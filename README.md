@@ -16,40 +16,43 @@ meeting times, etc.
 4. Team Contract Submission:
 • Fill out, sign, and upload your completed Team Contract to the GitLab project.
 
+# Team details
+| Name | GitLab Username | e-mail |
 
-Team Contract for team4SE
-====================================
+| 강재현 |  KangJaehyun | 
 
-- We agree that we will participate actively in this class project.
-- We agree that all members of our team will be present during the demo for each milestone.
-- We agree to consistently meet as a team at 2 (time(s) and day(s)) [minimum meeting time: 1 hour] each week for the duration of the course project. 
-  This is in addition to meeting separately in pairs (if our meetings last long enough that we do all our work and pairing during the meetings, then we don't need separate meetings for pair programming), and this is separate from team meetings with your course staff supervisor.
-- We agree that we will do actual pair-programming and that we will switch pairs regularly.
-- We agree that we will respond to e-mail/calls/etc. from our team members and the course staff within 4 hours.
-- We agree to report an unresponsive team member to the course staff as soon as problems occur.
-- We agree that we will seek help from the course staff and not wait until the last minute before the assignment is due.
-- We agree that we will post our progress frequently on our team's page on the GitLab repository.
+| 김태헌 |  thkim0305 | thkim0305@yonsei.ac.kr 
 
-Signed,
+| 이호재 |  2018147582 | unikskyseed@yonsei.ac.kr
 
-| Name   |   Signature     |
+| 김성환 |  2019147562 | happysnail06@yonsei.ac.kr
 
-| 강재현 |  강재현 |
+| 김윤태 |  kimyuntae | kimyt0511@yonsei.ac.kr
 
-| 김태헌 |  김태헌 |
+| 반 석 |   2019147568 | semient_97@naver.com
 
-| 이호재 |  이호재 |
+| 유지민 |  yxxjimin | jmy0819@yonsei.ac.kr
 
-| 김성환 |  김성환 |
+| 최원재 |  wonj | jaja1012@yonsei.ac.kr
 
-| 김윤태 |  김윤태 |
+| 한철원 |  2019147566 | hchulwon3080@gmail.com
 
-| 반 석 |  반 석 |
+| 홍현기 |  Hyunki Hong | htk77733377@yonsei.ac.kr
 
-| 유지민 |  유지민 |
 
-| 최원재 |  최원재 |
+# iteration 1
+- Team leader: 강재현
+- Planning leader: 김태헌
+- QA leader: 이호재
 
-| 한철원 |  한철원 |
+## Meeting#1 (2023-10-14)
+What we did:
 
-| 홍현기 |  홍현기 |
+- Next meeting: 2023-10-20
+
+ToDo:
+- summarize all (implemented/unimplemented) UCs
+- suggest one new UC to implement at the next meeting
+
+
+
