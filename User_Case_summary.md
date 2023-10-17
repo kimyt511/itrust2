@@ -10,17 +10,28 @@
 
 ### UC4
 
+- user가 개인정보 기록을 열람하고 편집할 수 있다.
+- HCP는 본인의 정보 뿐 아니라 환자의 정보도 열람할 수 있는데, 환자의 정보를 볼 때에는 환자의 MID가 필요
+
 ### UC5
 
+- administrator가 병원에 대한 정보를 등록, 편집, 삭제
+
 ### UC6
+
+- 환자가 진료 예약을 신청할 수 있음
+- 환자는 자신의 진료 예약 신청을 열람, 삭제할 수 있다
+- HCP는 자신에게 온 진료 예약을 승인, 거부할수 있다. 이 경우에 진료 예약은 대기열에서 사라진다.
+- HCP는 승인된 진료 예약들을 열람할 수 있다.
 
 ### UC7
 
 ### UC8
 
 ### UC9
+
 - UC9 Summary -
-Pre-requirements: UC7 must be implemented ( Documented office hour visit )
+  Pre-requirements: UC7 must be implemented ( Documented office hour visit )
 
 UC9 is connected to UC7 as the documented office visit must be present in order
 to add a new prescription to the office visit. This user case is given to register the prescriptions
@@ -38,22 +49,21 @@ It has to contain name, code and description ( Ex. TestDrug, 1234-5678-90, "Meta
 ==PATIENT can view table containing current and past prescriptions. THis includes all details such as
 drug name, mg, start date, end date, renewals.
 
-
 Ex:
 
 ///// Office Visit + Description + Basic Health Metrics ///// Enter a new prescription -> Select (Name of drug)
-+ (Drug code) from list -> Edit mg, start date, end date, num of renewals.
 
+- (Drug code) from list -> Edit mg, start date, end date, num of renewals.
 
 Patient -> View prescriptions -> Shows list of current and past prescriptions. Table contains
 Drug name, Dose (mg), Start date, end date, num of renewals.
 
-
 Admin -> Add new NDC (National Drug Code) -> Enters (Num of drug code) + (Name of drug) + (Description)
 
 ### UC10
+
 - UC10 Summary -
-Pre-requirements: UC7 and UC8 must be implemented ( Documented office hour visit and Basic Health Metrics )
+  Pre-requirements: UC7 and UC8 must be implemented ( Documented office hour visit and Basic Health Metrics )
 
 This user case grants HCP to record a diagnosis of a patient during an office visit. Patients can
 view their current and past diagnoses along with the data associated with the diagnosis.
@@ -66,16 +76,13 @@ view their current and past diagnoses along with the data associated with the di
 
 ==PATIENT selects to view their diagnoses and data. Cannot edit.
 
-
-Ex: 
+Ex:
 
 ///// Office visit + Description + Basic Health Metrics ///// Dr. Vang diagnoses (diagnosis) associated with
 ICD-10 code (ICD-10 code) with (descriptions regarding diagnosis)
 
-
 Patient -> Check diagnosis -> Views past diagnoses as her most recent diagnosis. Includes date of diagnosis
 and HCP who perfomed the diagnosis.
-
 
 ADMIN -> List of diagnoses -> Add new diagnosis -> Enter K35 (ICD-10 code) + "Acute appendicitis" (Description)
 
@@ -98,6 +105,7 @@ ADMIN -> List of diagnoses -> Add new diagnosis -> Enter K35 (ICD-10 code) + "Ac
 ### UC18
 
 ### UC19: Food Diary
+
 - 환자가 직접 자신이 먹은 식단정보를 입력하고, 식단 정보를 보는 기능
 - 환자는 자신껏만 추가하고 자신것만 볼수있음
 - HCP는 원하는 환자의 식단 볼수는 있지만, 추가는 안됨
@@ -105,6 +113,7 @@ ADMIN -> List of diagnoses -> Add new diagnosis -> Enter K35 (ICD-10 code) + "Ac
 - 이 때 각 날짜별로 해당하는 식단들의 영양소 정보의 합을 display 해줘야됨
 
 ### UC20: Ophthalmology Appointment Requests
+
 - 안과 진료/수술 예약 기능
 - 2명의 HCP role을 추가 (optometrist, ophthalmologist)
 
