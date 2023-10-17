@@ -19,8 +19,65 @@
 ### UC8
 
 ### UC9
+- UC9 Summary -
+Pre-requirements: UC7 must be implemented ( Documented office hour visit )
+
+UC9 is connected to UC7 as the documented office visit must be present in order
+to add a new prescription to the office visit. This user case is given to register the prescriptions
+needed for the patient after their office visit.
+
+==HCP can add a new prescription to the office visit (including drug name, mg, start data, end date, renewals)
+==HCP can edit the prescription (drug name, mg, start date, end date, renewals)
+==HCP can delete the prescription.
+
+==ADMIN can add a new drug to the list of all drugs categorized. It should include name, code that consists
+of 4 digits, a dash ( - ), four digits, a dash ( - ), and two more digits (Ex. 1234-5678-90)
+It has to contain name, code and description ( Ex. TestDrug, 1234-5678-90, "Metaphentamine")
+==ADMIN can also edit the drug of delete and exisitng drug.
+
+==PATIENT can view table containing current and past prescriptions. THis includes all details such as
+drug name, mg, start date, end date, renewals.
+
+
+Ex:
+
+///// Office Visit + Description + Basic Health Metrics ///// Enter a new prescription -> Select (Name of drug)
++ (Drug code) from list -> Edit mg, start date, end date, num of renewals.
+
+
+Patient -> View prescriptions -> Shows list of current and past prescriptions. Table contains
+Drug name, Dose (mg), Start date, end date, num of renewals.
+
+
+Admin -> Add new NDC (National Drug Code) -> Enters (Num of drug code) + (Name of drug) + (Description)
 
 ### UC10
+- UC10 Summary -
+Pre-requirements: UC7 and UC8 must be implemented ( Documented office hour visit and Basic Health Metrics )
+
+This user case grants HCP to record a diagnosis of a patient during an office visit. Patients can
+view their current and past diagnoses along with the data associated with the diagnosis.
+
+==ADMIN can update list of diagnoses in the system by adding or removing diagnoses.
+==ADMIN can add and delete diagnosis. If add, then admin enters the ICD-10 code and description of the diagnosis.
+
+==HCP select correct diagnoses from menu of diagnoses options labeled with code ICD-10 and descriptions.
+==HCP must enter information about the diagnosis (date of office visit, HCP name, and additional notes)
+
+==PATIENT selects to view their diagnoses and data. Cannot edit.
+
+
+Ex: 
+
+///// Office visit + Description + Basic Health Metrics ///// Dr. Vang diagnoses (diagnosis) associated with
+ICD-10 code (ICD-10 code) with (descriptions regarding diagnosis)
+
+
+Patient -> Check diagnosis -> Views past diagnoses as her most recent diagnosis. Includes date of diagnosis
+and HCP who perfomed the diagnosis.
+
+
+ADMIN -> List of diagnoses -> Add new diagnosis -> Enter K35 (ICD-10 code) + "Acute appendicitis" (Description)
 
 ### UC11
 
