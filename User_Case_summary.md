@@ -145,7 +145,20 @@ ADMIN -> List of diagnoses -> Add new diagnosis -> Enter K35 (ICD-10 code) + "Ac
 
 ### UC11 Password Functionality 
 
+- 유저가 자신의 비밀번호를 변경할 수 있다.
+- 그 유저가 자신의 비밀번호를 아는 경우:
+  - 그 유저가 동일한 비밀번호로 변경 시도할 경우 에러를 출력한다.
+  - 그 유저의 "새로운 비번"과 "비번 확인"란이 다를 경우 에러를 출력한다.
+- 그 유저가 자신의 비밀번호를 모르는 경우:
+  - 그 유저는 본인의 유저 네임을 입력하고, 등록되지 않은 이름이라면 에러를 출력한다.
+  - 그 후 그 유저가 등록한 이메일로 복구 비번을 보내주는데, 등록한 이메일이 없다면 에러를 출력하고, 복구 비번이 "만료"된다면 오류를 출력한다.
+
 ### UC12 HCP Edit Demographics 
+
+- (Preconditions) 이 유저는 등록된 HCP이다.
+- HCP는 등록된 환자들 중 선택하여 세부 정보? (demographics)를 편집하도록 한다.
+  - 만약 입력한 정보가 [UC4](#uc4-demographics)에 있는 형식에 맞지 않으면 에러를 출력한다.
+  - 저장하지 않고 다른 유저의 demographics를 수정하려 하면 확인 메시지를 보낸다.
 
 ### UC13 View Access Logs
 
