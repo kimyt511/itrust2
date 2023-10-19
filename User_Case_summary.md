@@ -187,7 +187,7 @@ ADMIN -> List of diagnoses -> Add new diagnosis -> Enter K35 (ICD-10 code) + "Ac
     - 백신: 
       - 이름 (~250자, 숫자 및 '-' 허용)
       - 약자 (~10자, 숫자 및 '-' 허용)
-      - CPT 코드 (##### 형식의 90 이상의 숫자)
+      - CPT 코드 (90### 형식)
       - 설명 (~500자)
 - **HCP**
     - ([Office visit](#uc7-office-visit)에다가) 백신 목록을 보고 추가함 (0개 이상).
