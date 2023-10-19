@@ -160,14 +160,20 @@ ADMIN -> List of diagnoses -> Add new diagnosis -> Enter K35 (ICD-10 code) + "Ac
 ### UC17 Lab Procedures
 - **Admin**
     - Procedure 목록을 추가/편집/삭제함.
-    - Procedure: LOINC 코드 / 이름 / 구성요소 / 속성
+    - Procedure: 
+        - LOINC 코드 (#####-# 형식)
+        - 이름 (~250자)
+        - 구성요소 (~250자)
+        - 속성 (~250자)
 - **HCP**
     - ([Office visit](#uc7-office-visit)에다가) 환자를 위한 Procedure를 목록에서 선택할 수 있음.
-    - 이 때 해당 Procedure를 수행할 Lab Tech를 배정하고 priority(1~4)를 배정할 수 있음.
+        - Procedure를 수행할 Lab Tech를 배정
+        - Priority(1~4)를 설정
+        - Comment를 추가(~500자)
     - 배정해준 Procedure의 상태가 `1. Assigned`이면 Procedure를 삭제할 수 있음.
 - **Lab Tech**
     - 자기한테 배정된 Procedure를 확인할 수 있음.
-    - Procedure의 진행 상태/comment를 변경할 수 있음.
+    - Procedure의 진행 상태/Comment를 변경할 수 있음.
         1. Assigned(초기)
         2. In-Progress
         3. Completed
@@ -178,7 +184,11 @@ ADMIN -> List of diagnoses -> Add new diagnosis -> Enter K35 (ICD-10 code) + "Ac
 ### UC18 Vaccinations
 - **Admin**
     - 백신 목록을 추가/편집/삭제함.
-    - 백신: 이름 / 약자 / CPT 코드 / 설명
+    - 백신: 
+      - 이름 (~250자, 숫자 및 '-' 허용)
+      - 약자 (~10자, 숫자 및 '-' 허용)
+      - CPT 코드 (##### 형식의 90 이상의 숫자)
+      - 설명 (~500자)
 - **HCP**
     - ([Office visit](#uc7-office-visit)에다가) 백신 목록을 보고 추가함 (0개 이상).
     - 환자 이름으로 검색해서 그 환자의 모든 백신 접종에 대한 기록을 열람할 수 있음.
