@@ -46,7 +46,32 @@
   - 날자: MM/DD/YYYY    2 digit/2 digit/ 4 digit
   - 시간: HH/MM [am/pm]   2 digit/ 2 digit
 
-### UC8
+### UC8 Basic Health Metrics
+
+-Precondition: HCP(Health Care Provider)는  iTrust2에 로그인하고 인증 되어야 한다. 
+               HCP가 환자의 진료내역을 작성하기 시작했다.
+
+- 환자 나이에 따라 3가지 다른 형식의 문서를 사용한다. 만나이를 기준으로 하며 각 문서의 세부 항목은 아래와 같다.
+  - 3세 이하
+    - 키, 몸무게, 머리 둘레, 가족 흡연 여부
+  - 3세 ~ 12세
+    - 키, 몸무게, 혈압, 가족 흡연 여부
+  - 12세 이상
+    - 키, 몸무게, 혈압, 가족 흡연 여부, 본인 흡연 여부, HDL 콜레스테롤 수치, LDL 콜레스텔롤 수치, 중성지방 수치
+- 가족 흡연 여부는 아래 옵션 중에서 선택한다
+  - 1. Non-smoking
+  - 2. Outdoor-smoking
+  - 3. indoor-smoking
+- 본인 흡연 여부는 아래 옵션 중에서 선택한다
+  - 1. Never smoker
+  - 2. Former smoker
+  - 3. Current some days smoker
+  - 4. Current every day smoker
+  - 5. Smoker, current status unknown
+  - 9. unknown, if never smoked
+
+- 진료 내용 데이터 작성 형식
+
 
 ### UC9
 
