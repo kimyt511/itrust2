@@ -158,8 +158,33 @@ ADMIN -> List of diagnoses -> Add new diagnosis -> Enter K35 (ICD-10 code) + "Ac
 ### UC16 Personal Representatives
 
 ### UC17 Lab Procedures
+- **Admin**
+    - Procedure 목록을 추가/편집/삭제함.
+    - Procedure: LOINC 코드 / 이름 / 구성요소 / 속성
+- **HCP**
+    - ([Office visit](#uc7-office-visit)에다가) 환자를 위한 Procedure를 목록에서 선택할 수 있음.
+    - 이 때 해당 Procedure를 수행할 Lab Tech를 배정하고 priority(1~4)를 배정할 수 있음.
+    - 배정해준 Procedure의 상태가 `1. Assigned`이면 Procedure를 삭제할 수 있음.
+- **Lab Tech**
+    - 자기한테 배정된 Procedure를 확인할 수 있음.
+    - Procedure의 진행 상태/comment를 변경할 수 있음.
+        1. Assigned(초기)
+        2. In-Progress
+        3. Completed
+    - 혹은 다른 Lab Tech한테 떠넘기기 가능.
+- **Patient**
+    - 자기한테 할당된 Procedure를 구경만 가능.
 
 ### UC18 Vaccinations
+- **Admin**
+    - 백신 목록을 추가/편집/삭제함.
+    - 백신: 이름 / 약자 / CPT 코드 / 설명
+- **HCP**
+    - ([Office visit](#uc7-office-visit)에다가) 백신 목록을 보고 추가함 (0개 이상).
+    - 환자 이름으로 검색해서 그 환자의 모든 백신 접종에 대한 기록을 열람할 수 있음.
+- **Patient**
+    - 환자는 보기만 할 수 있음.
+    - 자신의 모든 백신 기록을 볼 수 있음.
 
 ### UC19 Food Diary
 -Precondition: 환자와 HCP가 iTrust2에 로그인하고 인증 되어야 한다.
