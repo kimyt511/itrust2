@@ -2,22 +2,22 @@
 
 ## Implemented UCs (1~14)
 
-### UC1
+### UC1 User Functionality
 
-### UC2
+### UC2 Authenticate Users
 
-### UC3
+### UC3 Log Transactions
 
-### UC4
+### UC4 Demographics
 
 - user가 개인정보 기록을 열람하고 편집할 수 있다.
 - HCP는 본인의 정보 뿐 아니라 환자의 정보도 열람할 수 있는데, 환자의 정보를 볼 때에는 환자의 MID가 필요
 
-### UC5
+### UC5 Hospitals
 
 - administrator가 병원에 대한 정보를 등록, 편집, 삭제
 
-### UC6
+### UC6 Appointments
 
 - 환자가 진료 예약을 신청할 수 있음
 - 환자는 자신의 진료 예약 신청을 열람, 삭제할 수 있다
@@ -73,7 +73,7 @@
 - 진료 내용 데이터 작성 형식
 
 
-### UC9
+### UC9 Prescriptions
 
 - UC9 Summary -
   Pre-requirements: UC7 must be implemented ( Documented office hour visit )
@@ -105,7 +105,7 @@ Drug name, Dose (mg), Start date, end date, num of renewals.
 
 Admin -> Add new NDC (National Drug Code) -> Enters (Num of drug code) + (Name of drug) + (Description)
 
-### UC10
+### UC10 Diagnoses
 
 - UC10 Summary -
   Pre-requirements: UC7 and UC8 must be implemented ( Documented office hour visit and Basic Health Metrics )
@@ -131,47 +131,62 @@ and HCP who perfomed the diagnosis.
 
 ADMIN -> List of diagnoses -> Add new diagnosis -> Enter K35 (ICD-10 code) + "Acute appendicitis" (Description)
 
-### UC11
+### UC11 Password Functionality 
 
-### UC12
+### UC12 HCP Edit Demographics 
 
-### UC13
+### UC13 View Access Logs
 
-### UC14
+### UC14 Alert Users by Email
 
 ## UCs to implement (15~22)
 
-### UC15
+### UC15 Emergency Health Records
 
-### UC16
+### UC16 Personal Representatives
 
-### UC17
+### UC17 Lab Procedures
 
-### UC18
+### UC18 Vaccinations
 
-### UC19: Food Diary
+### UC19 Food Diary
+-Precondition: 환자와 HCP가 iTrust2에 로그인하고 인증 되어야 한다.
 
 - 환자가 직접 자신이 먹은 식단정보를 입력하고, 식단 정보를 보는 기능
-- 환자는 자신껏만 추가하고 자신것만 볼수있음
+  - 환자는 자신껏만 추가하고 자신것만 볼수있음
 - HCP는 원하는 환자의 식단 볼수는 있지만, 추가는 안됨
 - diary 보이는 순서는 최신꺼부터 쭉
 - 이 때 각 날짜별로 해당하는 식단들의 영양소 정보의 합을 display 해줘야됨
+- Diary 데이터 형식(모든 항목이 Required):
+  - 날자: MM/DD/YYYY    2 digit/2 digit/ 4 digit
+  - 식사종류: “Breakfast”, “Lunch”, “Dinner”, or “Snack” 중 1개 (같은 식사종류가 같은 날에 여러개 있어도 됨)
+  - 음식이름
+  - 반찬개수
+  - 칼로리 per 반찬
+  - 나트륨(Sodium) per 반찬 (in Miligrams)
+  - 지방, 탄수화물, 당, 식이섬유, 단백질 per 반찬 (in Grams)
 
-### UC20: Ophthalmology Appointment Requests
-
+### UC20 Ophthalmology Appointment Requests
+- 용어정리:
+  - ophthamology: 안과
+  - ophthalmologist: 안과 전문의
+  - optometrist: 눈 healthcare 전문의?
 - 안과 진료/수술 예약 기능
+  - 환자가 예약 요청/ 기존 요청 철회
+  - HCP는 들어온 요청을 보고 수락 혹은 거절
 - 2명의 HCP role을 추가 (optometrist, ophthalmologist)
+- 각 HCP role별 안과관련 진료가능 항목:
+  - Optometrist: general checkups / opthalmology office visits
+  - Ophthalmologist: general checkups / opthalmology office visits / ophthalmology surgeries
+  - other HCPS: general checkups /
+- 예약 요청 데이터 형식:
+  - HCP: HCP user의 이름
+  - 날짜, 시간 
+  - Comments: Up to 50 characters
+  - 종류: "General Checkup" 혹은 "ophthalmology appointment"
+  - Name, Abbreviations, CPT Code
+  - Comments: Up to 500 characters --> ??? 이게 왜 또있지
 
-- 예약 type도 좀 이상함
-- main flow에는 general checkup, ophthalmology appointment, ophthalmology surgery가 있는데
-- patient가 할수있는 타입에는 general checkup과 appointment밖에 없음
+### UC21 Ophthalmologist Appointment
 
-아니 이건 근데 설명이 좀 많이 부족함, 부족한 부분을 우리가 직접 채우라는 건가???
-
-ophthamology: 안과
-ophthalmologist: 안과 전문의
-optometrist: 눈 healthcare 전문의?
-
-### UC21
-
-### UC22
+### UC22 Ophthalmology Surgeries
