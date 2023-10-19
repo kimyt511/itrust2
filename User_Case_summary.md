@@ -155,7 +155,33 @@ ADMIN -> List of diagnoses -> Add new diagnosis -> Enter K35 (ICD-10 code) + "Ac
 
 ### UC15 Emergency Health Records
 
+- HCP와 Emergency Responder는 환자의 이름이나 MID로 환자를 검색해서 환자의 Emergency Health Records를 볼 수 있음.
+
+- Searching
+  - 환자의 성, 이름으로 검색 (혹은 그것의 substring)
+  - 환자의 username/MID로 검색 (혹은 그것의 substring)
+  - 검색한 substring을 포함하는 이름/MID를 가진 환자들의 리스트가 표시됨
+  - 표시된 리스트중 특정 환자를 선택하여 Emergency Health Records 페이지를 불러옴.
+  - 검색한 substring을 포함하는 환자가 없거나, 검색한 substring이 포맷에 맞지 않으면 환자 리스트가 표시되지 않음
+
+- Emergency Health Records
+  - 이름, 나이, 생일, 성별, 혈액형이 표시됨
+  - 지난 60일간의 단기 건강검진의 진단 코드가 표시됨 (최근 것 부터)
+  - 지난 90일간의 처방 기록이 표시됨 (최근 것 부터)
+
 ### UC16 Personal Representatives
+
+- 환자는 다른 환자를 자신의 Personal Representatives(PR, 대리인)으로 지정하여 자신의 의료 기록 접근 권한을 줄 수 있음.
+
+- PR의 등록과 해제
+  - 환자는 자신의 대리인으로 등록된 사용자들과 자신이 대리인으로 등록된 사용자들의 리스트를 볼 수 있음.
+  - 환자는 이름이나 MID로 다른 환자를 검색하여 자신의 대리인으로 등록할 수 있음.
+  - 환자는 자신의 대리인으로 등록된 사용자를 대리인에서 해제할 수 있음.
+  - 대리인으로 등록된 사용자가 특정 환자를 대리하기를 원하지 않는다면 그 환자의 대리인에서 해제할 수 있음.
+  - HCP는 환자의 대리인을 등록할 수 있고, 특정 환자의 대리인 목록이나 그 환자가 대리인으로 등록된 환자들의 목록을 볼 수 있음.
+
+- 대리인은 환자의 의료 기록, 진단, 예약 페이지를 확인할 수 있음.
+
 
 ### UC17 Lab Procedures
 - **Admin**
