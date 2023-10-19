@@ -79,9 +79,9 @@
   - 머리 둘레(inches):   xxx.x              소수점 한 자릿수까지, 0 이상.
   - 혈압(mmHg):      Systolic/Diastolic      정수, 3 자릿수
   - 콜레스테롤(mg/dL):    
-          HDL             0 ~ 90
-          LDL             0 ~ 600
-          triglyceride    100 ~ 600
+        - HDL             0 ~ 90
+        - LDL             0 ~ 600
+        - triglyceride    100 ~ 600
   - 가족 흡연 여부:    1 / 2 / 3 /  중 선택
   - 본인 흡연 여부:   1 / 2 / 3 / 4 / 5 / 9 / 중 선택
 
