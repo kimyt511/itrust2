@@ -70,8 +70,20 @@
   - 5. Smoker, current status unknown
   - 9. unknown, if never smoked
 
-- 진료 내용 데이터 작성 형식
+- 문서 작성 성공 시 성공 메시지가 뜬다.
+- 문서 작성 실패 시 틀린 항목에 정확한 형식을 입력하라는 메시지가 뜬다.
 
+- 진료 내용 데이터 작성 형식
+- 키(inches):         xxx.x             소수점 한 자릿수까지, 0 이상.
+  - 몸무게(pounds):     xxxx.x             소수점 한 자릿수까지, 0 이상.
+  - 머리 둘레(inches):   xxx.x              소수점 한 자릿수까지, 0 이상.
+  - 혈압(mmHg):      Systolic/Diastolic      정수, 3 자릿수
+  - 콜레스테롤(mg/dL):    
+          HDL             0 ~ 90
+          LDL             0 ~ 600
+          triglyceride    100 ~ 600
+  - 가족 흡연 여부:    1 / 2 / 3 /  중 선택
+  - 본인 흡연 여부:   1 / 2 / 3 / 4 / 5 / 9 / 중 선택
 
 ### UC9 Prescriptions
 
