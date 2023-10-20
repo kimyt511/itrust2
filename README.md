@@ -3,7 +3,7 @@
 | Name | GitLab Username | e-mail                    |
 |------|-----------------|---------------------------| 
 | 강재현 | KangJaehyun | luxmea1005@yonsei.ac.kr   |
-| 김태헌 | Taeheon Kim | thkim0305@yonsei.ac.kr    |
+| 김태헌 | thkim0305 | thkim0305@yonsei.ac.kr    |
 | 이호재 | 2018147582 | unikskyseed@yonsei.ac.kr  |
 | 김성환 | 2019147562 | happysnail06@yonsei.ac.kr |
 | 김윤태 | kimyuntae | kimyt0511@yonsei.ac.kr    |
