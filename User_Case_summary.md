@@ -162,8 +162,22 @@ ADMIN -> List of diagnoses -> Add new diagnosis -> Enter K35 (ICD-10 code) + "Ac
 
 ### UC13 View Access Logs
 
+- Precondition: 시스템에 등록된 유저 + 인증한 유저여야한다. (uc1,2)
+- main flow: 1. 로그인하면 access log의 상위항목(최근 10개)이 display되어야 하고 다른 창에서 access   log(최근 순으로 모든 로그)를 볼 수 있어야 한다. user는 시작날짜, 종료날짜를 골라 log를 볼 수 있다. 입력이 잘 못된 경우, 이벤트를 표시하지 않고 다른 날짜를 선택할 수 있게 한다.
+user는 
+- 로그는 다음 항목 포함
+   * Name of accessor
+   * Role of accessor relative to the patient (if the logged event is for a patient)
+   * Date and time of access
+
 ### UC14 Alert Users by Email
 
+- Precondition: email alert가 필요한 상황이 발생
+- main flow: 
+  1. 비밀번호 변경 혹은 리셋 시 email alert 발생 -> MID를 포함한 이메일 발송
+  2. 요청에 관련된 HCP에 의해 예약 요청 상태가 변경되었으며, 환자에게 예약 상태를 알리는 이메일 발송
+  3. 일정 로그인 시도 실패 시, 계정이 잠기고 이메일 발송
+  모든 이메일은 application에서 추적, 로그 남음
 ## UCs to implement (15~22)
 
 ### UC15 Emergency Health Records
