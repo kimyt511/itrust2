@@ -22,7 +22,7 @@
 3. `./itrust2/iTrust2`에서 shell에다가 `mvn spring-boot:run` 입력하면 돌아갈껍니다.
     - 만약 안되면 [Developers-Gude.md](https://github.com/ncsu-csc326/iTrust2/blob/main/docs/Developers-Guide.md##import-itrust2-into-eclipse-workspace)에 나온대로 eclipse에 추가한 다음에 시도해보는걸 추천드립니다.
 
-- 근데 일단 돌아가기는 하는데 로그인 창에서부터 뭐가 안됨 ㅋ
+- 처음에 돌아갈 때 sample user라고 밑에 있는데 누르면 로그인이 안됨. 정확한 이유는 모르겠지만, 처음 돌려서인지 db 생성이 안된건지 모르겠지만, 막 누르면 ban당해서 1시간동안 아무 기능도 확인을 못하게 되기 때문에 조심하세요..
 
 ## Iteration 1 (~2023-10-31)
 - Team leader: 강재현
