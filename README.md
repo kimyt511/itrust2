@@ -28,18 +28,18 @@ meeting times, etc.
 - 근데 일단 돌아가기는 하는데 로그인 창에서부터 뭐가 안됨 ㅋ
 
 ## Team details
-| Name | GitLab Username | e-mail |
-|------|-----------------|--------| 
-| 강재현 | KangJaehyun | |
-| 김태헌 | thkim0305 | thkim0305@yonsei.ac.kr |
-| 이호재 | 2018147582 | unikskyseed@yonsei.ac.kr |
+| Name | GitLab Username | e-mail                    |
+|------|-----------------|---------------------------| 
+| 강재현 | KangJaehyun | luxmea1005@yonsei.ac.kr   |
+| 김태헌 | thkim0305 | thkim0305@yonsei.ac.kr    |
+| 이호재 | 2018147582 | unikskyseed@yonsei.ac.kr  |
 | 김성환 | 2019147562 | happysnail06@yonsei.ac.kr |
-| 김윤태 | kimyuntae | kimyt0511@yonsei.ac.kr |
-| 반 석 | 2019147568 | semient_97@naver.com |
-| 유지민 | yxxjimin | jmy0819@yonsei.ac.kr |
-| 최원재 | wonj | jaja1012@yonsei.ac.kr |
-| 한철원 | 2019147566 | hchulwon3080@gmail.com |
-| 홍현기 | Hyunki Hong | htk77733377@yonsei.ac.kr |
+| 김윤태 | kimyuntae | kimyt0511@yonsei.ac.kr    |
+| 반 석 | 2019147568 | semient_97@naver.com      |
+| 유지민 | yxxjimin | jmy0819@yonsei.ac.kr      |
+| 최원재 | wonj | jaja1012@yonsei.ac.kr     |
+| 한철원 | 2019147566 | hchulwon3080@gmail.com    |
+| 홍현기 | Hyunki Hong | htk77733377@yonsei.ac.kr  |
 
 
 ## Iteration 1 (~2023-10-31)

@@ -3,10 +3,35 @@
 ## Implemented UCs (1~14)
 
 ### UC1 User Functionality
+- Admin이 user를 create, view, update, delete하는 기능에 대한 설명. 
+- user create시 입력해야하는 정보는 user name, password, confirm password, the role이고 등록하는 role의 종류는 다음과 같다. 
+- * Patient
+  * Health Care Provider (HCP)
+  * Optometrist HCP
+  * Ophthalmologist HCP
+  * Admin
+  * Emergency Responder (ER)
+  * Lab Tech
+- 정해진 data 틀에 맞지 않거나, password가 일치하지 않을 경우 err 발생.
+- user name, password, confirm password는 모두 6~20 character data format 가짐.
+- create와 delete 시 success 메시지가 display되고 log가 기록된다.
 
 ### UC2 Authenticate Users
+- UC1에서 등록된 유저가 user name과 password를 통해 시스템에서 역할에 맞는 entry를 받음.
+    3번 실패시 60분동안 세션 잠금, 특정 IP주소에서 최근 6번 시도가 실패할 경우 해당 IP에 대한 어떤 유저에 대해 60분 차단. 
+    차단 이후에 user는 3번, ip는 6번의 기회 받음.
+    최근 24시간 안에 user나 ip가 3번 잠기면 해당 계정또는 IP는 system으로부터 ban되며 재인증을 받아야함.
+- 로그인 실패시 mistake에 대한 메시지창 안내
+- 세션은 10분 이상 비활성화상태이면 terminated. => 인증이 초기화되어야 함.
+- 인증 성공시, role에 따른 personalized homepage로 이동, user logout 또는 app 종료시 세션 종료.
 
 ### UC3 Log Transactions
+- patient 개인정보의 중요성에 따라 patient data에 대한 부적절한 access에 대한 log기록은 매우 중요하다.
+  creates, views, edits, or deletes information, Login failures, valid authentication, and log outs 까지
+  모두 log 기록 대상이다.
+  트랜잭션 1-99는 use case에 대한 접근을 제외한 system과 관련한 log event가 기록되는 곳이고, 이후부터는 100개 단위로 use case에 대한
+  log가 기록된다.
+  log에는 로그인한 user의 MID와 접근되고 있는 user의 MID, 트랜잭션타입, 현재 시간이 기록된다.
 
 ### UC4 Demographics
 
