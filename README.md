@@ -24,6 +24,8 @@
 
 - 처음에 돌아갈 때 sample user라고 밑에 있는데 누르면 로그인이 안됨. 정확한 이유는 모르겠지만, 처음 돌려서인지 db 생성이 안된건지 모르겠지만, 막 누르면 ban당해서 1시간동안 아무 기능도 확인을 못하게 되기 때문에 조심하세요..
 
+-link: (http://localhost:8080/iTrust2)
+
 ## Iteration 1 (~2023-10-31)
 - Team leader: 강재현
 - Planning leader: 김태헌
