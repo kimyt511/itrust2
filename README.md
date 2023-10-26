@@ -73,3 +73,44 @@ ToDo:
 - Run `iTrust2` on the local machine
 
 - Next meeting: 2023-10-26
+
+### Meeting#3 (2023-10-26)
+What we did:
+- Each member chose `Front-end` or `Back-end`.
+- Based on the choices, we divided the team into 3, and assigned 2 UCs per team to implement.
+
+| Team 1 | Team 2 | Team 3 |
+|--------|--------|--------| 
+| 강재현 (`Front-end`) |김태헌 (`Front-end`) | 이호재 (`Front-end`)  |
+| 김성환 (`Front-end`) |한철원 (`Back-end`) | 홍현기 (`Front-end`)  |
+| 유지민 (`Back-end`) |최원재 (`Back-end`) | 반석 (`Back-end`)  |
+|       |       | 김윤태 (`Back-end`)  |
+
+    Team 1: UC16 & UC19
+    Team 2: UC15 & UC18
+    Team 3: UC17 & New UC
+
+- For the presentation of iteration1, we decided presenters and the contents of the presentation.
+    - Presenters: 강재현, 김태헌, 이호재
+    - Contents:
+        - 조원소개
+        - 8개 중 선택한 5개 UC 내용 요약
+            - User Stories 설명
+            - UC Diagram?
+        - Newly proposed UC 내용 요약
+            - User Stories
+            - UC Diagram?
+        - (iTrust2 Demo if time left)
+        - Future plan
+            - How we divide the team into sub-teams
+
+- We created [google_docs](https://docs.google.com/document/d/1DPIqJ6o1eQRVJbVYjrY-3QLi_OlikNk23oljrz-Ql08/edit?usp=sharing) to share User Stories and Use Case that we propose.
+    - We decided the common structure of User Story
+
+            As a ~, I want ~, So that ~
+    - We wrote some basic components of our UC in the docs.
+
+ToDo:
+- Each sub-team writes User Stories of the assigned UCs before Sunday(10/29) 10PM.
+    - Team3 completes newly proposed UC.
+- 재현, 태헌, 호재: Prepare presentation before Tuesday(10/31)
