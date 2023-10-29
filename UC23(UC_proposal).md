@@ -1,0 +1,43 @@
+# UC23 Rate Health Care Provider and Hospital
+## 23.1 Preconditions
+
+A patient is a registered user of the iTrust2 system (UC1). The patient has authenticated in the system (UC2).
+
+## 23.2 Main Flow
+
+An authenticated patient can rate and review a Health Care Provider (HCP) or a hospital they have recently visited. The patient can access the rating interface [S1], select an HCP or hospital [S2], submit a rating and an optional comment [S3], and submit their review [S4]. The system records the review and updates the HCP's or hospital's average rating [S5].
+
+## 23.3 Sub-flows
+
+   * [S1]: The patient navigates to the rating and review section in the iTrust2 application.
+   * [S2]: The patient selects an HCP or hospital they have visited from a dropdown list or through a search interface.
+   * [S3]: The patient selects a rating from 1 to 5 stars and optionally leaves a comment about their experience.
+   * [S4]: The patient clicks the submit button to post their review.
+   * [S5]: The system records the rating and comment, updates the average rating for the selected HCP or hospital, and makes the review visible to other patients.
+
+## 23.4 Alternative Flows
+
+   * [E1]: If the patient tries to rate an HCP or hospital they haven't visited, the system will display an error message.
+   * [E2]: If the patient leaves the rating section without submitting, the system will prompt to save or discard the review.
+
+## 23.5 Logging
+| Transaction Code | Verbose Description | Logged In MID | Secondary MID | Transaction Type | Patient Viewable |
+|------------------|---------------------|---------------|---------------|------------------|------------------|
+| 2301 | Patient rates an HCP | Patient | HCP | Review | Yes |
+| 2302 | Patient rates a hospital | Patient | None | Review | Yes |
+
+## 23.6 Data Format
+| Field | Format |
+|------------------|---------------------|
+| Rating | Integer from 0  to 5 |
+| Comment | Up to 500 characters, alpha-numeric, and common symbols|
+
+## 23.7 Acceptance Scenarios
+**Scenario 1:: A Patient Rates an HCP**  
+Patient John Doe authenticates into iTrust2. He navigates to the rating section and selects HCP Dr. Alice Smith from the list. He gives her a 4-star rating and writes a comment about his positive experience. He then clicks the submit button. Dr. Alice Smith's average rating is updated with the new review.
+
+**Scenario 2:: A Patient Rates a Hospital**  
+Patient Emily Clark authenticates into iTrust2. She navigates to the rating section and searches for 'Greenwood Hospital'. She selects it, gives a 5-star rating, and comments on the excellent facilities. She clicks submit. Greenwood Hospital's average rating is updated with the new review.
+
+**Scenario 3:: A Patient Attempts to Rate Without a Visit**  
+Patient Alex Johnson authenticates into iTrust2. He tries to rate Dr. Brian Thomas, whom he hasn't visited. Upon attempting to submit the rating, the system displays an error message indicating that he can only rate providers or hospitals he has visited.
