@@ -41,7 +41,7 @@ What we did:
 
 ToDo:
 - Summarize all (implemented/unimplemented) UCs
-    - Each member write the summary in `Use_Case_summary.md`
+    - Each member write the summary in [Use_Case_summary.md](https://34.64.100.199/team4se/itrust2/-/blob/main/Use_Case_summary.md?ref_type=heads)
 - Suggest one new UC to implement at the next meeting
 
 - Next meeting: 2023-10-20
@@ -96,15 +96,13 @@ What we did:
         - 조원소개
         - 8개 중 선택한 5개 UC 내용 요약
             - User Stories 설명
-            - UC Diagram?
         - Newly proposed UC 내용 요약
             - User Stories
-            - UC Diagram?
         - (iTrust2 Demo if time left)
         - Future plan
             - How we divide the team into sub-teams
 
-- We created [google_docs](https://docs.google.com/document/d/1DPIqJ6o1eQRVJbVYjrY-3QLi_OlikNk23oljrz-Ql08/edit?usp=sharing) to share User Stories and Use Case that we propose.
+- We created [google docs](https://docs.google.com/document/d/1DPIqJ6o1eQRVJbVYjrY-3QLi_OlikNk23oljrz-Ql08/edit?usp=sharing) to share User Stories and Use Case that we propose.
     - We decided the common structure of User Story
 
             As a ~, I want ~, So that ~
@@ -114,3 +112,12 @@ ToDo:
 - Each sub-team writes User Stories of the assigned UCs before Sunday(10/29) 10PM.
     - Team3 completes newly proposed UC.
 - 재현, 태헌, 호재: Prepare presentation before Tuesday(10/31)
+
+### Meeting#4 (2023-10-30)
+What we did:
+- Based on the work we had done in the google docs, we create [UC23.md](https://34.64.100.199/team4se/itrust2/-/blob/main/UC23(UC_proposal).md?ref_type=heads) in the same format as other UCs.
+- Create User_Story.md for each team and neatly organize each user story and its basic scenario.
+- Create [google slides](https://docs.google.com/presentation/d/1tC3bB02xBQjqlFD9e0CbPNYj5uUtUy4dsA_H0H2TqCg/edit?usp=sharing) to present what we have done during iteration 1.
+
+
+Next Meeting: Decide after the presentation.
