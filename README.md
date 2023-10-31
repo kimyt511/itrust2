@@ -13,7 +13,9 @@
 | 한철원 | 2019147566 | hchulwon3080@gmail.com    |
 | 홍현기 | Hyunki Hong | htk77733377@yonsei.ac.kr  |
 
-## iTrust2 실행하기 (by 태헌 in Windows11, 제가 실행시키면서 격었던 문제들과 그 해결책 적어놓겠습니다. 근데 다른 문제가 나타나면 저도 잘 몰라요)
+<details>
+  <summary markdown="span">iTrust2 실행하기 (by 태헌 in Windows11, 제가 실행시키면서 격었던 문제들과 그 해결책 적어놓겠습니다. 근데 다른 문제가 나타나면 저도 잘 몰라요)</summary>
+
 - Application 버전: JDK 11, MySQL 8.1 (이 때 MySQL 계정 비밀번호를를 대문자+소문자+숫자+기호 포함된 8자이상으로 설정 안하면 오류 뜹니다.)
 1. Repo clone한 다음에 가장 먼저 `./iTrust2/src/main/java/edu/nscu/csc/itrsut2` 에서 마지막 `itrust2`를 `iTrust2`로 바꿔주세요.
     - `./iTrust2/test/main/java/edu/nscu/csc/itrsut2`에서도 마지막 `itrust2`를 `iTrust2`로 바꿔주세요.
@@ -25,6 +27,9 @@
 - 처음에 돌아갈 때 sample user라고 밑에 있는데 누르면 로그인이 안됨. 정확한 이유는 모르겠지만, 처음 돌려서인지 db 생성이 안된건지 모르겠지만, 막 누르면 ban당해서 1시간동안 아무 기능도 확인을 못하게 되기 때문에 조심하세요..
 
 -link: (http://localhost:8080/iTrust2)
+
+</details>
+
 
 ## Iteration 1 (~2023-10-31)
 - Team leader: 강재현
