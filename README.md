@@ -121,7 +121,7 @@ ToDo:
 ### Meeting#4 (2023-10-30)
 What we did:
 - Based on the work we had done in the google docs, we create [UC23.md](https://34.64.100.199/team4se/itrust2/-/blob/main/UC23(UC_proposal).md?ref_type=heads) in the same format as other UCs.
-- Create User_Story.md for each team and neatly organize each user story and its basic scenario.
+- Create User_Story.md ([team1](https://34.64.100.199/team4se/itrust2/-/blob/develop/docs/use-cases/User_Story_team1.md), [team2](https://34.64.100.199/team4se/itrust2/-/blob/develop/docs/use-cases/User_Story_team2.md), [team3](https://34.64.100.199/team4se/itrust2/-/blob/develop/docs/use-cases/User_Story_team3.md)) for each team and neatly organize each user story and its basic scenario.
 - Create [google slides](https://docs.google.com/presentation/d/1tC3bB02xBQjqlFD9e0CbPNYj5uUtUy4dsA_H0H2TqCg/edit?usp=sharing) to present what we have done during iteration 1.
 
 
