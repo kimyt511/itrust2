@@ -46,7 +46,7 @@ What we did:
 
 ToDo:
 - Summarize all (implemented/unimplemented) UCs
-    - Each member write the summary in [Use_Case_summary.md](https://34.64.100.199/team4se/itrust2/-/blob/main/Use_Case_summary.md?ref_type=heads)
+    - Each member write the summary in [summary.md](https://34.64.100.199/team4se/itrust2/-/blob/develop/docs/use-cases/summary.md?ref_type=heads)
 - Suggest one new UC to implement at the next meeting
 
 - Next meeting: 2023-10-20
