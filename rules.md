@@ -125,3 +125,23 @@ resolves: #1137
 - Pull Request(Merge Request)는 최소 2명 이상의 팀원의 승인이 있어야 Merge가 가능합니다.
 - Pull Request(Merge Request)는 최대한 작은 단위로 나누어 작성합니다.
 - Pull Request(Merge Request)는 작성 시 [Pull Request(Merge Request) 템플릿](/.gitlab/MERGE_REQUEST_TEMPLATE.md)을 활용합니다.
+
+---
+
+### 추가 고려사항
+
+- IDE 통일: IntelliJ
+- CI/CD: GitLab CI
+- 코드 퀄리티
+  - 테스트 코드: JUnit5
+  - 코드 컨벤션: Google Java Style Guide
+  - 코드 정적 분석: SonarQube
+  - 코드 커버리지: JaCoCo
+- 컨테이너화: Docker, Docker Compose
+- Migration (Optional)
+  - Maven -> Gradle
+  - JSP -> React
+  - JUnit4 -> JUnit5
+  - Java8 -> Java21(17) (LTS version)
+  - SpringBoot 2.3.4 -> SpringBoot 3.1.5
+  - Spring 5.2.9 -> Spring 6.0.13
