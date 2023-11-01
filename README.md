@@ -46,7 +46,7 @@ What we did:
 
 ToDo:
 - Summarize all (implemented/unimplemented) UCs
-    - Each member write the summary in [summary.md](https://34.64.100.199/team4se/itrust2/-/blob/develop/docs/use-cases/summary.md?ref_type=heads)
+    - Each member write the summary in [Use_Case_summary.md](https://34.64.100.199/team4se/itrust2/-/blob/develop/docs/use-cases/summary.md?ref_type=heads)
 - Suggest one new UC to implement at the next meeting
 
 - Next meeting: 2023-10-20
@@ -107,7 +107,7 @@ What we did:
         - Future plan
             - How we divide the team into sub-teams
 
-- We created [google docs](https://docs.google.com/document/d/1DPIqJ6o1eQRVJbVYjrY-3QLi_OlikNk23oljrz-Ql08/edit?usp=sharing) to share User Stories and Use Case that we propose.
+- We created google docs to share User Stories and Use Case that we propose.
     - We decided the common structure of User Story
 
             As a ~, I want ~, So that ~
@@ -120,9 +120,19 @@ ToDo:
 
 ### Meeting#4 (2023-10-30)
 What we did:
-- Based on the work we had done in the google docs, we create [UC23.md](https://34.64.100.199/team4se/itrust2/-/blob/main/UC23(UC_proposal).md?ref_type=heads) in the same format as other UCs.
+- Based on the work we had done in the google docs, we create [UC23.md](https://34.64.100.199/team4se/itrust2/-/blob/develop/docs/use-cases/UC23.md?ref_type=heads) in the same format as other UCs.
 - Create User_Story.md ([team1](https://34.64.100.199/team4se/itrust2/-/blob/develop/docs/use-cases/User_Story_team1.md), [team2](https://34.64.100.199/team4se/itrust2/-/blob/develop/docs/use-cases/User_Story_team2.md), [team3](https://34.64.100.199/team4se/itrust2/-/blob/develop/docs/use-cases/User_Story_team3.md)) for each team and neatly organize each user story and its basic scenario.
 - Create [google slides](https://docs.google.com/presentation/d/1tC3bB02xBQjqlFD9e0CbPNYj5uUtUy4dsA_H0H2TqCg/edit?usp=sharing) to present what we have done during iteration 1.
 
+### Meeting#5 (2023-11-01)
+What we did:
+- Discuss how are we going to cooperate (lead by 원재)
+    - All our code implementation is going to be managed in the branch ['develop'](https://34.64.100.199/team4se/itrust2/-/tree/develop?ref_type=heads)
+    - Share [ERD](https://dbdiagram.io/d/653b3ea5ffbf5169f08f5cb8)
+    - Share [detailed Guildelines](https://34.64.100.199/team4se/itrust2/-/blob/develop/CONTRIBUTING.md?ref_type=heads) to start coding
+    - Share & learn [COOP rules](https://34.64.100.199/team4se/itrust2/-/blob/develop/rules.md?ref_type=heads) for easier cooperation
+- Finalize our presentation preparation by giving feedbacks
+
 
 Next Meeting: Decide after the presentation.
+
