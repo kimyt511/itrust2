@@ -61,6 +61,15 @@
                         }
                         return err.join(". ");
                     }
+					
+					/*Method for checking added vaccinations for validity*/
+                    var checkValidVaccination = function (v) {
+                        var err = [];
+                        if (!v.cpt) {
+                            err.push("Vaccination must be associated with a cpt code");
+                        }
+                        return err.join(". ");
+                    }
 
                     var checkValidProcedure = function (p) {
                         var err = [];
@@ -161,6 +170,11 @@
                     $http.get("/iTrust2/api/v1/icdcodes").then(
                         function (response) {
                             $scope.icdcodes = response.data;
+                        });
+					/*Getting a list of vaccines*/
+                    $http.get("/iTrust2/api/v1/vaccines").then(
+                        function (response) {
+                            $scope.vaccines = response.data;
                         });
 
                     /*Getting a list of laboratory procedures*/
@@ -349,6 +363,7 @@
                             checkBasicHealthMetrics();
                             if ($scope.errorMsg == "") {
                                 $scope.visit.diagnoses = $scope.diagnoses;
+								$scope.visit.vaccinations = $scope.vaccinations;
                                 $scope.visit.prescriptions = $scope.prescriptions;
                                 $scope.visit.prescriptions.forEach(function (p) {
                                     p.patient = $scope.visit.patient;
@@ -385,6 +400,9 @@
                     $scope.endEntry = "";
                     $scope.renewalEntry = "";
 
+					$scope.vaccineEntry = "";
+					$scope.dateEntry = "";
+
                     $scope.loincEntry = "";
                     $scope.priorityEntry = "";
                     $scope.techEntry = "";
@@ -405,6 +423,12 @@
                         $scope.startEntry = "";
                         $scope.endEntry = "";
                         $scope.renewalEntry = "";
+                    }
+
+					// Clears local variables for vaccination form
+                    function resetVaccinationForm() {
+                        $scope.vaccineEntry = "";
+                        $scope.dateEntry = "";
                     }
 
                     // Capture each diagnosis into an array
@@ -457,6 +481,26 @@
                         }
                     }
 
+					//capture each vaccination into an array
+                    $scope.vaccinations = [];
+                    $scope.fillVaccination = function () {
+                        $scope.errorMsg = "";
+                        var p = {
+                            vaccine: $scope.vaccineEntry,
+							date: $scope.dateEntry
+                        }
+                        
+                        var err = checkValidVaccination(v);
+                        if (err) {
+                            $scope.errorMsg = err;
+                            $scope.message = "";
+                        } else {
+                            v.date = dateTimeService.toDateString(v.date);
+                            $scope.vaccinations.push(v);
+                            resetPrescriptionForm();
+                        }
+                    }
+
                     /*Adding a procedure to Office visit*/
                     $scope.addProcedure = function () {
                         var procCopy = {};
@@ -485,6 +529,11 @@
                         $scope.prescriptions.splice($index, 1);
                     }
 
+					//remove local vaccination from list
+                    $scope.removeVaccination = function ($index) {
+                        $scope.vaccinations.splice($index, 1);
+                    }
+
                     //remove local procedure from list
                     $scope.removeProcedure = function ($index) {
                         $scope.procedures.splice($index, 1);
@@ -493,6 +542,7 @@
                     //call initally
                     resetDiagnosisForm();
                     resetPrescriptionForm();
+					resetVaccinationForm();
                 });
 			/*]]>*/
             </script>
@@ -768,7 +818,6 @@
 										</div>
 									</div>
 
-
 									<!-- Prescription Panel -->
 									<div ng-show="visit.type == 'GENERAL_CHECKUP'" class="col-md-4">
 										<div class="panel panel-info">
@@ -868,6 +917,72 @@
 										</div>
 									</div>
 								</div>
+
+								<!-- Vaccination Panel -->
+								<div ng-show="visit.type == 'GENERAL_CHECKUP'" class="col-md-4">
+									<div class="panel panel-info">
+										<div class="panel-heading">
+											<h4>Vaccination</h4>
+										</div>
+										<div class="panel-body">
+											<div class="form-group row">
+												<div class="col-xs-6">
+													<label>Vaccine:</label>
+												</div>
+												<div class="col-xs-6 radio-box">
+													<div class="form-check">
+														<ul style="list-style: none;">
+															<li ng-repeat="v in vaccines"><label> <input
+																	type="radio" ng-model="$parent.vaccineEntry"
+																	name="{{v.abbreviation}}" value="{{v.cpt}}" required="true" />
+																	{{v.abbreviation}}
+															</label></li>
+														</ul>
+													</div>
+												</div>
+											</div>
+											<div class="form-group row">
+												<div class="col-xs-6">
+													<label>Date:</label>
+												</div>
+												<div class="col-xs-6">
+													<input type="date" class="form-control" name="dateEntry"
+														ng-model="dateEntry" required />
+												</div>
+											</div>
+											<div class="form-group row text-center">
+												<button class="btn btn-success"
+													ng-click="fillVaccination()" name="fillVaccination">Add
+													Vaccination</button>
+											</div>
+											<div class="form-group row">
+												<div class="col-md-12">
+													<div class="panel panel-default">
+														<div class="panel-heading">Added Vaccinations</div>
+														<div class="panel-body">
+															<div class="row" ng-repeat="v in vaccinations">
+																<div class="col-md-3">{{v.vaccine}}</div>
+																<br>
+																<div class="col-md-1"></div>
+																<!-- "tab" over columns -->
+																<div class="col-md-3">{{p.date | date :
+																	'MM/dd/yyyy'}}</div>
+																<div class="col-md-1">
+																	<button class="btn btn-danger btn-xs"
+																		ng-click="removeVaccination($index)"
+																		name="removeVaccination">
+																		<b>x</b>
+																	</button>
+																</div>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
 
 								<!-- Lab Procedures Panel -->
 								<div ng-show="visit.type == 'GENERAL_CHECKUP'" class="row">

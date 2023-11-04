@@ -95,4 +95,17 @@ public class PatientController {
         return "/patient/officeVisit/viewDiagnoses";
     }
 
+    /**
+     * Create a page for the patient to view all diagnoses
+     *
+     * @param model
+     *            data for front end
+     * @return The page for the patient to view their diagnoses
+     */
+    @GetMapping ( value = "patient/officeVisit/viewVaccinations" )
+    @PreAuthorize ( "hasRole('ROLE_PATIENT')" )
+    public String viewVaccinations ( final Model model ) {
+        return "/patient/officeVisit/viewVaccinations";
+    }
+
 }
