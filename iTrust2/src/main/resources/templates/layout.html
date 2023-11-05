@@ -153,6 +153,8 @@ a {
 									Drugs</a></li>
 							<li><a href="/iTrust2/admin/manageICDCodes"
 								id="manageICDCodes">Manage ICD-10 Codes</a></li>
+							<li><a href="/iTrust2/admin/vaccines" id="vaccines">Manage
+								Vaccines(UC18)</a></li>
 						</ul></li>
 					<li class="dropdown"><a class="dropdown-toggle"
 						data-toggle="dropdown" href="#">Edit<span class="caret"></span></a>
@@ -173,6 +175,12 @@ a {
 								id="editPatientDemographics">Edit Patient</a></li>
 							<li><a href="/iTrust2/hcp/documentOfficeVisit"
 								id="documentOfficeVisit">Document Office Visit</a></li>
+							<li><a href="/iTrust2/hcp/foodDiary"
+								id="foodDiary">View Food Diary(UC19)</a></li>
+							<li><a href="/iTrust2/hcp/EmergencyHealthRecords"
+								id="EmergencyHealthRecords">View Emergency Health Records(UC15)</a></li>
+							<li><a href="/iTrust2/hcp/viewVaccinations"
+								id="patientVaccinations">View Vaccinations(UC18)</a></li>
 						</ul></li>
 					<li class="dropdown"><a class="dropdown-toggle"
 						data-toggle="dropdown" href="#">Edit<span class="caret"></span></a>
@@ -180,7 +188,7 @@ a {
 							<li><a href="/iTrust2/personnel/editDemographics"
 								id="editdemographics">Edit Demographics</a></li>
 							<li><a href="/iTrust2/hcp/editOfficeVisit"
-								id="editOfficeVisit">Edit Office Visit</a></li>
+								id="editOfficeVisit">Edit Office Visit(UC18)</a></li>
 							<li><a href="/iTrust2/hcp/editPrescriptions"
 								id="editPrescriptions-personnel">Edit Prescriptions</a></li>
 						</ul></li>
@@ -192,6 +200,9 @@ a {
 					<li class="dropdown"><a class="dropdown-toggle"
 						data-toggle="dropdown" href="#">Patient<span class="caret"></span></a>
 						<ul class="dropdown-menu">
+							<li><a
+								href="/iTrust2/patient/Reviews"
+								id="Reviews">Leave Reviews(UC23)</a></li>
 						</ul></li>
 					<li class="dropdown"><a class="dropdown-toggle"
 						data-toggle="dropdown" id="appointments" href="#">Appointments<span
@@ -206,6 +217,8 @@ a {
 								id="viewDiagnoses">Diagnoses</a></li>
 							<li><a href="/iTrust2/patient/officeVisit/viewPrescriptions"
 								id="viewPrescriptions">Prescriptions</a></li>
+							<li><a href="/iTrust2/patient/officeVisit/viewVaccinations"
+								id="viewVaccinations">Vaccinations(UC18)</a></li>
 							
 						</ul></li>
 					<li class="dropdown"><a class="dropdown-toggle" id="edit"
@@ -213,8 +226,21 @@ a {
 						<ul class="dropdown-menu">
 							<li><a href="/iTrust2/patient/editDemographics"
 								id="editdemographics-patient">Edit Demographics</a></li>
+							<li><a href="/iTrust2/patient/editPR"
+								id="editPR">Edit PR(UC16)</a></li>
+							<li><a href="/iTrust2/patient/myFoodDiary"
+								id="myFoodDiary">My Food Diary(UC19)</a></li>
 						</ul></li>
 				</ul>
+
+				<!-- Labtech navbar -->
+				<ul id="labtech-dropdown" class="nav navbar-nav">
+					<li class="dropdown"><a class="dropdown-toggle"
+						data-toggle="dropdown" href="#" id="LabtechDropDown">Labtech<span class="caret"></span></a>
+						<ul class="dropdown-menu">
+						</ul></li>
+				</ul>
+
 				<ul id="extra-dropdown" class="nav navbar-nav">
 					<li><a
 						href="https://github.ncsu.edu/engr-csc326-staff/iTrust2-v8/wiki">About</a></li>
