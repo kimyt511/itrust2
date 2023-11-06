@@ -52,9 +52,9 @@
 										</tr>
 									</thead>
 									<tbody>
-										<tr name="prescriptionTableRow"
+										<tr name="vaccinationTableRow"
 											ng-repeat="v in vaccinations | orderBy: 'vaccination'"
-											prescriptionId={{p.id}}>
+											vaccinationID={{v.id}}>
 											<td name="drugCell">{{v.drug.name}}</td>
 											<td name="abbreCell">{{v.drug.abbreviation}}</td>
 											<td name="CptCell">{{v.drug.cpt}}</td>
