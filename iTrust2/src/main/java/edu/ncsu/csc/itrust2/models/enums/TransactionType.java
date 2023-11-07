@@ -551,7 +551,24 @@ public enum TransactionType {
     /**
      * Admin views all lab procedures in the system
      */
-    LABPROCEDURE_VIEW ( 907, "Admin views all lab procedures in the system", true );
+    LABPROCEDURE_VIEW ( 907, "Admin views all lab procedures in the system", true ),
+
+    /**
+     * Admin created a new LOINC
+     */
+    LOINC_CREATE ( 920, "Admin created a new LOINC", false ),
+    /**
+     * Admin edited an existing lab procedure
+     */
+    LOINC_EDIT ( 921, "Admin edited an existing LOINC", false ),
+    /**
+     * Admin deleted an existing lab procedure
+     */
+    LOINC_DELETE ( 922, "Admin deleted an existing LOINC", false ),
+    /**
+     * Admin views all lab procedures in the system
+     */
+    LOINC_VIEW ( 923, "Admin views all LOINC in the system", false );
 
     /**
      * Creates a TransactionType for logging events

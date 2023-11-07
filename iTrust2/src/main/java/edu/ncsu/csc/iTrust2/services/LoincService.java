@@ -6,15 +6,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
 
-import edu.ncsu.csc.iTrust2.models.LabProcedure;
-import edu.ncsu.csc.iTrust2.repositories.LabProcedureRepository;
+import edu.ncsu.csc.iTrust2.models.Loinc;
+import edu.ncsu.csc.iTrust2.repositories.LoincRepository;
 
 @Component
 @Transactional
-public class LabProcedureService extends Service {
+public class LoincService extends Service {
 
     @Autowired
-    private LabProcedureRepository repository;
+    private LoincRepository repository;
 
     @Override
     protected JpaRepository getRepository () {
@@ -25,7 +25,7 @@ public class LabProcedureService extends Service {
         return repository.existsByCode( code );
     }
 
-    public LabProcedure findByCode ( final String code ) {
+    public Loinc findByCode ( final String code ) {
         return repository.findByCode( code );
     }
 }

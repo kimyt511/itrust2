@@ -14,35 +14,30 @@ import javax.validation.constraints.Pattern;
 
 import org.hibernate.validator.constraints.Length;
 
-import edu.ncsu.csc.iTrust2.forms.LabProcedureForm;
-import edu.ncsu.csc.iTrust2.models.enums.Priority;
-import edu.ncsu.csc.iTrust2.models.enums.Status;
+import edu.ncsu.csc.iTrust2.forms.LoincForm;
 
 /**
- * Represents a LabProcedure.
+ * Represents a Loinc.
  */
 @Entity
-public class LabProcedure extends DomainObject {
+public class Loinc extends DomainObject {
 
     /** For Hibernate/Thymeleaf _must_ be an empty constructor */
-    public LabProcedure () {
+    public Loinc () {
     }
 
     /**
      * Constructs a new form from the details in the given form
      *
      * @param form
-     *            the form to base the new LabProcedure on
+     *            the form to base the new Loinc on
      */
-    public LabProcedure ( final LabProcedureForm form ) {
+    public Loinc ( final Loinc form ) {
         setId( form.getId() );
         setCode( form.getCode() );
         setName( form.getName() );
         setComponent( form.getComponent() );
         setProperty( form.getProperty() );
-        setPriority( form.getPriority() );
-        setComment( form.getComment() );
-        setStatus( form.getStatus() );
     }
 
     @Id
@@ -64,17 +59,6 @@ public class LabProcedure extends DomainObject {
     @Length ( max = 250 )
     private String property;
 
-    @NotNull
-    @Enumerated ( EnumType.STRING )
-    private Priority priority;
-
-    @NotEmpty
-    @Length ( max = 500 )
-    private String comment;
-
-    @NotNull
-    @Enumerated ( EnumType.STRING )
-    private Status status;
 
 
     public void setId ( final Long id ) {
@@ -115,30 +99,6 @@ public class LabProcedure extends DomainObject {
 
     public void setProperty(final String property) {
         this.property = property;
-    }
-
-    public Priority getPriority() {
-        return priority;
-    }
-
-    public void setPriority(final Priority priority) {
-        this.priority = priority;
-    }
-
-    public String getComment() {
-        return comment;
-    }
-
-    public void setComment(final String comment) {
-        this.comment = comment;
-    }
-
-    public Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(final Status status) {
-        this.status = status;
     }
 
 }
