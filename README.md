@@ -155,4 +155,16 @@ Todo:
 - Each group individually implement UCs by 2023-11-14.
 - Merge implemented features.
 
+### Meeting#7 (2023-11-07)
+
+From Team3
+
+What we did:
+- Understanding of UC17
+- Understanding of what frontend and backend will do
+
+Todo:
+ - backend -> make Loinc and Procedure Units
+ - Frontend -> make Procedure template for admin
+
 
