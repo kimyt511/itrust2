@@ -1,4 +1,8 @@
 # team4SE:iTrust2
+- [Team Details](#team-details)
+- [Iteration 1](#iteration-1-2023-10-31)
+- [Iteration 2](#iteration-2-2023-11-21)
+
 ## Team details
 | Name | GitLab Username | e-mail                    |
 |------|-----------------|---------------------------| 
@@ -135,4 +139,20 @@ What we did:
 
 
 Next Meeting: Decide after the presentation.
+
+## Iteration 2 (~2023-11-21)
+- Team leader: 유지민
+- Planning leader: 최원재
+- QA leader: 김윤태
+
+### Meeting#6 (2023-11-05)
+What we did:
+- Allocate leader roles for Iteration 2.
+- Set initial deadline for UC implementations.
+- Discuss whether to use AWS RDS for development & testing. 
+
+Todo:
+- Each group individually implement UCs by 2023-11-14.
+- Merge implemented features.
+
 
