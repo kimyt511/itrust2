@@ -1,0 +1,149 @@
+package edu.ncsu.csc.iTrust2.controllers.api;
+
+import java.util.List;
+
+import edu.ncsu.csc.iTrust2.models.enums.ProcedureStatus;
+import edu.ncsu.csc.itrust2.models.Procedure;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import edu.ncsu.csc.iTrust2.forms.ProcedureForm;
+import edu.ncsu.csc.iTrust2.models.Procedure;
+import edu.ncsu.csc.iTrust2.models.enums.Priority;
+import edu.ncsu.csc.iTrust2.models.enums.Status;
+import edu.ncsu.csc.iTrust2.models.enums.TransactionType;
+import edu.ncsu.csc.iTrust2.services.ProcedureService;
+import edu.ncsu.csc.iTrust2.utils.LoggerUtil;
+
+/**
+ * Provides REST endpoints that deal with loinc. Exposes functionality to add,
+ * edit, fetch, and delete LOINC.
+ *
+ */
+@SuppressWarnings ( { "unchecked", "rawtypes" } )
+@RestController
+public class APIProcedureController extends APIController {
+
+    @Autowired
+    private ProcedureService service;
+
+    @Autowired
+    private LoggerUtil  loggerUtil;
+
+    /**
+     * Adds a new Procedure to the system. Returns an
+     * error message if something goes wrong.
+     *
+     * @param form
+     *            the Procedure form
+     * @return the created Procedure
+     */
+    @PreAuthorize ( "hasRole('ROLE_HCP')" )
+    @PostMapping ( BASE_PATH + "/procedure" )
+    public ResponseEntity addProcedure ( @RequestBody final ProcedureForm form ) {
+        try {
+            final Procedure procedure = new Procedure( form );
+            service.save( procedure );
+            loggerUtil.log( TransactionType.HCP_CREATE_PROC, LoggerUtil.currentUser(),
+                    "Procedure created" );
+            return new ResponseEntity(procedure, HttpStatus.OK );
+        }
+        catch ( final Exception e ) {
+            loggerUtil.log( TransactionType.HCP_CREATE_PROC, LoggerUtil.currentUser(), "Failed to create Procedure" );
+            return new ResponseEntity( errorResponse( "Could not add Procedure: " + e.getMessage() ),
+                    HttpStatus.BAD_REQUEST );
+        }
+    }
+
+    /**
+     * Edits a Procedure in the system. The id stored in the form must match an
+     * existing Procedure, and changes to NDCs cannot conflict with existing NDCs.
+     *
+     *
+     * @param form
+     *            the edited Procedure form
+     * @return the edited Procedure or an error message
+     */
+    @PreAuthorize ( "hasRole('ROLE_HCP')" )
+    @PutMapping ( BASE_PATH + "/procedure" )
+    public ResponseEntity editLoinc ( @RequestBody final ProcedureForm form ) {
+        try {
+            // Check for existing Procedure in database
+            final Procedure savedProcedure = (Procedure) service.findById( form.getId() );
+            if ( savedProcedure == null ) {
+                return new ResponseEntity( errorResponse( "No Procedure found" ),
+                        HttpStatus.NOT_FOUND );
+            }
+
+            final Procedure procedure = new Procedure( form );
+
+            service.save( procedure ); /* Overwrite existing Procedure */
+
+            loggerUtil.log( TransactionType.HCP_EDIT_PROC, LoggerUtil.currentUser(),
+                    "Procedure with id " + procedure.getId() + " edited" );
+            return new ResponseEntity( procedure, HttpStatus.OK );
+        }
+        catch ( final Exception e ) {
+            loggerUtil.log( TransactionType.HCP_EDIT_PROC, LoggerUtil.currentUser(), "Failed to edit Procedure" );
+            return new ResponseEntity( errorResponse( "Could not update Procedure: " + e.getMessage() ),
+                    HttpStatus.BAD_REQUEST );
+        }
+    }
+
+    /**
+     * Deletes the Procedure with the id matching the given id.
+     * Procedure should in assigned progress.
+     * Requires hcp permissions.
+     *
+     * @param id
+     *            the id of the Procedure to delete
+     * @return the id of the deleted Procedure
+     */
+    @PreAuthorize ( "hasRole('ROLE_HCP')" )
+    @DeleteMapping ( BASE_PATH + "/procedure/{id}" )
+    public ResponseEntity deleteProcedure ( @PathVariable final String id ) {
+        try {
+            final Procedure procedure= (Procedure) service.findById( Long.parseLong( id ) );
+            if ( procedure == null ) {
+                loggerUtil.log( TransactionType.HCP_DELETE_PROC, LoggerUtil.currentUser(),
+                        "Could not find Procedure with id " + id );
+                return new ResponseEntity( errorResponse( "No Procedure found with id " + id ), HttpStatus.NOT_FOUND );
+            }
+            if (procedure.getProcedureStatus() != ProcedureStatus.Assigned){
+                loggerUtil.log( TransactionType.HCP_DELETE_PROC, LoggerUtil.currentUser(),
+                        "Could not delete Procedure with progress " + ProcedureStatus.getName(procedure.getProcedureStatus().ordinal()) );
+                return new ResponseEntity( errorResponse( "No Procedure found with id " + id ), HttpStatus.NOT_FOUND );
+            }
+            service.delete( procedure );
+            loggerUtil.log( TransactionType.HCP_DELETE_PROC, LoggerUtil.currentUser(),
+                    "Deleted Procedure with id " + procedure.getId() );
+            return new ResponseEntity( id, HttpStatus.OK );
+        }
+        catch ( final Exception e ) {
+            loggerUtil.log( TransactionType.HCP_DELETE_PROC, LoggerUtil.currentUser(), "Failed to delete Procedure" );
+            return new ResponseEntity( errorResponse( "Could not delete Procedure: " + e.getMessage() ),
+                    HttpStatus.BAD_REQUEST );
+        }
+    }
+
+    /**
+     * Gets a list of all the Procedure in the system.
+     *
+     * @return a list of Procedure
+     */
+    @GetMapping ( BASE_PATH + "/procedure" )
+    public List<Proceudre> getProcedure () {
+        loggerUtil.log( TransactionType.HCP_VIEW_PROCS, LoggerUtil.currentUser(), "Fetched list of LOINC" );
+        return (List<Procedure>) service.findAll();
+    }
+
+}
