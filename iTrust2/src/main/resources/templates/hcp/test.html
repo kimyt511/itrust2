@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>사용자 목록</title>
+</head>
+<body>
+    <input type="text" id="searchInput" placeholder="특정 문자열을 입력하세요">
+    <button onclick="getUsers()">검색</button>
+
+    <ul id="userList">
+        <!-- 사용자 목록이 여기에 표시될 것입니다 -->
+    </ul>
+
+    <script>
+        function getUsers() {
+            var keyword = document.getElementById("searchInput").value;
+            fetchUsers(keyword);
+        }
+
+        function fetchUsers(keyword) {
+            fetch('/searchUsers')
+                .then(response => response.json())
+                .then(data => displayUsers(data));
+        }
+
+        function displayUsers(users) {
+            var userList = document.getElementById('userList');
+            userList.innerHTML = '';
+
+            users.forEach(function(user) {
+                var listItem = document.createElement('li');
+                listItem.appendChild(document.createTextNode(user.username));
+                userList.appendChild(listItem);
+            });
+        }
+    </script>
+</body>
+</html>

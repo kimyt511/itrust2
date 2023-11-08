@@ -1,12 +1,20 @@
 package edu.ncsu.csc.iTrust2.controllers.routing;
 
+import java.util.List;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import edu.ncsu.csc.iTrust2.models.User;
 import edu.ncsu.csc.iTrust2.models.enums.Role;
+import edu.ncsu.csc.iTrust2.models.enums.TransactionType;
+import edu.ncsu.csc.iTrust2.utils.LoggerUtil;
 
 /**
  * Controller class responsible for managing the behavior for the HCP Landing
@@ -105,5 +113,6 @@ public class HCPController {
     public String EmergencyHealthRecords ( final Model model ) {
         return "/hcp/EmergencyHealthRecords";
     }
+
 
 }
