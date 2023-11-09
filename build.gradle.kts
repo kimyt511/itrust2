@@ -1,7 +1,7 @@
 plugins {
     java
     id("org.springframework.boot") version "2.7.16"
-    id("io.spring.dependency-management") version "1.0.15.RELEASE"
+    id("io.spring.dependency-management") version "1.1.3"
 
     id("com.diffplug.spotless") version "6.22.0"
 }
@@ -23,6 +23,7 @@ configurations {
 }
 
 repositories {
+    mavenLocal()
     mavenCentral()
 }
 
@@ -38,23 +39,23 @@ dependencies {
     implementation("org.springdoc", "springdoc-openapi-security", "1.7.0")
     implementation("org.springdoc", "springdoc-openapi-ui", "1.7.0")
 
-    implementation("com.google.code.gson:gson:2.8.9")
-    implementation("org.hibernate:hibernate-validator:6.1.5.Final")
-    runtimeOnly("mysql:mysql-connector-java:8.0.28")
+    implementation("com.google.code.gson:gson:2.10.1")
+    implementation("org.hibernate:hibernate-validator:8.0.1.Final")
+    runtimeOnly("mysql:mysql-connector-java:8.0.33")
 
-    compileOnly("org.projectlombok:lombok:1.18.22")
-    annotationProcessor("org.projectlombok:lombok:1.18.22")
+    compileOnly("org.projectlombok:lombok:1.18.30")
+    annotationProcessor("org.projectlombok:lombok:1.18.30")
 
-    implementation("org.seleniumhq.selenium:selenium-java:3.141.59")
-    implementation("com.paulhammant:ngwebdriver:1.0")
-    implementation("io.github.bonigarcia:webdrivermanager:3.6.2")
+    implementation("org.seleniumhq.selenium:selenium-java:4.15.0")
+    implementation("com.paulhammant:ngwebdriver:1.2")
+    implementation("io.github.bonigarcia:webdrivermanager:5.6.2")
 
-    testImplementation("io.cucumber:cucumber-java:6.9.0")
-    testImplementation("io.cucumber:cucumber-junit:6.9.0")
-    testImplementation("io.cucumber:cucumber-spring:6.9.0")
+    testImplementation("io.cucumber:cucumber-java:7.14.0")
+    testImplementation("io.cucumber:cucumber-junit:7.14.0")
+    testImplementation("io.cucumber:cucumber-spring:7.14.0")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test:5.3.6.RELEASE")
-    testImplementation("junit:junit:4.13.1")
+    testImplementation("junit:junit:4.13.2")
 }
 
 spotless {
