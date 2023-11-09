@@ -62,10 +62,12 @@
                         return err.join(". ");
                     }
 
+					// Check Validity of procedure (LOINC + priority + labtech)
                     var checkValidProcedure = function (p) {
                         var err = [];
                         if (!p.loinc) {
-                            err.push("Lab procedure must be associated with a diagnosis code");
+							// Lab procedure must be associated with a procedure code. ****
+                            err.push("Lab procedure must be associated with a procedure code");
                         }
                         if (!p.priority) {
                             err.push("Lab procedure must have an associated priority");
@@ -163,6 +165,7 @@
                             $scope.icdcodes = response.data;
                         });
 
+					// tech is brought from here for html usage
                     /*Getting a list of laboratory procedures*/
                     $http.get("/iTrust2/api/v1/personnel/getbyroles/ROLE_LABTECH").then(
                         function (response) {
@@ -181,13 +184,12 @@
                             }
                         });
 
-                    /*Getting a list of lionc codes*/
-                    /*
+                    /*Getting a list of loinc codes*/
+
                     $http.get("/iTrust2/api/v1/loinccodes").then(
                         function (response) {
                             $scope.loinccodes = response.data;
                         });
-*/
 
                     /*Checks Basic Health Metrics for correctness*/
                     function checkBasicHealthMetrics() {
@@ -463,6 +465,7 @@
                         $scope.errorMsg = "";
                         $scope.procedure.patient = $scope.visit.actualPatient.self;
                         $scope.procedure.status = "ASSIGNED";
+						$scope.procedure.
                         angular.copy($scope.procedure, procCopy);
                         var err = checkValidProcedure($scope.procedure);
                         if (err) {
@@ -883,10 +886,12 @@
 													</div>
 													<div class="col-xs-6">
 														<ul>
-															<li ng-repeat="l in codes"><label> <input
-																	type="radio" ng-model="procedure.loinc"
-																	name="{{l.commonName}}" ng-value="l" value="{{l.code}}"
-																	required="true" /> {{l.commonName}}
+															<!-- There was no common name in procedure.
+															 Proceeded to add 'name' inside ProcedureForm and Procedure-->
+															<li ng-repeat="l in loinccodes"><label> <input
+																	type="radio" ng-model="procedure.code"
+																	name="{{l.name}}" ng-value="l.code" value="{{l.code}}"
+																	required="true" /> {{l.code}}
 															</label></li>
 														</ul>
 													</div>
@@ -936,6 +941,7 @@
 
 													</div>
 												</div>
+												<!-- Check this -->
 												<!-- Add procedure button -->
 												<div class="form-group row text-center">
 													<button class="btn btn-success" ng-click="addProcedure()"

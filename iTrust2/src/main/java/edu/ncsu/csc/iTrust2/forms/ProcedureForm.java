@@ -15,6 +15,9 @@ import edu.ncsu.csc.iTrust2.models.enums.ProcedureStatus;
 public class ProcedureForm {
 
     private Long   id;
+
+    private String code;
+    private String name;
     private String labtech;
     private String patient;
     private String comment;
@@ -35,6 +38,8 @@ public class ProcedureForm {
      */
     public ProcedureForm ( final Procedure Procedure ) {
         setId( Procedure.getId() );
+        setCode( Procedure.getCode() );
+        setName( Procedure.getName() );
         setLabtech(Procedure.getLabtech());
         setPatient(Procedure.getPatient());
         setComment(Procedure.getComment());
@@ -50,6 +55,23 @@ public class ProcedureForm {
     public void setId(final Long id) {
         this.id = id;
     }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(final String code) {
+        this.code = code;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(final String name) {
+        this.name = name;
+    }
+
     public String getLabtech() {
         return labtech;
     }

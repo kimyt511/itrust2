@@ -27,6 +27,8 @@ public class Procedure extends DomainObject {
      */
     public Procedure ( final ProcedureForm form ) {
         setId( form.getId() );
+        setCode (form.getCode() );
+        setName( form.getName());
         setLabtech(form.getLabtech());
         setPatient(form.getPatient());
         setComment(form.getComment());
@@ -37,6 +39,10 @@ public class Procedure extends DomainObject {
     @Id
     @GeneratedValue( strategy = GenerationType.AUTO )
     private Long   id;
+
+    private String code;
+
+    private String name;
 
     @NotEmpty
     private String labtech;
@@ -60,6 +66,21 @@ public class Procedure extends DomainObject {
 
     public void setId(final Long id) {
         this.id = id;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(final String code) {
+        this.code = code;
+    }
+    public String getName() {
+        return name;
+    }
+
+    public void setName(final String name) {
+        this.name = name;
     }
     public String getLabtech() {
         return labtech;

@@ -81,7 +81,7 @@ public class APILoincController extends APIController {
      * @return the edited LOINC or an error message
      */
     @PreAuthorize ( "hasRole('ROLE_ADMIN')" )
-    @PutMapping ( BASE_PATH + "/loinccodes" )
+    @PutMapping ( BASE_PATH + "/loinccodes" ) // Keep an eye on nothing added after loinccodes.
     public ResponseEntity editLoinc ( @RequestBody final LoincForm form ) {
         try {
             // Check for existing LOINC in database
@@ -122,7 +122,9 @@ public class APILoincController extends APIController {
      * @return the id of the deleted LOINC
      */
     @PreAuthorize ( "hasRole('ROLE_ADMIN')" )
-    @DeleteMapping ( BASE_PATH + "/loinccodes/{id}" )
+    // CHECK DELETE MAPPING FOR REFERENCE.
+    // ALWAYS TAKE REFERENCE FROM API FORMATS
+    @DeleteMapping ( BASE_PATH + "/loinccodes/{id}" ) //Keep an eye on {id}
     public ResponseEntity deleteLoinc ( @PathVariable final String id ) {
         try {
             final Loinc loinc = (Loinc) service.findById( Long.parseLong( id ) );
