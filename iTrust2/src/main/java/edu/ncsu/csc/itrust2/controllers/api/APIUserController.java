@@ -279,11 +279,5 @@ public class APIUserController extends APIController {
         return false;
     }
     
-    @GetMapping ( BASE_PATH + "/users/search/{keyword}" )
-    public List<String> searchUsers ( @PathVariable ( "keyword" ) final String keyword ) {
-    	loggerUtil.log( TransactionType.VIEW_USERS, LoggerUtil.currentUser() );
-        return (List<String>) userService.findByUsernameContaining( keyword );
-    }
-
     
 }

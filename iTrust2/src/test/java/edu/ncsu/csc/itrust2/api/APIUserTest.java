@@ -141,32 +141,5 @@ public class APIUserTest {
 
     }
     
-    @Test
-    @Transactional
-    public void testSearchUsers () throws Exception {
-
-        final UserForm uf = new UserForm( USER_1, PW, Role.ROLE_HCP, 1 );
-
-        final User u1 = new Personnel( uf );
-
-        service.save( u1 );
-
-        Assert.assertEquals( u1.getUsername(), service.findByName( USER_1 ).getUsername() );
-
-        uf.addRole( Role.ROLE_ER.toString() );
-
-        mvc.perform( MockMvcRequestBuilders.get( "/api/v1/users/search/" + uf.getUsername() )
-                .contentType( MediaType.APPLICATION_JSON ).content( TestUtils.asJsonString( uf ) ) )
-                .andExpect( MockMvcResultMatchers.status().isOk() );
-
-        final List<String> retrieved = service.findByUsernameContaining("u");
-        for(String user: retrieved) {
-        	System.out.println(user);
-        }
-
-
-
-    }
-    
 
 }

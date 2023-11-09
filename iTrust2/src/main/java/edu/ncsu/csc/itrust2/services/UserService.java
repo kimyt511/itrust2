@@ -30,13 +30,5 @@ public class UserService extends Service {
         return repository.findByUsername( username );
     }
     
-    public List<String> findByUsernameContaining(String keyword){
-    	List<String> usernames = new ArrayList<String>();
-    	List<User> users = repository.findByUsernameContaining(keyword);
-    	for(User user:users) {
-    		usernames.add(user.getUsername());
-    	}
-		return usernames;
-    }
 
 }

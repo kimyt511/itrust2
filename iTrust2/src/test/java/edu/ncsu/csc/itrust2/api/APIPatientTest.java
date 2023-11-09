@@ -288,6 +288,10 @@ public class APIPatientTest {
         mvc.perform( MockMvcRequestBuilders.get( "/api/v1/patients/search/wa")
                 .contentType( MediaType.APPLICATION_JSON ).content( TestUtils.asJsonString( patient ) ) )
                 .andExpect( MockMvcResultMatchers.status().isOk() );
+        
+        mvc.perform( MockMvcRequestBuilders.get( "/api/v1/patients/searchmid/at")
+                .contentType( MediaType.APPLICATION_JSON ).content( TestUtils.asJsonString( patient ) ) )
+                .andExpect( MockMvcResultMatchers.status().isOk() );
 
     }
 

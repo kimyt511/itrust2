@@ -12,4 +12,6 @@ public interface PatientRepository extends JpaRepository<Patient, Long> {
 	@Query(value = "select * from user where user.first_name like %:keyword% or user.last_name like %:keyword%", nativeQuery = true)
 	List<Patient> findByNameContaining(@Param(value = "keyword")String keyword);
 
+	List<Patient> findByUsernameContaining(String keyword);
+
 }

@@ -192,14 +192,17 @@ public class APIPatientController extends APIController {
     }
     
     @GetMapping ( BASE_PATH + "/patients/search/{keyword}" )
-    public List<String> searchUsersByKeyword ( @PathVariable ( "keyword" ) final String keyword ) {
-    	loggerUtil.log( TransactionType.VIEW_USERS, LoggerUtil.currentUser() );
-    	List<String> tmp = patientService.findByNameContaining( keyword );
-    	for(String t:tmp) {
-    		System.out.println("cont: "+ t);
-    	}
-        return (List<String>) patientService.findByNameContaining( keyword );
+    @PreAuthorize ( "hasRole( 'ROLE_HCP')" )
+    public List<Patient> searchUsersByKeyword ( @PathVariable ( "keyword" ) final String keyword ) {
+        return (List<Patient>) patientService.findByNameContaining( keyword );
     }
+    
+    @GetMapping ( BASE_PATH + "/patients/searchmid/{keyword}" )
+    @PreAuthorize ( "hasRole( 'ROLE_HCP')" )
+    public List<Patient> searchUsers ( @PathVariable ( "keyword" ) final String keyword ) {
+        return (List<Patient>) patientService.findByUsernameContaining( keyword );
+    }
+
 
 
 }

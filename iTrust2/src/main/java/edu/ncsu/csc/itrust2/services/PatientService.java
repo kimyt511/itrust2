@@ -24,13 +24,23 @@ public class PatientService extends UserService {
         return repository;
     }
     
-    public List<String> findByNameContaining(String keyword){
+    public List<Patient> findByNameContaining(String keyword){
     	List<String> usernames = new ArrayList<String>();
     	List<Patient> patients = repository.findByNameContaining(keyword);
     	for(Patient patient:patients) {
     		usernames.add(patient.getUsername());
     	}
-		return usernames;
+		return patients;
     }
+    
+    public List<Patient> findByUsernameContaining(String keyword){
+    	List<String> usernames = new ArrayList<String>();
+    	List<Patient> users = repository.findByUsernameContaining(keyword);
+    	for(Patient user:users) {
+    		usernames.add(user.getUsername());
+    	}
+		return users;
+    }
+
 
 }
