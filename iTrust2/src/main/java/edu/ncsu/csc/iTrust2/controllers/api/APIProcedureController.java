@@ -17,11 +17,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import edu.ncsu.csc.iTrust2.forms.ProcedureForm;
+import edu.ncsu.csc.iTrust2.models.User;
 import edu.ncsu.csc.iTrust2.models.Procedure;
 import edu.ncsu.csc.iTrust2.models.enums.Priority;
 import edu.ncsu.csc.iTrust2.models.enums.Status;
 import edu.ncsu.csc.iTrust2.models.enums.TransactionType;
 import edu.ncsu.csc.iTrust2.services.ProcedureService;
+import edu.ncsu.csc.iTrust2.services.UserService;
 import edu.ncsu.csc.iTrust2.utils.LoggerUtil;
 
 /**
@@ -38,6 +40,9 @@ public class APIProcedureController extends APIController {
 
     @Autowired
     private LoggerUtil  loggerUtil;
+
+    @Autowired
+    private UserService               userService;
 
     /**
      * Adds a new Procedure to the system. Returns an
@@ -141,9 +146,40 @@ public class APIProcedureController extends APIController {
      * @return a list of Procedure
      */
     @GetMapping ( BASE_PATH + "/procedure" )
+    @PreAuthorize ( "hasRole('ROLE_HCP')" )
     public List<Procedure> getProcedure () {
-        loggerUtil.log( TransactionType.HCP_VIEW_PROCS, LoggerUtil.currentUser(), "Fetched list of LOINC" );
+        loggerUtil.log( TransactionType.HCP_VIEW_PROCS, LoggerUtil.currentUser(), "Fetched list of Procedures" );
         return (List<Procedure>) service.findAll();
+    }
+
+    /**
+     * Gets a list of Procedure associated with the labtech.
+     *
+     * @return a list of Procedure
+     *
+     * KEEP IN MIND the path is BASE_PATH + "/procedureForLabtech"
+     */
+    @GetMapping ( BASE_PATH + "/procedureForLabtech" )
+    @PreAuthorize ( "hasRole('ROLE_LABTECH')" )
+    public List<Procedure> getProcedureForLabtech () {
+        final User labtech = userService.findByName( LoggerUtil.currentUser() );
+        loggerUtil.log( TransactionType.LABTECH_VIEW_PROCS, LoggerUtil.currentUser(), "Fetched list of Procedures" );
+        return (List<Procedure>) service.findByLabtech( labtech );
+    }
+
+    /**
+     * Gets a list of Procedure associated with the patient.
+     *
+     * @return a list of Procedure
+     *
+     * KEEP IN MIND the path is BASE_PATH + "/procedureForPatient"
+     */
+    @GetMapping ( BASE_PATH + "/procedureForPatient" )
+    @PreAuthorize ( "hasRole('ROLE_PATIENT')" )
+    public List<Procedure> getProcedureForPatient () {
+        final User patient = userService.findByName( LoggerUtil.currentUser() );
+        loggerUtil.log( TransactionType.PATIENT_VIEW_PROCS, LoggerUtil.currentUser(), "Fetched list of Procedures" );
+        return (List<Procedure>) service.findByPatient( patient );
     }
 
 }
