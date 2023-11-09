@@ -49,20 +49,20 @@ public class APILoincController extends APIController {
     @PostMapping ( BASE_PATH + "/loinccodes" )
     public ResponseEntity addLoinc ( @RequestBody final LoincForm form ) {
         try {
-            final Loinc Loinc = new Loinc( form );
+            final Loinc loinc = new Loinc( form );
 
             // Make sure code does not conflict with existing Loinc
-            if ( service.existsByCode( Loinc.getCode() ) ) {
+            if ( service.existsByCode( loinc.getCode() ) ) {
                 loggerUtil.log( TransactionType.LOINC_CREATE, LoggerUtil.currentUser(),
-                        "Conflict: LOINC with code " + Loinc.getCode() + " already exists" );
-                return new ResponseEntity( errorResponse( "LOINC with code " + Loinc.getCode() + " already exists" ),
+                        "Conflict: LOINC with code " + loinc.getCode() + " already exists" );
+                return new ResponseEntity( errorResponse( "LOINC with code " + loinc.getCode() + " already exists" ),
                         HttpStatus.CONFLICT );
             }
 
-            service.save( Loinc );
+            service.save( loinc );
             loggerUtil.log( TransactionType.LOINC_CREATE, LoggerUtil.currentUser(),
-                    "LOINC " + Loinc.getCode() + " created" );
-            return new ResponseEntity( Loinc, HttpStatus.OK );
+                    "LOINC " + loinc.getCode() + " created" );
+            return new ResponseEntity( loinc, HttpStatus.OK );
         }
         catch ( final Exception e ) {
             loggerUtil.log( TransactionType.LOINC_CREATE, LoggerUtil.currentUser(), "Failed to create LOINC" );
@@ -91,20 +91,20 @@ public class APILoincController extends APIController {
                         HttpStatus.NOT_FOUND );
             }
 
-            final Loinc Loinc = new Loinc( form );
+            final Loinc loinc = new Loinc( form );
 
             // If the code was changed, make sure it is unique
-            final Loinc sameCode = service.findByCode( Loinc.getCode() );
+            final Loinc sameCode = service.findByCode( loinc.getCode() );
             if ( sameCode != null && !sameCode.getId().equals( savedLoinc.getId() ) ) {
-                return new ResponseEntity( errorResponse( "LOINC with code " + Loinc.getCode() + " already exists" ),
+                return new ResponseEntity( errorResponse( "LOINC with code " + loinc.getCode() + " already exists" ),
                         HttpStatus.CONFLICT );
             }
 
-            service.save( Loinc ); /* Overwrite existing LOINC */
+            service.save( loinc ); /* Overwrite existing LOINC */
 
             loggerUtil.log( TransactionType.LOINC_EDIT, LoggerUtil.currentUser(),
-                    "LOINC with id " + Loinc.getId() + " edited" );
-            return new ResponseEntity( Loinc, HttpStatus.OK );
+                    "LOINC with id " + loinc.getId() + " edited" );
+            return new ResponseEntity( loinc, HttpStatus.OK );
         }
         catch ( final Exception e ) {
             loggerUtil.log( TransactionType.LOINC_EDIT, LoggerUtil.currentUser(), "Failed to edit LOINC" );
@@ -125,15 +125,15 @@ public class APILoincController extends APIController {
     @DeleteMapping ( BASE_PATH + "/loinccodes/{id}" )
     public ResponseEntity deleteLoinc ( @PathVariable final String id ) {
         try {
-            final Loinc Loinc = (Loinc) service.findById( Long.parseLong( id ) );
-            if ( Loinc == null ) {
+            final Loinc loinc = (Loinc) service.findById( Long.parseLong( id ) );
+            if ( loinc == null ) {
                 loggerUtil.log( TransactionType.LOINC_DELETE, LoggerUtil.currentUser(),
                         "Could not find LOINC with id " + id );
                 return new ResponseEntity( errorResponse( "No LOINC found with id " + id ), HttpStatus.NOT_FOUND );
             }
-            service.delete( Loinc );
+            service.delete( loinc );
             loggerUtil.log( TransactionType.LOINC_DELETE, LoggerUtil.currentUser(),
-                    "Deleted LOINC with id " + Loinc.getId() );
+                    "Deleted LOINC with id " + loinc.getId() );
             return new ResponseEntity( id, HttpStatus.OK );
         }
         catch ( final Exception e ) {
@@ -150,7 +150,6 @@ public class APILoincController extends APIController {
      */
     @GetMapping ( BASE_PATH + "/loinccodes" )
     public List<Loinc> getLoinc () {
-        loggerUtil.log( TransactionType.LOINC_VIEW, LoggerUtil.currentUser(), "Fetched list of LOINC" );
         return (List<Loinc>) service.findAll();
     }
 

@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
 
-import edu.ncsu.csc.itrust2.models.Procedure;
+import edu.ncsu.csc.iTrust2.models.Procedure;
 import edu.ncsu.csc.iTrust2.repositories.ProcedureRepository;
 
 @Component

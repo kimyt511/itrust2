@@ -3,7 +3,7 @@ package edu.ncsu.csc.iTrust2.forms;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
-import edu.ncsu.csc.itrust2.models.Procedure;
+import edu.ncsu.csc.iTrust2.models.Procedure;
 import edu.ncsu.csc.iTrust2.models.enums.Priority;
 import edu.ncsu.csc.iTrust2.models.enums.ProcedureStatus;
 /**

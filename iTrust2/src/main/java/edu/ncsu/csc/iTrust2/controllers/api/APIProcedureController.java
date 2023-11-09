@@ -3,7 +3,7 @@ package edu.ncsu.csc.iTrust2.controllers.api;
 import java.util.List;
 
 import edu.ncsu.csc.iTrust2.models.enums.ProcedureStatus;
-import edu.ncsu.csc.itrust2.models.Procedure;
+import edu.ncsu.csc.iTrust2.models.Procedure;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -141,7 +141,7 @@ public class APIProcedureController extends APIController {
      * @return a list of Procedure
      */
     @GetMapping ( BASE_PATH + "/procedure" )
-    public List<Proceudre> getProcedure () {
+    public List<Procedure> getProcedure () {
         loggerUtil.log( TransactionType.HCP_VIEW_PROCS, LoggerUtil.currentUser(), "Fetched list of LOINC" );
         return (List<Procedure>) service.findAll();
     }

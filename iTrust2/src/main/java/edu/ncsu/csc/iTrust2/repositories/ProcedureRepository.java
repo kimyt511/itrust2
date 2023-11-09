@@ -2,7 +2,7 @@ package edu.ncsu.csc.iTrust2.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import edu.ncsu.csc.itrust2.models.Procedure;
+import edu.ncsu.csc.iTrust2.models.Procedure;
 
 public interface ProcedureRepository extends JpaRepository<Procedure, Long> {
 

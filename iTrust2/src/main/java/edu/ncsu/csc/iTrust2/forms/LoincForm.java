@@ -31,12 +31,12 @@ public class LoincForm {
      * @param Loinc
      *            the Loinc object
      */
-    public LoincForm ( final Loinc Loinc ) {
-        setId( Loinc.getId() );
-        setCode( Loinc.getCode() );
-        setName( Loinc.getName() );
-        setComponent( Loinc.getComponent() );
-        setProperty( Loinc.getProperty() );
+    public LoincForm ( final Loinc loinc ) {
+        setId( loinc.getId() );
+        setCode( loinc.getCode() );
+        setName( loinc.getName() );
+        setComponent( loinc.getComponent() );
+        setProperty( loinc.getProperty() );
     }
 
 

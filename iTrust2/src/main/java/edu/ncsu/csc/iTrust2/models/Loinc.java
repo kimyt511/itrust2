@@ -32,7 +32,7 @@ public class Loinc extends DomainObject {
      * @param form
      *            the form to base the new Loinc on
      */
-    public Loinc ( final Loinc form ) {
+    public Loinc ( final LoincForm form ) {
         setId( form.getId() );
         setCode( form.getCode() );
         setName( form.getName() );

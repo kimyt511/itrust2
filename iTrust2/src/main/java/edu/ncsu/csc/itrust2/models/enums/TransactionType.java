@@ -551,7 +551,7 @@ public enum TransactionType {
     /**
      * Admin views all lab procedures in the system
      */
-    LABPROCEDURE_VIEW ( 907, "Admin views all lab procedures in the system", true ),
+    LABPROCEDURE_VIEW ( 907, "Admin views all lab procedures in the system", true );
 
 
     /**

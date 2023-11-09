@@ -1,4 +1,4 @@
-package edu.ncsu.csc.itrust2.models;
+package edu.ncsu.csc.iTrust2.models;
 
 import edu.ncsu.csc.iTrust2.forms.ProcedureForm;
 import org.hibernate.validator.constraints.Length;
