@@ -1,3 +1,14 @@
-.DS_Store
-.vscode
+# Project Files
+src/main/resources/application.yml
+db/
+
+# Gradle
+.gradle/
+build/
+
+# IDE
 .idea/
+.vscode/
+
+# Misc
+tmp
