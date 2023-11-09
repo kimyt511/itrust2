@@ -167,4 +167,15 @@ Todo:
  - backend -> make Loinc and Procedure Units
  - Frontend -> make Procedure template for admin
 
+### Meeting #8 (2023-11-09)
+
+From Team3
+
+What we did:
+- Create, edit, delete Loinc code by Admin
+
+Todo:
+- Frontend -> Create, edit, delete Procedure by HCP
+- Backend -> view, edit API for Labtech, view API for patient
+
 
