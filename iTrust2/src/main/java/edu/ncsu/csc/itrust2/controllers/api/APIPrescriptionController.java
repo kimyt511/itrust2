@@ -173,5 +173,12 @@ public class APIPrescriptionController extends APIController {
             return new ResponseEntity( p, HttpStatus.OK );
         }
     }
+    
+    @GetMapping ( BASE_PATH + "/prescriptions/search/{username}" )
+    public List<Prescription> getPrescription ( @PathVariable final String username ) {
+    	final User patient = userService.findByName( username );
+		return prescriptionService.findByPatient(patient);
+        
+    }
 
 }

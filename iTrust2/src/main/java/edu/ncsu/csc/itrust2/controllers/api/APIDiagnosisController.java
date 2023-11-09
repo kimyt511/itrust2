@@ -96,5 +96,11 @@ public class APIDiagnosisController extends APIController {
 
         return diagnosisService.findByPatient( self );
     }
+    
+    @GetMapping ( BASE_PATH + "/diagnoses/serarch/{username}" )
+    public List<Diagnosis> getDiagnosisByName (@PathVariable final String username) {
+        final User patient = userService.findByName( username );
+        return diagnosisService.findByPatient( patient );
+    }
 
 }

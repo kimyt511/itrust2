@@ -202,7 +202,6 @@ public class APIPatientController extends APIController {
     public List<Patient> searchUsers ( @PathVariable ( "keyword" ) final String keyword ) {
         return (List<Patient>) patientService.findByUsernameContaining( keyword );
     }
-
-
+    
 
 }
