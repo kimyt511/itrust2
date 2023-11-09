@@ -883,7 +883,7 @@
 													</div>
 													<div class="col-xs-6">
 														<ul>
-															<li ng-repeat="l in loinccodes"><label> <input
+															<li ng-repeat="l in codes"><label> <input
 																	type="radio" ng-model="procedure.loinc"
 																	name="{{l.commonName}}" ng-value="l" value="{{l.code}}"
 																	required="true" /> {{l.commonName}}
@@ -913,14 +913,17 @@
 													<div class="col-xs-6 radio-box">
 														<div class="form-check">
 															<ul style="list-style: none;">
+
+																<!-- Modified t.self.username to simply t.username in order to show username correctly.
+																Additionally modified ng-value to t.username, so we can choose between different labtech users.-->
 																<li ng-repeat="t in tech"><label> <input
 																		type="radio" ng-model="procedure.labtech"
-																		name="{{t.self.username}}" ng-value="t.self"
-																		value="{{t.self.username}}" required="true"
-																		id="radio-{{t.self.username}}" /> {{t.self.username}}
-																		({{t.numAssigned}} assigned)
+																		name="{{t.username}}" ng-value="t.username"
+																		value="{{t.username}}" required="true" />
+																		({{t.username}} assigned)
 																</label></li>
 															</ul>
+
 														</div>
 													</div>
 												</div>

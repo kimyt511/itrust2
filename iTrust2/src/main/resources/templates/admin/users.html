@@ -62,7 +62,9 @@
 		                $scope.user.password = "";
 		                $scope.user.password2 = "";
 		                $scope.user.enabled = false;
-		                $scope.user.role = "ROLE_PATIENT";
+
+						/* changed the variable from ROLE_PATIENT to roles to add correctly without hard coding */
+		                $scope.user.role = roles;
 		                $scope.errorAdding = "";
 		                $scope.successMessage = "User added successfully.";
 		              }, function (rejection) {

@@ -101,6 +101,7 @@
                             $scope.submit = function() {
                                 var loinc = angular.copy($scope.loincForm);
 
+								// ========================= LOINC EDIT AND DELETE ARE NOT WORKING. NEED TO CHANGE ========================
                                 $http({
                                     method : 'PUT',
                                     url : '/iTrust2/api/v1/loinccodes/' + loinc.code,
@@ -122,24 +123,26 @@
                                     }
                                 })
                             }
-
+							// ========================= LOINC EDIT AND DELETE ARE NOT WORKING. NEED TO CHANGE ========================
 	        				$scope.deleteLoinc = function(loinc) {
 	            				$http.delete('/iTrust2/api/v1/loinccodes/' + loinc.code).then(
 	              					function (response) {
 	                					$scope.loadLoincs();
+										$scope.message = "";
 	              					}, function (rejection) {
-	            	    				$scope.loadLoincs();
-	                				$scope.message = "Could not remove LOINC";
+										  $scope.message = "Could not remove LOINC";
 	              				});
 	          				}
 
-	        				$scope.loadLoincs = function () {
+
+							$scope.loincs = [];
+							$scope.loadLoincs = function () {
 	        				  $http.get("/iTrust2/api/v1/loinccodes").then(
 	        				    function (response) {
-	        				      $scope.users = response.data;
+	        				      $scope.loincs= response.data;
 	        				      $scope.message = "";
 	        				    }, function (rejection) {
-	        				      $scope.users = [];
+	        				      $scope.loincs = [];
 	        				      $scope.message = "Could not display LOINCs";
 	        				    });
 	        				}
