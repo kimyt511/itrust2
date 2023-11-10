@@ -124,7 +124,7 @@ resolves: #1137
 - 리뷰어는 해당 코드의 오너, 혹은 해당 코드에 대해 잘 알고 있는 팀원과 QA Leader를 선택합니다.
 - Pull Request(Merge Request)는 최소 2명 이상의 팀원의 승인이 있어야 Merge가 가능합니다.
 - Pull Request(Merge Request)는 최대한 작은 단위로 나누어 작성합니다.
-- Pull Request(Merge Request)는 작성 시 [Pull Request(Merge Request) 템플릿](/.gitlab/MERGE_REQUEST_TEMPLATE.md)을 활용합니다.
+- Pull Request(Merge Request)는 작성 시 [Pull Request(Merge Request) 템플릿](/.gitlab/merge_request_templates/default.md)을 활용합니다.
 
 ---
 
