@@ -151,9 +151,22 @@ What we did:
 - Set initial deadline for UC implementations.
 - Discuss whether to use AWS RDS for development & testing. 
 
-Todo:
+ToDo:
 - Each group individually implement UCs by 2023-11-14.
 - Merge implemented features.
+- Try to change the dependency of this project (Maven --> Gradle)
+
+From team2
+
+What we did:
+- As our team consists of one FE and two BEs, each BE developer decided to implement one UC
+    - UC15: 철원, UC18: 원재
+    - 태헌 develop FE for both UCs.
+- Created prototype of some html pages of each UC to visualize how each UC works, which can help both FE and BE developers to implement new API or scripts.
+
+ToDo:
+- BE developers: implement APIs that are necessary and let FE developer know how to use it
+- FE developer: develop web-pages based on newly implemented APIs.
 
 ### Meeting#7 (2023-11-07)
 
@@ -163,7 +176,7 @@ What we did:
 - Understanding of UC17
 - Understanding of what frontend and backend will do
 
-Todo:
+ToDo:
  - backend -> make Loinc and Procedure Units
  - Frontend -> make Procedure template for admin
 
@@ -174,8 +187,13 @@ From Team3
 What we did:
 - Create, edit, delete Loinc code by Admin
 
-Todo:
+ToDo:
 - Frontend -> Create, edit, delete Procedure by HCP
 - Backend -> view, edit API for Labtech, view API for patient
 
+From Team2
+
+What we did:
+- Add searching functionalities using patient name or MID for UC15
+- Talk about what kinds of API is needed to load prescriptions and diagnoses of selected patient.
 
