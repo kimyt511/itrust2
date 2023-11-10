@@ -59,8 +59,6 @@ dependencies {
 }
 
 spotless {
-    // optional: limit format enforcement to just the files changed by this feature branch
-//    ratchetFrom("origin/main")
 
     format("misc") {
         target("*.gradle", "*.md", ".gitignore")
