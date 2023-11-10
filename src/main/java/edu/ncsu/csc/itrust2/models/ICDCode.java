@@ -32,11 +32,11 @@ public class ICDCode extends DomainObject {
     private Long id;
 
     /** The ICD Code string */
-    @Setter(AccessLevel.PRIVATE)
+    @Setter(AccessLevel.PUBLIC)
     private String code;
 
     /** Description of the diagnosis */
-    @Setter(AccessLevel.PRIVATE)
+    @Setter(AccessLevel.PUBLIC)
     private String description;
 
     public ICDCode(String code, String description) {

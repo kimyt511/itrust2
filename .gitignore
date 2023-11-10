@@ -1,6 +1,7 @@
 # Project Files
-src/main/resources/application.yml
 db/
+# src/main/resources/application.yml
+# src/main/resources/application-test.yml
 
 # Gradle
 .gradle/
@@ -9,6 +10,7 @@ build/
 # IDE
 .idea/
 .vscode/
+.run/
 
 # Misc
 tmp

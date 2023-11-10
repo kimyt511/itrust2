@@ -1,6 +1,6 @@
 package edu.ncsu.csc.itrust2.web;
 
-import io.github.bonigarcia.wdm.ChromeDriverManager;
+import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 
@@ -32,7 +32,7 @@ public class BrowserHandler {
 
         OS = System.getProperty("os.name");
 
-        ChromeDriverManager.chromedriver().setup();
+        WebDriverManager.chromedriver().setup();
         final ChromeOptions options = new ChromeOptions();
         options.addArguments("headless");
         options.addArguments("window-size=1200x600");

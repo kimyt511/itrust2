@@ -5,7 +5,7 @@
 
 ## Team details
 | Name | GitLab Username | e-mail                    |
-|------|-----------------|---------------------------| 
+|------|-----------------|---------------------------|
 | 강재현 | KangJaehyun | luxmea1005@yonsei.ac.kr   |
 | 김태헌 | thkim0305 | thkim0305@yonsei.ac.kr    |
 | 이호재 | 2018147582 | unikskyseed@yonsei.ac.kr  |
@@ -69,10 +69,10 @@ What we did:
         1. Rating system: patient can leave rate(e.g. star out of 5) and comment/review of HCP/Hospital that he or she met. HCP can leave a comment to the review.
         2. Allowing patient to view upcomming/rejected appointments and to edit approved appointmenets.
         3. HCP Shcedule: HCP decides duration of each appointments when he or she approves it, patient can see the schedule(available/unavailable time) of chosen HCP when requesting appointments.
-        4. related to UC2, when a user gets banned and receives an email, allow a user to remove the ban by approving himself and then change password. 
+        4. related to UC2, when a user gets banned and receives an email, allow a user to remove the ban by approving himself and then change password.
         5. Drug guidelines: admin/HCP can register a guideline of drugs, patient can (only) read the guideline of prescripted drugs.
         6. New drug creation: related to Lab tech role, Lab tech can create/register new drug after its lab study.
-    - Among these ideas, we decided to propose 1 Rating system (decided by majority voting). 
+    - Among these ideas, we decided to propose 1 Rating system (decided by majority voting).
     - We decided to make detail about the new UC at the next meeting.
 - Decide that each member tries to run `iTrust2` project on local machine separately and checks each UC.
 
@@ -89,7 +89,7 @@ What we did:
 - Based on the choices, we divided the team into 3, and assigned 2 UCs per team to implement.
 
 | Team 1 | Team 2 | Team 3 |
-|--------|--------|--------| 
+|--------|--------|--------|
 | 강재현 (`Front-end`) |김태헌 (`Front-end`) | 이호재 (`Front-end`)  |
 | 김성환 (`Front-end`) |한철원 (`Back-end`) | 홍현기 (`Front-end`)  |
 | 유지민 (`Back-end`) |최원재 (`Back-end`) | 반석 (`Back-end`)  |
@@ -149,7 +149,7 @@ Next Meeting: Decide after the presentation.
 What we did:
 - Allocate leader roles for Iteration 2.
 - Set initial deadline for UC implementations.
-- Discuss whether to use AWS RDS for development & testing. 
+- Discuss whether to use AWS RDS for development & testing.
 
 ToDo:
 - Each group individually implement UCs by 2023-11-14.
@@ -196,4 +196,3 @@ From Team2
 What we did:
 - Add searching functionalities using patient name or MID for UC15
 - Talk about what kinds of API is needed to load prescriptions and diagnoses of selected patient.
-

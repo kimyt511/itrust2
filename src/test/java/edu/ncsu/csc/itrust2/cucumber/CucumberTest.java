@@ -3,7 +3,7 @@ package edu.ncsu.csc.itrust2.cucumber;
 import edu.ncsu.csc.itrust2.services.UserService;
 
 import com.paulhammant.ngwebdriver.NgWebDriver;
-import io.github.bonigarcia.wdm.ChromeDriverManager;
+import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -76,7 +76,7 @@ public abstract class CucumberTest {
     /* Selenium setup stuff */
 
     static {
-        ChromeDriverManager.chromedriver().setup();
+        WebDriverManager.chromedriver().setup();
     }
 
     protected static final String BASE_URL = "http://localhost:8080/iTrust2/";
