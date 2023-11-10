@@ -42,7 +42,7 @@ public class APIProcedureController extends APIController {
     private LoggerUtil  loggerUtil;
 
     @Autowired
-    private UserService               userService;
+    private UserService  userService;
 
     /**
      * Adds a new Procedure to the system. Returns an
@@ -182,4 +182,17 @@ public class APIProcedureController extends APIController {
         return (List<Procedure>) service.findByPatient( patient );
     }
 
+    /**
+     * Gets a list of Procedure associated with hcp and patient
+     *
+     * @return a list of Procedure
+     */
+    @GetMapping ( BASE_PATH + "/procedureForHcp/{id}" )
+    @PreAuthorize ( "hasRole('ROLE_HCP')" )
+    public List<Procedure> getProcedureForHcpAndPatient (@PathVariable ( "id" ) final String id ) {
+        final User hcp = userService.findByName( LoggerUtil.currentUser() );
+        final User patient = userService.findByName( id );
+        loggerUtil.log( TransactionType.HCP_VIEW_PROCS, LoggerUtil.currentUser(), "Fetched list of Procedures" );
+        return (List<Procedure>) service.findByHcpAndPatient(hcp, patient);
+    }
 }

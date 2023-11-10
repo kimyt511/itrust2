@@ -4,10 +4,9 @@ import edu.ncsu.csc.iTrust2.forms.ProcedureForm;
 import org.hibernate.validator.constraints.Length;
 import edu.ncsu.csc.iTrust2.models.enums.Priority;
 import edu.ncsu.csc.iTrust2.models.enums.ProcedureStatus;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import edu.ncsu.csc.iTrust2.models.User;
+
+import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 
 /**
@@ -29,6 +28,7 @@ public class Procedure extends DomainObject {
         setId( form.getId() );
         setCode (form.getCode() );
         setName( form.getName());
+        setHcp(form.getHcp());
         setLabtech(form.getLabtech());
         setPatient(form.getPatient());
         setComment(form.getComment());
@@ -45,10 +45,18 @@ public class Procedure extends DomainObject {
     private String name;
 
     @NotEmpty
-    private String labtech;
+    @ManyToOne
+    @JoinColumn ( name = "hcp_id", columnDefinition = "varchar(100)" )
+    private User hcp;
+    @NotEmpty
+    @ManyToOne
+    @JoinColumn ( name = "labtech_id", columnDefinition = "varchar(100)" )
+    private User labtech;
 
     @NotEmpty
-    private String patient;
+    @ManyToOne
+    @JoinColumn ( name = "patient_id", columnDefinition = "varchar(100)" )
+    private User patient;
 
     @NotEmpty
     @Length( max = 500 )
@@ -63,60 +71,54 @@ public class Procedure extends DomainObject {
     public Long getId() {
         return id;
     }
-
     public void setId(final Long id) {
         this.id = id;
     }
-
     public String getCode() {
         return code;
     }
-
     public void setCode(final String code) {
         this.code = code;
     }
     public String getName() {
         return name;
     }
-
     public void setName(final String name) {
         this.name = name;
     }
-    public String getLabtech() {
+    public User getHcp() {
+        return hcp;
+    }
+    public void setHcp(final User hcp) {
+        this.hcp = hcp;
+    }
+    public User getLabtech() {
         return labtech;
     }
-
-    public void setLabtech(final String labtech) {
+    public void setLabtech(final User labtech) {
         this.labtech = labtech;
     }
-    public String getPatient() {
+    public User getPatient() {
         return patient;
     }
-
-    public void setPatient(final String patient) {
+    public void setPatient(final User patient) {
         this.patient = patient;
     }
-
     public String getComment() {
         return comment;
     }
-
     public void setComment(final String comment) {
         this.comment = comment;
     }
-
     public Priority getPriority() {
         return priority;
     }
-
     public void setPriority(final Priority priority) {
         this.priority = priority;
     }
-
     public ProcedureStatus getProcedureStatus() {
         return procedureStatus;
     }
-
     public void setProcedureStatus(final ProcedureStatus procedureStatus) {
         this.procedureStatus = procedureStatus;
     }

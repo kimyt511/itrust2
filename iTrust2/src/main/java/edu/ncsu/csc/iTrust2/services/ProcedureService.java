@@ -19,7 +19,7 @@ public class ProcedureService extends Service {
     private ProcedureRepository repository;
 
     @Autowired
-    private UserService                  userService;
+    private UserService userService;
 
     @Override
     protected JpaRepository getRepository () {
@@ -41,4 +41,15 @@ public class ProcedureService extends Service {
     public List<Procedure> findByPatient( final User patient){
         return repository.findByPatient(patient);
     }
+    public boolean existsByHcp ( final User hcp){
+        return repository.existsByHcp(hcp);
+    }
+
+    public List<Procedure> findByHcp( final User hcp){
+        return repository.findByHcp(hcp);
+    }
+
+    public boolean existsByHcpAndPatient (final User hcp, final User patient){ return repository.existsByHcpAndPatient(hcp, patient);}
+
+    public List<Procedure> findByHcpAndPatient(final User hcp, final User patient){ return repository.findByHcpAndPatient(hcp, patient);}
 }
