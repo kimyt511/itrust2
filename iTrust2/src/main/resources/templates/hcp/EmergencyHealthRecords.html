@@ -12,15 +12,10 @@
 			/*<![CDATA[*/
 
 			var app = angular.module('myApp', ['dateTimeServices']);
-			app.controller('editPatientDemographicsCtrl', function($scope, $http, dateTimeService) {
+			// app.controller('editPatientDemographicsCtrl', function($scope, $http, dateTimeService) {
+			app.controller('EmergencyHealthRecordsCtrl', function($scope, $http, dateTimeService) {
 				$scope.displayName = function(p) {
 					return p.firstName + " " + p.lastName + " (" + p.username + ")";
-				}
-				
-				// documentation on Angular filters: https://docs.angularjs.org/api/ng/filter/filter
-				$scope.searchFilter = "";
-				$scope.filterPatients = function(patient) {
-					return ($scope.displayName(patient)).toLowerCase().match($scope.searchFilter.toLowerCase());
 				}
 				
 				function formDifferent(current, original) {
@@ -116,60 +111,120 @@
 							$scope.genders = response.data;
 						});
 
-				$scope.submit = function() {
-					var patient = angular.copy($scope.patientForm);
-					patient.dateOfBirth = dateTimeService.toDateString(patient.dateOfBirth).format('yyyy-MM-dd');
+				// $scope.submit = function() {
+				// 	var patient = angular.copy($scope.patientForm);
+				// 	patient.dateOfBirth = dateTimeService.toDateString(patient.dateOfBirth).format('yyyy-MM-dd');
 
-					$http({
-						method : 'PUT',
-						url : '/iTrust2/api/v1/patients/' + patient.username,
-						data : patient
-					}).then(function(response) {
-						$scope.message = "Patient demographics updated successfully.";
+				// 	$http({
+				// 		method : 'PUT',
+				// 		url : '/iTrust2/api/v1/patients/' + patient.username,
+				// 		data : patient
+				// 	}).then(function(response) {
+				// 		$scope.message = "Patient demographics updated successfully.";
 						
-						// replace the patient in session 
-						for (var i in $scope.patients)
-							if ($scope.patients[i].username == response.data.username) {
-								$scope.patients[i] = response.data;
-								$scope.selectPatient(response.data, true);
-							}
-					}, function(rejection) {
-						if (rejection.data.msg) {
-							$scope.message = "Error: " + rejection.data.msg;
-						} else {
-							$scope.message = "An error occured updating demographics.";
+				// 		// replace the patient in session 
+				// 		for (var i in $scope.patients)
+				// 			if ($scope.patients[i].username == response.data.username) {
+				// 				$scope.patients[i] = response.data;
+				// 				$scope.selectPatient(response.data, true);
+				// 			}
+				// 	}, function(rejection) {
+				// 		if (rejection.data.msg) {
+				// 			$scope.message = "Error: " + rejection.data.msg;
+				// 		} else {
+				// 			$scope.message = "An error occured updating demographics.";
+				// 		}
+				// 	})
+				// }
+
+				// $scope.getUsersbyMID = function(){
+				// 	var keyword = document.getElementsByName("searchMID").value;
+            	// 	$scope.fetchUsers(keyword);
+
+				// }
+
+				// $scope.fetchUsers = function(keyword){
+				// 	fetch('/searchUsers')
+				// 	.then(response => response.json())
+				// 	.then(data => displayUsers(data));
+				// }
+
+				// $scope.displayUsers = function(users){
+				// 	var userList = document.getElementById('userList');
+				// 	userList.innerHTML = '';
+
+				// 	users.forEach(function(user) {
+				// 		var listItem = document.createElement('li');
+				// 		listItem.appendChild(document.createTextNode(user.username));
+				// 		userList.appendChild(listItem);
+				// 	});
+				// }
+				$scope.searchedMID = "";
+				$scope.searchedName = "";
+				$scope.searchedPatients = [];
+				// documentation on Angular filters: https://docs.angularjs.org/api/ng/filter/filter
+				$scope.searchFilter = "";
+				$scope.filterPatients = function(patient) {
+					return ($scope.displayName(patient)).toLowerCase().match($scope.searchFilter.toLowerCase());
+				}
+
+				$scope.getUsersbyMID = function(){
+					$scope.searchedPatients = [];
+					var searchedMID = $scope.searchedMID;
+					for (var i in $scope.patients)
+						if ($scope.patients[i].username.toLowerCase().includes(searchedMID.toLowerCase())){
+							$scope.searchedPatients.push($scope.patients[i]);
 						}
-					})
+				}
+
+				$scope.getUsersbyName = function(){
+					$scope.searchedPatients = [];
+					var searchedName = $scope.searchedName;
+					for (var i in $scope.patients)
+						if ($scope.patients[i].firstName.toLowerCase().includes(searchedName.toLowerCase())){
+							$scope.searchedPatients.push($scope.patients[i]);
+						}
+						else if ($scope.patients[i].lastName.toLowerCase().includes(searchedName.toLowerCase())){
+							$scope.searchedPatients.push($scope.patients[i]);
+						}
 				}
 			});
+
 
 			/*]]>*/
 		</script>
 
 
 
-		<div ng-app="myApp" ng-controller="editPatientDemographicsCtrl">
+		<div ng-app="myApp" ng-controller="EmergencyHealthRecordsCtrl">
 			<div style="float: left; width: 30%; height: 75%; overflow-y: auto">
 				<h2>Patients:</h2>
 				<!-- info on filtering taken from here: https://www.w3schools.com/angular/angular_filters.asp
 				and https://docs.angularjs.org/api/ng/filter/filter -->
 				<h4>
-					Name: <input type="text" name="searchName" ng-model="searchNameFilter" />
+					<!-- Name: <input type="text" name="searchName" ng-model="searchNameFilter" /> -->
+					Name: <input type="text" name="searchName" ng-model="searchedName"/>
+					<button ng-click="getUsersbyName()" name="searchbyName" >Search</button>
+					
 				</h4>
 				<h4>
-					MID: <input type="text" name="searchMID" ng-model="searchMIDFilter" />
+					<!-- MID: <input type="text" name="searchMID" ng-model="searchMIDFilter" /> -->
+					MID: <input type="text" name="searchMID" ng-model="searchedMID"/>
+					<button ng-click="getUsersbyMID()" name="searchbyMID">Search</button>
 				</h4>
 				<!-- Info on scrolling taken from here: https://www.w3schools.com/cssref/pr_pos_overflow.asp -->
 				<!-- and here: https://stackoverflow.com/questions/9560330/how-to-hide-a-vertical-scroll-bar-when-not-needed -->
 				<ul style="overflow: auto;height=90%;">
 					<!-- Information on how labels wor from here: https://stackoverflow.com/questions/7863251/clicking-the-text-to-select-corresponding-radio-button -->
-					<li ng-repeat="patient in patients | filter:filterPatients"><h4>
+					<li ng-repeat="patient in searchedPatients"><h4>
 							<label> <input type="radio"
 								ng-model="$parent.selectedPatient" name="patient"
 								value="{{patient.username}}"
-								ng-click='$parent.selectPatient(patient)' />&nbsp;{{$parent.displayName(patient)}}
+								ng-click='$parent.selectPatient(patient)' />{{$parent.displayName(patient)}}
+								<!-- &nbsp;{{$parent.displayName(patient)}} -->
 							</label>
 						</h4></li>
+					<ul id="userList"></ul>
 				</ul>
 			</div>
 			<!-- information on vertical rule found here: https://stackoverflow.com/questions/571900/is-there-a-vr-vertical-rule-in-html  -->
