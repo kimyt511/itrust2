@@ -907,6 +907,12 @@
 															 Proceeded to add 'name' inside ProcedureForm and Procedure-->
 															<li ng-repeat="l in loinccodes"><label> <input
 
+																	type="radio" ng-model="procedure.code"
+																	name="{{l.name}}" code ="{{l.code}}"
+																	ng-value="l" value="{{l.code}}"
+																	required="true"
+															/>
+
 															<!-- Used procedure.code model to store ng-value l
 															which is a list of properties from procedure.
 															ex.
@@ -914,11 +920,7 @@
 															procedure.code.code = 123-1
 															procedure.code.name = "X-ray"
 															-->
-
-																	type="radio" ng-model="procedure.code"
-																	name="{{l.name}}" code ="{{l.code}}"
-																	ng-value="l" value="{{l.code}}"
-																	required="true" /> {{l.code}}
+																{{l.code}}
 															</label></li>
 														</ul>
 													</div>
