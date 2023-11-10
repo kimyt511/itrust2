@@ -63,9 +63,12 @@
                     }
 
 					// Check Validity of procedure (LOINC + priority + labtech)
+					// p = $scope.procedure. LINE 485
                     var checkValidProcedure = function (p) {
                         var err = [];
-                        if (!p.loinc) {
+
+						// p stands for procedure. so procedure.code is given as argument.
+                        if (!p.code) {
 							// Lab procedure must be associated with a procedure code. ****
                             err.push("Lab procedure must be associated with a procedure code");
                         }
@@ -409,6 +412,12 @@
                         $scope.renewalEntry = "";
                     }
 
+					function resetProcedureForm() {
+						$scope.loincEntry = "";
+						$scope.priorityEntry = "";
+						$scope.techEntry = "";
+					}
+
                     // Capture each diagnosis into an array
                     $scope.diagnoses = [];
                     $scope.eyediagnoses = [];
@@ -465,8 +474,15 @@
                         $scope.errorMsg = "";
                         $scope.procedure.patient = $scope.visit.actualPatient.self;
                         $scope.procedure.status = "ASSIGNED";
-						$scope.procedure.
+
+						//Procedure name and code fixed.
+						$scope.procedure.name = $scope.procedure.code.name;
+						$scope.procedure.code = $scope.procedure.code.code;
+
+
                         angular.copy($scope.procedure, procCopy);
+
+						//CheckValidProcedure arguemnt is scope.procedure.
                         var err = checkValidProcedure($scope.procedure);
                         if (err) {
                             $scope.errorMsg = err;
@@ -496,6 +512,7 @@
                     //call initally
                     resetDiagnosisForm();
                     resetPrescriptionForm();
+					resetProcedureForm();
                 });
 			/*]]>*/
             </script>
@@ -889,8 +906,18 @@
 															<!-- There was no common name in procedure.
 															 Proceeded to add 'name' inside ProcedureForm and Procedure-->
 															<li ng-repeat="l in loinccodes"><label> <input
+
+															<!-- Used procedure.code model to store ng-value l
+															which is a list of properties from procedure.
+															ex.
+															procedure.code = {name = "X-ray",code = 123-1}
+															procedure.code.code = 123-1
+															procedure.code.name = "X-ray"
+															-->
+
 																	type="radio" ng-model="procedure.code"
-																	name="{{l.name}}" ng-value="l.code" value="{{l.code}}"
+																	name="{{l.name}}" code ="{{l.code}}"
+																	ng-value="l" value="{{l.code}}"
 																	required="true" /> {{l.code}}
 															</label></li>
 														</ul>
@@ -956,8 +983,8 @@
 															<div class="panel-body">
 																<div class="row" ng-repeat="p in procedures">
 																	<div>
-																		<b>Code:</b> {{p.loinc.code}} <br> 
-																		<b>Common Name:</b> {{p.loinc.commonName}} <br>
+																		<b>Code:</b> {{p.code}} <br>
+																		<b>Common Name:</b> {{p.name}} <br>
 																		<b>Priority:</b> {{p.priority}} <br>
 																		<b>Status:</b> {{p.status}} <br>
 																		<b>Comments:</b> {{p.comments}} <br>
