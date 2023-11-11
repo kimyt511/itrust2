@@ -26,22 +26,33 @@
 				}
 
 				$scope.prescriptions = [];
-				$scope.pattern = /^\d{4}-\d{4}-\d{2}$/;
+				$scope.diagnoses = [];
 				$scope.loadTable = function (username) {
-				$http.get("/iTrust2/api/v1/prescriptions/"+username).then(
-					function (response) {
-					$scope.prescriptions = response.data;
-					$scope.message = "";
-					}, function (rejection) {
-					$scope.prescriptions = [];
-					$scope.message = "Could not display prescriptions";
-					});
+					$http.get("/iTrust2/api/v1/prescriptions/search/"+username).then(
+						function (response) {
+							$scope.prescriptions = response.data;
+							$scope.message = "";
+						}, function (rejection) {
+							$scope.prescriptions = [];
+							$scope.message = "Could not display prescriptions";
+						});
 				}
 				
 				$scope.originalForm = {};
 				$scope.patientForm = {};
 				
 				$scope.selectPatient = function(patient, override) {
+					$http.get("/iTrust2/api/v1/diagnoses/search/"+patient.username).then(
+					function(response) {
+						$scope.diagnoses = response.data;
+						$scope.message = "";
+					}, function(rejection) {
+						$scope.diagoses = [];
+						$scope.message = "Unable to display diagnoses";
+					});
+
+					$scope.loadTable(patient.username);
+
 					if (!override && formDifferent($scope.patientForm, $scope.originalForm)) {
 						if (!confirm("You have made changes to " + $scope.patientForm.username
 								+ ". Would you like to continue? (changes will be lost)")) {
@@ -83,17 +94,6 @@
 					
 					$scope.selectedPatient = pf.username;
 
-					$http.get("/iTrust2/api/v1/diagnosis/"+pf.username).then(
-					function(response) {
-						$scope.diagnoses = response.data;
-						$scope.message = "";
-					}, function(rejection) {
-						$scope.diagoses = [];
-						$scope.message = "Unable to display diagnoses";
-					});
-
-					$scope.loadTable(pf.username);
-
 				}
 
 				$http.get("/iTrust2/api/v1/patients").then(
@@ -111,54 +111,6 @@
 							$scope.genders = response.data;
 						});
 
-				// $scope.submit = function() {
-				// 	var patient = angular.copy($scope.patientForm);
-				// 	patient.dateOfBirth = dateTimeService.toDateString(patient.dateOfBirth).format('yyyy-MM-dd');
-
-				// 	$http({
-				// 		method : 'PUT',
-				// 		url : '/iTrust2/api/v1/patients/' + patient.username,
-				// 		data : patient
-				// 	}).then(function(response) {
-				// 		$scope.message = "Patient demographics updated successfully.";
-						
-				// 		// replace the patient in session 
-				// 		for (var i in $scope.patients)
-				// 			if ($scope.patients[i].username == response.data.username) {
-				// 				$scope.patients[i] = response.data;
-				// 				$scope.selectPatient(response.data, true);
-				// 			}
-				// 	}, function(rejection) {
-				// 		if (rejection.data.msg) {
-				// 			$scope.message = "Error: " + rejection.data.msg;
-				// 		} else {
-				// 			$scope.message = "An error occured updating demographics.";
-				// 		}
-				// 	})
-				// }
-
-				// $scope.getUsersbyMID = function(){
-				// 	var keyword = document.getElementsByName("searchMID").value;
-            	// 	$scope.fetchUsers(keyword);
-
-				// }
-
-				// $scope.fetchUsers = function(keyword){
-				// 	fetch('/searchUsers')
-				// 	.then(response => response.json())
-				// 	.then(data => displayUsers(data));
-				// }
-
-				// $scope.displayUsers = function(users){
-				// 	var userList = document.getElementById('userList');
-				// 	userList.innerHTML = '';
-
-				// 	users.forEach(function(user) {
-				// 		var listItem = document.createElement('li');
-				// 		listItem.appendChild(document.createTextNode(user.username));
-				// 		userList.appendChild(listItem);
-				// 	});
-				// }
 				$scope.searchedMID = "";
 				$scope.searchedName = "";
 				$scope.searchedPatients = [];
