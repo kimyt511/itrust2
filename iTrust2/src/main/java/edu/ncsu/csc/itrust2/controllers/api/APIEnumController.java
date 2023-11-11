@@ -20,6 +20,8 @@ import edu.ncsu.csc.iTrust2.models.enums.PatientSmokingStatus;
 import edu.ncsu.csc.iTrust2.models.enums.Role;
 import edu.ncsu.csc.iTrust2.models.enums.State;
 import edu.ncsu.csc.iTrust2.models.enums.Status;
+import edu.ncsu.csc.iTrust2.models.enums.Priority;
+import edu.ncsu.csc.iTrust2.models.enums.ProcedureStatus;
 import edu.ncsu.csc.iTrust2.services.UserService;
 import edu.ncsu.csc.iTrust2.utils.LoggerUtil;
 
@@ -134,6 +136,28 @@ public class APIEnumController extends APIController {
     public List<PatientSmokingStatus> getPatientSmokingStatuses () {
         final List<PatientSmokingStatus> ret = Arrays.asList( PatientSmokingStatus.values() ).subList( 1,
                 PatientSmokingStatus.values().length );
+        return ret;
+    }
+
+    /**
+     * Get procedure priority
+     *
+     * @return procedure priority
+     */
+    @GetMapping ( BASE_PATH + "/priority" )
+    public List<Priority> getPriorities () {
+        return Arrays.asList( Priority.values() );
+    }
+
+    /**
+     * Get procedure statuses
+     *
+     * @return procedure statuses
+     */
+    @GetMapping ( BASE_PATH + "/procedureStatus" )
+    public List<ProcedureStatus> getProcedureStatuses () {
+        final List<ProcedureStatus> ret = Arrays.asList( ProcedureStatus.values() ).subList( 1,
+                ProcedureStatus.values().length );
         return ret;
     }
 

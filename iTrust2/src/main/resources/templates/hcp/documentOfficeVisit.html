@@ -95,9 +95,11 @@
 
                         if (!$scope.visit.actualPatient && patient) {
                             $scope.visit.actualPatient = patient;
+                            $scope.loadProcedureOfPatient(patient);
                         } else if (!patient) {
                             if ($scope.visit.actualPatient) {
                                 patient = $scope.visit.actualPatient;
+                            	$scope.loadProcedureOfPatient(patient);
                             } else {
                                 // We don't have enough information to continue
                                 return;
@@ -474,7 +476,7 @@
                         $scope.errorMsg = "";
 
                         $scope.procedure.patient = $scope.visit.actualPatient;
-                        $scope.procedure.procedureStatus = 1;
+                        $scope.procedure.procedureStatus = "Assigned";
 
 						//Procedure name and code fixed.
 						$scope.procedure.name = $scope.procedure.code.name;
@@ -524,9 +526,23 @@
                         $scope.prescriptions.splice($index, 1);
                     }
 
-                    //remove local procedure from list
+					/*
+                    // DEPRECATED
                     $scope.removeProcedure = function ($index) {
                         $scope.procedures.splice($index, 1);
+                    }
+                    */
+
+                    // Use this version instead
+                    $scope.deleteProcedure = function (p) {
+	            		$http.delete('/iTrust2/api/v1/procedure/' + p.id).then(
+	            			function (response) {
+	                			$scope.loadProcedureOfPatient($scope.visit.actualPatient);
+	                		}, function (rejection) {
+	            				$scope.loadProcedureOfPatient($scope.visit.actualPatient);
+	                			$scope.errorMsg = "Could not remove procedure";
+	              			}
+	              		);
                     }
 
                     //call initally
@@ -1015,6 +1031,7 @@
 																		<b>Priority:</b> {{p.priority}} <br>
 																		<b>Status:</b> {{p.procedureStatus}} <br>
 																		<b>Comments:</b> {{p.comment}} <br>
+																		<input type="button" value="Delete" class="btn btn-danger" name="deleteProcedure" ng-click="deleteProcedure(p)"/>
 																	</div>
 																	<br>
 																</div>
