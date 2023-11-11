@@ -88,4 +88,16 @@ public class HCPController {
     public String documentOfficeVisit(final Model model) {
         return "/hcp/documentOfficeVisit";
     }
+
+    /**
+     * Returns the form page for a HCP to view Personal Representatives
+     *
+     * @param model The data for the front end
+     * @return Page to display to the user
+     */
+    @GetMapping("/hcp/hcpPersonalRepresentatives")
+    @PreAuthorize("hasRole('ROLE_HCP')")
+    public String hclPersonalRepresentatives(final Model model) {
+        return "/hcp/hcpPersonalRepresentatives";
+    }
 }
