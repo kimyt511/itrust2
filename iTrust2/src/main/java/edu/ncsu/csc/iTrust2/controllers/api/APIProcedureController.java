@@ -78,9 +78,9 @@ public class APIProcedureController extends APIController {
      *            the edited Procedure form
      * @return the edited Procedure or an error message
      */
-    @PreAuthorize ( "hasRole('ROLE_HCP')" )
+    @PreAuthorize ( "hasAnyRole('ROLE_HCP', 'ROLE_LABTECH')" )
     @PutMapping ( BASE_PATH + "/procedure" )
-    public ResponseEntity editLoinc ( @RequestBody final ProcedureForm form ) {
+    public ResponseEntity editProcedure ( @RequestBody final ProcedureForm form ) {
         try {
             // Check for existing Procedure in database
             final Procedure savedProcedure = (Procedure) service.findById( form.getId() );
@@ -189,10 +189,16 @@ public class APIProcedureController extends APIController {
      */
     @GetMapping ( BASE_PATH + "/procedureForHcp/{id}" )
     @PreAuthorize ( "hasRole('ROLE_HCP')" )
-    public List<Procedure> getProcedureForHcpAndPatient (@PathVariable ( "id" ) final String id ) {
+    public ResponseEntity getProcedureForHcpAndPatient (@PathVariable ( "id" ) final String id ) {
         final User hcp = userService.findByName( LoggerUtil.currentUser() );
         final User patient = userService.findByName( id );
-        loggerUtil.log( TransactionType.HCP_VIEW_PROCS, LoggerUtil.currentUser(), "Fetched list of Procedures" );
-        return (List<Procedure>) service.findByHcpAndPatient(hcp, patient);
+        if ( patient == null ) {
+            return new ResponseEntity( errorResponse( "No Patient found with id " + id ), HttpStatus.NOT_FOUND );
+        }
+        else{
+            loggerUtil.log( TransactionType.HCP_VIEW_PROCS, LoggerUtil.currentUser(), "Fetched list of Procedures" );
+            return new ResponseEntity( service.findByHcpAndPatient(hcp, patient), HttpStatus.OK);
+        }
+
     }
 }

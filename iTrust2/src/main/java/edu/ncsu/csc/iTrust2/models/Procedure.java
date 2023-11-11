@@ -8,11 +8,14 @@ import edu.ncsu.csc.iTrust2.models.User;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 /**
  * Represents a Procedure.
  */
 @Entity
+@Table(name="lab_procedure")
 public class Procedure extends DomainObject {
     /** For Hibernate/Thymeleaf _must_ be an empty constructor */
     public Procedure(){
@@ -39,21 +42,22 @@ public class Procedure extends DomainObject {
     @Id
     @GeneratedValue( strategy = GenerationType.AUTO )
     private Long   id;
-
+    @Pattern( regexp = "^\\d{1,5}-\\d$" )
     private String code;
-
+    @NotEmpty
+    @Length ( max = 250 )
     private String name;
 
-    @NotEmpty
+    @NotNull
     @ManyToOne
     @JoinColumn ( name = "hcp_id", columnDefinition = "varchar(100)" )
     private User hcp;
-    @NotEmpty
+    @NotNull
     @ManyToOne
     @JoinColumn ( name = "labtech_id", columnDefinition = "varchar(100)" )
     private User labtech;
 
-    @NotEmpty
+    @NotNull
     @ManyToOne
     @JoinColumn ( name = "patient_id", columnDefinition = "varchar(100)" )
     private User patient;
@@ -61,11 +65,9 @@ public class Procedure extends DomainObject {
     @NotEmpty
     @Length( max = 500 )
     private String comment;
-
-    @NotEmpty
+    @Enumerated ( EnumType.STRING )
     private Priority priority;
-
-    @NotEmpty
+    @Enumerated ( EnumType.STRING )
     private ProcedureStatus procedureStatus;
 
     public Long getId() {
