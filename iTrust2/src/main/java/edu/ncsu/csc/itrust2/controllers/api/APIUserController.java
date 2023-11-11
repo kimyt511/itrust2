@@ -247,6 +247,10 @@ public class APIUserController extends APIController {
 
         userService.save( patient );
 
+        final User labtech = new Personnel( new UserForm( "labtech", "123456", Role.ROLE_LABTECH, 1 ) );
+
+        userService.save( labtech );
+
         loggerUtil.log( TransactionType.USERS_GENERATED, "" );
 
         return new ResponseEntity( HttpStatus.OK );
