@@ -66,6 +66,24 @@
 
                     $scope.assign = function () {
                     }
+
+                    // Function to display the search section
+                    $scope.assign = function () {
+                        // Toggle the visibility of the search section
+                        $scope.showSearchSection = !$scope.showSearchSection;
+                    };
+
+                    // Function for handling search
+                    $scope.searchPatients = function () {
+                        $http.get("/iTrust2/api/v1/search?query=" + $scope.searchQuery).then(
+                            function (response) {
+                                $scope.searchResults = response.data;
+                            },
+                            function (rejection) {
+                                $scope.searchResults = [];
+                            }
+                        );
+                    };
                 });
 
         /*]]>*/
@@ -142,6 +160,37 @@
                 <div class="text-center">
                     <button class="btn btn-primary" ng-click="assign()">assign</button>
                 </div>
+
+                <!-- Search Section -->
+                <div ng-show="showSearchSection" class="search-section">
+                    <!-- Search Form -->
+                    <form>
+                        <div class="form-row align-items-center">
+                            <div class="col-md mb-3">
+                                <label for="searchInput" style="font-size: 1.7rem;">Enter Name or MID:</label>
+                            </div>
+                            <div class="col-md mb-3">
+                                <input type="text" class="form-control" id="searchInput"
+                                       ng-model="searchQuery" placeholder="Enter name or MID">
+                            </div>
+                        </div>
+                    </form>
+
+                    <!-- Search Results -->
+                    <div ng-if="searchResults.length > 0">
+                        <h5>Search Results:</h5>
+                        <ul class="list-group">
+                            <li class="lsist-group-item" ng-repeat="patient in searchResults">
+                                {{patient.name}} (MID: {{patient.mid}})
+                                <button class="btn btn-success btn-sm" ng-click="confirmDeclaration(patient)">
+                                    Confirm Declaration</button>
+                            </li>
+                        </ul>
+                    </div>
+                    <!-- No Results Message -->
+                    <div ng-if="searchResults.length === 0 && searchQuery">
+                        <p style="font-size: 1.5rem;">No matching patients found.</p>
+                    </div>
 
                 <div name="success">{{message}}</div>
             </div>
