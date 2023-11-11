@@ -472,13 +472,13 @@
                     $scope.addProcedure = function () {
                         var procCopy = {};
                         $scope.errorMsg = "";
-                        $scope.procedure.patient = $scope.visit.actualPatient.self;
-                        $scope.procedure.status = "ASSIGNED";
+
+                        $scope.procedure.patient = $scope.visit.actualPatient;
+                        $scope.procedure.procedureStatus = 1;
 
 						//Procedure name and code fixed.
 						$scope.procedure.name = $scope.procedure.code.name;
 						$scope.procedure.code = $scope.procedure.code.code;
-
 
                         angular.copy($scope.procedure, procCopy);
 
@@ -488,11 +488,31 @@
                             $scope.errorMsg = err;
                             $scope.message = "";
                         } else {
-                            $scope.procedures.push(procCopy);
-                            $scope.procedure = {};
-                            $scope.message = "Lab procedure added successfully";
+                        	$http.post("/iTrust2/api/v1/procedure", $scope.procedure).then(
+		    					function (response) {
+		    				    	$scope.loadProcedureOfPatient($scope.visit.actualPatient);
+                            		$scope.procedure = {};
+                            		$scope.message = "Procedure added successfully";
+		    				    }, function (rejection) {
+		    				    	$scope.loadProcedureOfPatient($scope.visit.actualPatient);
+		    				        $scope.errorMsg = "Could not add procedure";
+		    				        $scope.message = "";
+		    				    }
+		    				);
                         }
                     }
+
+                    $scope.loadProcedureOfPatient = function (patient) {
+	        		    $http.get("/iTrust2/api/v1/procedureForHcp/" + patient.username).then(
+	        			    function (response) {
+	        				    $scope.procedures= response.data;
+	        				    $scope.errorMsg = "";
+	        				}, function (rejection) {
+	        				    $scope.procedures = [];
+	        				    $scope.errorMsg = "Could not display procedures";
+	        		    	}
+	        		    );
+	        		}
 
                     //remove local diagnosis from list
                     $scope.removeDiagnosis = function ($index) {
@@ -513,6 +533,14 @@
                     resetDiagnosisForm();
                     resetPrescriptionForm();
 					resetProcedureForm();
+
+	        		$http.get("/iTrust2/api/v1/users/" + [[${#httpServletRequest.remoteUser}]]).then(
+	        			function (response) {
+	        			    $scope.procedure.hcp = response.data;
+	        			}, function (rejection) {
+
+	        		    }
+	        		);
                 });
 			/*]]>*/
             </script>
@@ -932,10 +960,10 @@
 													<div class="col-xs-6">
 														<select name="priority" ng-model="procedure.priority"
 															required="true">
-															<option value="CRITICAL">Critical</option>
+															<option value="HIGHEST">Critical</option>
 															<option value="HIGH">High</option>
-															<option value="MEDIUM">Medium</option>
-															<option value="LOW">Low</option>
+															<option value="LOW">Medium</option>
+															<option value="LOWEST">Low</option>
 														</select>
 													</div>
 												</div>
@@ -947,12 +975,9 @@
 													<div class="col-xs-6 radio-box">
 														<div class="form-check">
 															<ul style="list-style: none;">
-
-																<!-- Modified t.self.username to simply t.username in order to show username correctly.
-																Additionally modified ng-value to t.username, so we can choose between different labtech users.-->
 																<li ng-repeat="t in tech"><label> <input
 																		type="radio" ng-model="procedure.labtech"
-																		name="{{t.username}}" ng-value="t.username"
+																		name="{{t.username}}" ng-value="t"
 																		value="{{t.username}}" required="true" />
 																		({{t.username}} assigned)
 																</label></li>
@@ -965,7 +990,7 @@
 												<div class="form-group row">
 													<div class="col-xs-6">
 														<label>Notes:</label>
-														<textarea name="procNotes" ng-model="procedure.comments"
+														<textarea name="procNotes" ng-model="procedure.comment"
 															class="form-control" rows="3"></textarea>
 
 													</div>
