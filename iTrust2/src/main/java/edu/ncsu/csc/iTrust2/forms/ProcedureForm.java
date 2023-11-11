@@ -47,7 +47,7 @@ public class ProcedureForm {
         setPatient(Procedure.getPatient());
         setComment(Procedure.getComment());
         setPriority(Procedure.getPriority());
-        setProcedureStatus(edu.ncsu.csc.iTrust2.models.enums.ProcedureStatus.Assigned);
+        setProcedureStatus(Procedure.getProcedureStatus());
     }
 
 

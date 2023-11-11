@@ -36,7 +36,7 @@ public class Procedure extends DomainObject {
         setPatient(form.getPatient());
         setComment(form.getComment());
         setPriority(form.getPriority());
-        setProcedureStatus(ProcedureStatus.Assigned);
+        setProcedureStatus(form.getProcedureStatus());
     }
 
     @Id
