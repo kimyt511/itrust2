@@ -2,19 +2,18 @@
 
 ## Member Info
 
-| Name  | GitLab Username | Student ID | e-mail                    |
-| ----- | --------------- | ---------- | ------------------------- |
+| Name   | GitLab Username | Student ID | e-mail                    |
+| ------ | --------------- | ---------- | ------------------------- |
 | 강재현 | KangJaehyun     |            | luxmea1005@yonsei.ac.kr   |
 | 김성환 | 2019147562      |            | happysnail06@yonsei.ac.kr |
 | 김윤태 | kimyuntae       |            | kimyt0511@yonsei.ac.kr    |
 | 김태헌 | thkim0305       |            | thkim0305@yonsei.ac.kr    |
-| 반 석 | 2019147568      |            | semient_97@naver.com      |
+| 반 석  | 2019147568      |            | semient_97@naver.com      |
 | 유지민 | yxxjimin        |            | jmy0819@yonsei.ac.kr      |
 | 이호재 | 2018147582      |            | unikskyseed@yonsei.ac.kr  |
 | 최원재 | wonj            | 2020147530 | choi@wonj.me              |
 | 한철원 | 2019147566      |            | hchulwon3080@gmail.com    |
 | 홍현기 | Hyunki Hong     |            | htk77733377@yonsei.ac.kr  |
-
 
 ---
 
@@ -30,17 +29,17 @@
 
 ### Iteration 2
 
-2023.11.3 ~ 
+2023.11.3 ~
 
-- **Team Leader**: 
+- **Team Leader**:
 - **Planning Leader**: 최원재
-- **QA Leader**: 
+- **QA Leader**:
 
 ### Iteration 3
 
 - **Team Leader**:
-- **Planning Leader**: 
-- **QA Leader**: 
+- **Planning Leader**:
+- **QA Leader**:
 
 ---
 
@@ -48,10 +47,10 @@
 
 ### Team 1
 
-- **Assigned Usecases**:
+- **Assigned Usecases**: UC16, UC19
 - **Members**
-  - **Backend**:
-  - **Frontend**:
+  - **Backend**: 유지민
+  - **Frontend**: 강재현, 김성환
 
 [**Meeting Logs**](meetings.md#team-1-meetings)
 
@@ -59,17 +58,17 @@
 
 - **Assigned Usecases**: UC15, UC18
 - **Members**
-    - **Backend**: 최원재, 한철원
-    - **Frontend**: 김태헌
+  - **Backend**: 최원재, 한철원
+  - **Frontend**: 김태헌
 
 [**Meeting Logs**](meetings.md#team-2-meetings)
 
 ### Team 3
 
-- **Assigned Usecases**:
+- **Assigned Usecases**: UC17, UC23
 - **Members**
-    - **Backend**:
-    - **Frontend**:
+  - **Backend**: 김윤태, 반석
+  - **Frontend**: 이호재, 홍현기
 
 [**Meeting Logs**](meetings.md#team-3-meetings)
 
@@ -89,15 +88,15 @@
 
 Signed,
 
-| Name | Signature |
-|------|-----------|
-| 강재현 | 강재현 |
-| 김태헌 | 김태헌 |
-| 이호재 | 이호재 |
-| 김성환 | 김성환 |
-| 김윤태 | 김윤태 |
-| 반 석 | 반 석 |
-| 유지민 | 유지민 |
-| 최원재 | 최원재 |
-| 한철원 | 한철원 |
-| 홍현기 | 홍현기 |
+| Name   | Signature |
+| ------ | --------- |
+| 강재현 | 강재현    |
+| 김태헌 | 김태헌    |
+| 이호재 | 이호재    |
+| 김성환 | 김성환    |
+| 김윤태 | 김윤태    |
+| 반 석  | 반 석     |
+| 유지민 | 유지민    |
+| 최원재 | 최원재    |
+| 한철원 | 한철원    |
+| 홍현기 | 홍현기    |
