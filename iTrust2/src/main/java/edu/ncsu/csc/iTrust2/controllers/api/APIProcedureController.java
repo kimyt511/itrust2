@@ -164,7 +164,7 @@ public class APIProcedureController extends APIController {
     public List<Procedure> getProcedureForLabtech () {
         final User labtech = userService.findByName( LoggerUtil.currentUser() );
         loggerUtil.log( TransactionType.LABTECH_VIEW_PROCS, LoggerUtil.currentUser(), "Fetched list of Procedures" );
-        return (List<Procedure>) service.findByLabtech( labtech );
+        return service.findByLabtech( labtech );
     }
 
     /**
@@ -179,7 +179,7 @@ public class APIProcedureController extends APIController {
     public List<Procedure> getProcedureForPatient () {
         final User patient = userService.findByName( LoggerUtil.currentUser() );
         loggerUtil.log( TransactionType.PATIENT_VIEW_PROCS, LoggerUtil.currentUser(), "Fetched list of Procedures" );
-        return (List<Procedure>) service.findByPatient( patient );
+        return service.findByPatient( patient );
     }
 
     /**
@@ -200,5 +200,41 @@ public class APIProcedureController extends APIController {
             return new ResponseEntity( service.findByHcpAndPatient(hcp, patient), HttpStatus.OK);
         }
 
+    }
+    /**
+     * Reassign Labtech for Procedure. The id stored in the form must match an
+     * existing Procedure, reassign to Labtech who has id in parameter
+     *
+     * @param id
+     *            reassigned Labtech id
+     * @param form
+     *            the Procedure form
+     * @return the edited Procedure or an error message
+     */
+    @PutMapping ( BASE_PATH + "/procedureReassign/{id}" )
+    @PreAuthorize ( "hasRole('ROLE_LABTECH')" )
+    public ResponseEntity reassignProcedure ( @PathVariable ( "id" ) final String id, @RequestBody final ProcedureForm form ) {
+        try {
+            final Procedure savedProcedure = (Procedure) service.findById( form.getId() );
+            if ( savedProcedure == null ) {
+                return new ResponseEntity( errorResponse( "No Procedure found" ),
+                        HttpStatus.NOT_FOUND );
+            }
+            final User labtech = userService.findByName( id );
+            form.setLabtech( labtech );
+
+            final Procedure procedure = new Procedure( form );
+
+            service.save( procedure ); /* Overwrite existing Procedure */
+
+            loggerUtil.log( TransactionType.LABTECH_REASSIGN_PROC, LoggerUtil.currentUser(),
+                    "Labtech reassign to " + id);
+            return new ResponseEntity( procedure, HttpStatus.OK );
+        }
+        catch ( final Exception e ) {
+            loggerUtil.log( TransactionType.LABTECH_REASSIGN_PROC, LoggerUtil.currentUser(), "Failed to reassign Labtech" );
+            return new ResponseEntity( errorResponse( "Could not reassigned Labtech: " + e.getMessage() ),
+                    HttpStatus.BAD_REQUEST );
+        }
     }
 }
