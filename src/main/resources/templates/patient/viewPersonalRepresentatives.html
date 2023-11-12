@@ -21,8 +21,9 @@
 
             $scope.loadTable = function () {
                 // API endpoint connection
-                $http.get("/iTrust2/api/v1/representatives").then(
+                $http.get("/iTrust2/api/v1/pr/myrepresentatives").then(
                     function (response) {
+                        console.log(response.data);
                         $scope.representatives = response.data;
                         $scope.message = "";
                     }, function (rejection) {
@@ -53,7 +54,7 @@
             $scope.confirmDeclaration = function (patient) {
 
                 //api
-                $http.post("/iTrust2/api/v1/confirmDeclaration", { patientId: patient.id }).then(
+                $http.post("/iTrust2/api/v1/pr/declare", { patientId: patient.id }).then(
                     function (response) {
 
                         $scope.message = "Declaration confirmed successfully";
@@ -83,6 +84,18 @@
                     });
             };
 
+            // For API Testing
+            //
+            // TODO: Replace to `declareRepresentative()`
+            $scope.testDeclare = function() {
+                $http.post("/iTrust2/api/v1/pr/declare", $scope.repr).then(
+                    function (response) {
+                        $scope.repr.patient = "";
+                        $scope.repr.representative = "";
+                        $scope.repr.comment = "";
+                    }
+                )
+            }
 
 
 
@@ -150,8 +163,8 @@
                                 <!-- Contents -->
                                 <tr name="representativesTableRow" ng-repeat="r in representatives"
                                     representativeId={{r.id}}>
-                                    <td name="nameCell">{{r.name}}</td>
-                                    <td name="midCell">{{r.mid}}</td>
+                                    <td name="nameCell">{{r.representative.username}}</td>
+                                    <td name="midCell">{{r.representative.username}}</td>
                                     <td name="commentCell">{{r.comment}}</td>
                                     <td name="selectCell" class="text-center">
                                         <input type="checkbox" ng-model="r.selected">
@@ -168,6 +181,18 @@
                         <button class="btn btn-primary" ng-click="declareRepresentative()">
                             Declare a Representative</button>
                     </div>
+
+
+                    <!-- FOR API TESTING PURPOSE -->
+                    <form class="form-horizontal" role="form" name="addRepresentativeForm" ng-submit="testDeclare(addRepresentativeForm.$valid)">
+                        <input type="text" name="patient" ng-model="repr.patient" placeholder="Patient" />
+                        <input type="text" name="representative" ng-model="repr.representative" placeholder="Representative" />
+                        <input type="text" name="comment" ng-model="repr.comment" placeholder="Comment" />
+                        <button type="submit" name="submit">Declare</button>
+                    </form>
+
+                    <!-- END API TESTING -->
+
 
                     <!-- Search Section -->
                     <div ng-show="showSearchSection" class="search-section">

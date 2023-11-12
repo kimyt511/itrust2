@@ -48,6 +48,10 @@ public class PersonalRepresentative extends DomainObject {
     @JoinColumn(name = "representative_id", columnDefinition = "varchar(100)")
     private User representative;
 
+    /** Comments */
+    @Setter
+    private String comment;
+
     /** The id of this relationship */
     @Setter
     @Id

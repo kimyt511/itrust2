@@ -13,4 +13,6 @@ public interface PersonalRepresentativeRepository extends JpaRepository<Personal
     List<PersonalRepresentative> findByPatient(@NotNull User patient);
 
     List<PersonalRepresentative> findByRepresentative(@NotNull User representative);
+
+    boolean existsByPatientAndRepresentative(@NotNull User patient, @NotNull User Representative);
 }

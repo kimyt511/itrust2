@@ -13,7 +13,6 @@ import javax.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.validator.constraints.Length;
 
 /**
  * Personal Representative form used to create representative relationship.
@@ -28,6 +27,9 @@ public class PersonalRepresentativeForm implements Serializable {
 
     /** Name of the representative */
     @NotEmpty private String representative;
+    
+    /** Comment */
+    private String comment;
 
     /** ID of the relationship */
     private String id;
@@ -39,6 +41,7 @@ public class PersonalRepresentativeForm implements Serializable {
     public PersonalRepresentativeForm(@NotNull final PersonalRepresentative pr) {
         setPatient(pr.getPatient().getUsername());
         setRepresentative(pr.getRepresentative().getUsername());
+        setComment(pr.getComment());
         setId(pr.getId().toString());
     }
 }

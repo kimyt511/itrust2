@@ -3,13 +3,12 @@ package edu.ncsu.csc.itrust2.services;
 import edu.ncsu.csc.itrust2.forms.PersonalRepresentativeForm;
 import edu.ncsu.csc.itrust2.models.PersonalRepresentative;
 import edu.ncsu.csc.itrust2.models.User;
-import edu.ncsu.csc.itrust2.models.Patient;
 import edu.ncsu.csc.itrust2.repositories.PersonalRepresentativeRepository;
 
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 import javax.transaction.Transactional;
 
 import lombok.RequiredArgsConstructor;
@@ -36,11 +35,20 @@ public class PersonalRepresentativeService extends Service {
         return personalRepresentativeRepository.findByRepresentative(representative);
     }
 
+    public boolean existsByPatientAndRepresentative(final User patient, final User representative) {
+        return personalRepresentativeRepository.existsByPatientAndRepresentative(patient, representative);
+    }
+
+    public PersonalRepresentative findById(final Long id) {
+        return personalRepresentativeRepository.findById(id).orElse(null);
+    }
+
     public PersonalRepresentative build(final PersonalRepresentativeForm prf) {
         final PersonalRepresentative pr = new PersonalRepresentative();
 
         pr.setPatient(userService.findByName(prf.getPatient()));
         pr.setRepresentative(userService.findByName(prf.getRepresentative()));
+        pr.setComment(prf.getComment());
 
         if (prf.getId() != null) {
             pr.setId(Long.parseLong(prf.getId()));
