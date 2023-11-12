@@ -1,0 +1,218 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="layout :: head(title=~{::title},links=~{::script})">
+    <title>Patient Food Diary</title>
+    <script th:src="@{/js/dateTimeService.js}"
+            src="../js/dateTimeService.js"></script>
+</head>
+<body th:include="layout :: body" th:with="content=~{::content}">
+<div th:fragment="content">
+
+    <script th:inline="javascript">
+        /* Otherwise Thymeleaf tries to parse Javascript as XML and breaks itself sometimes.  Sigh */
+        /*<![CDATA[*/
+
+        const app = angular.module('myApp', ['dateTimeServices']);
+        app
+
+        // need to be modified
+            .controller(
+                'editPatientDemographicsCtrl',
+                function ($scope, $http, dateTimeService) {
+                    $scope.displayName = function (p) {
+                        return p.firstName + " " + p.lastName + " (" + p.username + ")";
+                    }
+
+                    // documentation on Angular filters: https://docs.angularjs.org/api/ng/filter/filter
+                    $scope.searchFilter = "";
+                    $scope.filterPatients = function (patient) {
+                        return ($scope.displayName(patient)).toLowerCase().match($scope.searchFilter.toLowerCase());
+                    }
+
+                    function formDifferent(current, original) {
+                        for (let field in original) {
+                            if (current[field] !== original[field]) return true;
+                        }
+                        return false;
+                    }
+
+                    $scope.originalForm = {};
+                    $scope.patientForm = {};
+                    $scope.selectPatient = function (patient, override) {
+                        if (!override && formDifferent($scope.patientForm, $scope.originalForm)) {
+                            if (!confirm("You have made changes to " + $scope.patientForm.username
+                                + ". Would you like to continue? (changes will be lost)")) {
+                                $scope.selectedPatient = "";
+                                $scope.selectedPatient = $scope.patientForm.username;
+                                return;
+                            }
+                        }
+
+                        const pf = $scope.patientForm = {};
+                        const of = $scope.originalForm = {};
+
+                        // make a copy of the patient
+                        for (let field in patient) {
+                            if (field[0] === '$') continue; // don't mess with angular fields
+                            pf[field] = of[field] = patient[field];
+                        }
+
+                        pf.username = of.username = patient.username;
+
+                        $scope.selectedPatient = pf.username;
+                    }
+
+                    $http.get("/iTrust2/api/v1/patients").then(
+                        function (response) {
+                            $scope.patients = response.data;
+                        });
+
+                    $scope.assign = function () {
+                    }
+
+                    // Function to display the search section
+                    $scope.assign = function () {
+                        // Toggle the visibility of the search section
+                        $scope.showSearchSection = !$scope.showSearchSection;
+                    };
+
+                    // Function for handling search
+                    $scope.searchPatients = function () {
+                        $http.get("/iTrust2/api/v1/search?query=" + $scope.searchQuery).then(
+                            function (response) {
+                                $scope.searchResults = response.data;
+                            },
+                            function (rejection) {
+                                $scope.searchResults = [];
+                            }
+                        );
+                    };
+                    
+                self.updatePageString = function () {
+                    self.pageString = "Page: " + self.requestParams.page + " of " + self.numPages;
+                }
+
+                self.nextPage = function () {
+                    if (self.requestParams.page >= self.numPages) return;
+                    self.requestParams.page++;
+                    self.updateTable();
+                }
+
+                self.prevPage = function () {
+                    if (self.requestParams.page <= 1) return;
+                    self.requestParams.page--;
+
+                    self.updateTable();
+                }                    
+            });
+                
+        /*]]>*/
+    </script>
+
+
+    <!-- need to be modified -->
+    <!-- The controller should be defined -->
+    <!-- Here used editPatientDemographicsCtrl" to give an idea -->
+    <div ng-app="myApp" ng-controller="editPatientDemographicsCtrl">
+        <div style="float: left; width: 20%; height: 75%; overflow-y: auto">
+            <h3>Search Patients:</h3>
+            <!-- info on filtering taken from here: https://www.w3schools.com/angular/angular_filters.asp
+                and https://docs.angularjs.org/api/ng/filter/filter -->
+            <h4 style = "padding-left: 2%">
+                <input type="text" name="search" ng-model="searchFilter" style = "padding-left: 2%"/>
+            </h4>
+            <!-- Info on scrolling taken from here: https://www.w3schools.com/cssref/pr_pos_overflow.asp -->
+            <!-- and here: https://stackoverflow.com/questions/9560330/how-to-hide-a-vertical-scroll-bar-when-not-needed -->
+            <ul style="overflow: auto;height: 90%; padding-left: 0%">
+                <!-- Information on how labels wor from here: https://stackoverflow.com/questions/7863251/clicking-the-text-to-select-corresponding-radio-button -->
+                <li ng-repeat="patient in patients | filter:filterPatients"><h4>
+                    <label> <input type="radio"
+                                   ng-model="$parent.selectedPatient" name="patient"
+                                   value="{{patient.username}}"
+                                   ng-click='$parent.selectPatient(patient)'/>&nbsp;{{$parent.displayName(patient)}}
+                    </label>
+
+                </h4></li>
+            </ul>
+        </div>
+        <!-- information on vertical rule found here: https://stackoverflow.com/questions/571900/is-there-a-vr-vertical-rule-in-html  -->
+        <div style="float: left; width: 75%; border-left: 1px solid #bbb; padding-left: 3%; height: 100%; overflow-y: auto">
+            <div style="height: 90%">
+                <h2 id="header0">Food Diary</h2>
+                <div ng-show="selectedPatient">
+                        <h4 style = "padding-left: 2%": >Username: {{selectedPatient}}</h4>
+                    <div class="panel-body">
+
+                        <!-- Display All Food Diary -->
+                        <table class="table table-bordered">
+                            <tbody>
+                            <!-- Contents -->
+                            <tr>
+                                <th class="col-md-6">Date</th>
+                                <td><!--data--></td>
+                            </tr>
+                            <tr>
+                                <th class="col-md-6">Type of Meal</th>
+                                <td><!--data--></td>
+                            </tr>
+                            <tr>
+                                <th class="col-md-6">Name of the Food Item</th>
+                                <td><!--data--></td>
+                            </tr>
+                            <tr>
+                                <th class="col-md-6">Number of Servings Consumed</th>
+                                <td><!--data--></td>
+                            </tr>
+                            <tr>
+                                <th class="col-md-6">Calories per Serving</th>
+                                <td><!--data--></td>
+                            </tr>
+                            <tr>
+                                <th class="col-md-6">Grams of Fat per Serving</th>
+                                <td><!--data--></td>
+                            </tr>
+                            <tr>
+                                <th class="col-md-6">Milligrams of Sodium per Serving</th>
+                                <td><!--data--></td>
+                            </tr>
+                            <tr>
+                                <th class="col-md-6">Grams of Carbs per Serving</th>
+                                <td><!--data--></td>
+                            </tr>
+                            <tr>
+                                <th class="col-md-6">Grams of Sugars per Serving</th>
+                                <td><!--data--></td>
+                            </tr>
+                            <tr>
+                                <th class="col-md-6">Grams of Fiber per Serving</th>
+                                <td><!--data--></td>
+                            </tr>
+                            <tr>
+                                <th class="col-md-6">Grams of Protein per Serving</th>
+                                <td><!--data--></td>
+                            </tr>
+                            <!-- To be modified -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Buttons to view all food Diary-->
+                    <div class="row" style="width: 300px; margin: 0 auto;">
+                        <button class="btn btn-primary" style="float: left; font-size:16px; width=100px;"
+                                ng-click="ctrl.prevPage()">Previous
+                        </button>
+                        <button class="btn btn-primary" style="float: right;font-size:16px; width=100px"
+                                ng-click="ctrl.nextPage()">Next
+                        </button>
+                        
+                        <!-- To be modified -->
+                        <p style="margin: 10 auto; width: 100px; text-align: center; font-size:16px;">
+                            Page: 1</p>
+                        <!-- To be modified -->
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
