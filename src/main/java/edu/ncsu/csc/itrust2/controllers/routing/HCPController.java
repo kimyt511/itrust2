@@ -100,16 +100,4 @@ public class HCPController {
     public String hclPersonalRepresentatives(final Model model) {
         return "/hcp/hcpPersonalRepresentatives";
     }
-
-    /**
-     * Returns the form page for a HCP to view food diary
-     *
-     * @param model The data for the front end
-     * @return Page to display to the user
-     */
-    @GetMapping("/hcp/viewPatientFoodDiary")
-    @PreAuthorize("hasRole('ROLE_HCP')")
-    public String viewPatientFoodDiary(final Model model) {
-        return "/hcp/viewPatientFoodDiary";
-    }
 }
