@@ -151,22 +151,38 @@
                 };
 
                 $scope.reassignLabtech = function (lt) {
-                    if($scope.procedure.labtech.username == lt) return;
+                    if($scope.originalForm.labtech.username == lt) return;
                     if(confirm(
                         "Are you sure that you want to reassign this procedure to " + lt + "?"
                         + "\nTHIS ACTION CANNOT BE UNDONE."
                         )){
-                        // TODO AFTER LABTECH REASSIGN API IS DONE
-                        let newLt;
-                        $http.get("/iTrust2/api/v1/users/" + lt).then(
-                            function (response) {
-                                newLt = response.data;
-                        });
+                        // Check if the form has been changed
+                        if(formDifferent($scope.procedureForm, $scope.originalForm)){
+                            if(!confirm("You have made changes to this procedure. Would you like to continue? (changes will be lost)"))
+                                return;
+                        }
 
-                        // Alert and refresh
-                        alert("The procedure has been reassigned. Reloading the page.");
-                        location.reload();
-                        return;
+                        // You don't want to get $scope.procedureForm since it may have been altered by user without saving
+                        var procedure = angular.copy($scope.originalForm);
+
+						$http({
+							method : 'PUT',
+							url : '/iTrust2/api/v1/procedureReassign/' + lt,
+							data : procedure
+						}).then(function(response) {
+							$scope.message = "Procedure updated successfully.";
+
+                            // Alert and refresh
+                            alert("The procedure has been reassigned. Reloading the page.");
+                            location.reload();
+                            return;
+						}, function(rejection) {
+							if (rejection.data.msg) {
+								$scope.message = "Error: " + rejection.data.msg;
+							} else {
+								$scope.message = "An error occured updating demographics.";
+							}
+						})
                     }
                     $scope.labtech = $scope.procedureForm.labtech.username;
                 };
