@@ -1,6 +1,6 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:include="layout :: head(title=~{::title},links=~{::script})">
-    <title>Patient Personal Representatives</title>
+    <title>Patient Food Diary</title>
     <script th:src="@{/js/dateTimeService.js}"
             src="../js/dateTimeService.js"></script>
 </head>
@@ -86,8 +86,25 @@
                             }
                         );
                     };
-                });
+                    
+                self.updatePageString = function () {
+                    self.pageString = "Page: " + self.requestParams.page + " of " + self.numPages;
+                }
 
+                self.nextPage = function () {
+                    if (self.requestParams.page >= self.numPages) return;
+                    self.requestParams.page++;
+                    self.updateTable();
+                }
+
+                self.prevPage = function () {
+                    if (self.requestParams.page <= 1) return;
+                    self.requestParams.page--;
+
+                    self.updateTable();
+                }                    
+            });
+                
         /*]]>*/
     </script>
 
@@ -118,83 +135,83 @@
             </ul>
         </div>
         <!-- information on vertical rule found here: https://stackoverflow.com/questions/571900/is-there-a-vr-vertical-rule-in-html  -->
-        <div
-                style="float: left; width: 70%; border-left: 1px solid #bbb; padding-left: 3%; height: 75%; overflow-y: auto">
-            <h2 id="header0">View Personal Representatives</h2>
-            <div ng-show="selectedPatient">
-                <h3>Username: {{selectedPatient}}</h3>
-                <h4>Representatives</h4>
-                <table border="1" style="width: 100%;">
-                    <tr>
-                        <td style="text-align: center; padding: 5px; width: 50px;"><b>No.</b></td>
-                        <td style="text-align: center; padding: 5px; width: 150px"><b>Name</b></td>
-                        <td style="text-align: center; padding: 5px; width: 150px"><b>MID</b></td>
-                    </tr>
-
-                    <!-- need to be modified -->
-                    <tr ng-repeat="rep in representatives">
-                        <td>{{ $index + 1 }}</td>
-                        <td>{{ rep.name }}</td>
-                        <td>{{ rep.mid }}</td>
-                    </tr>
-                    <!-- need to be modified -->
-
-                </table>
-                <h4>Representative of: </h4>
-                <table border="1" style="width: 100%;">
-                    <tr>
-                        <td style="text-align: center; padding: 5px; width: 50px;"><b>No.</b></td>
-                        <td style="text-align: center; padding: 5px; width: 150px"><b>Name</b></td>
-                        <td style="text-align: center; padding: 5px; width: 150px"><b>MID</b></td>
-                    </tr>
-
-                    <!-- need to be modified -->
-                    <tr ng-repeat="rep in representatives">
-                        <td>{{ $index + 1 }}</td>
-                        <td>{{ rep.name }}</td>
-                        <td>{{ rep.mid }}</td>
-                    </tr>
-                    <!-- need to be modified -->
-
-                </table>
-                <br/>
-
-                <div class="text-center">
-                    <button class="btn btn-primary" ng-click="assign()">assign</button>
+        <div style="float: left; width: 75%; border-left: 1px solid #bbb; padding-left: 3%; height: 100%; overflow-y: auto">
+            <div style="height: 90%">
+                <div class="panel-heading">
+                    <h3>Food Diary</a></h3>
                 </div>
+                <div ng-show="selectedPatient">
+                        <h4 style = "padding-left: 2%": >Username: {{selectedPatient}}</h4>
+                    <div class="panel-body">
 
-                <!-- Search Section -->
-                <div ng-show="showSearchSection" class="search-section">
-                    <!-- Search Form -->
-                    <form>
-                        <div class="form-row align-items-center">
-                            <div class="col-md mb-3">
-                                <label for="searchInput" style="font-size: 1.7rem;">Enter Name or MID:</label>
-                            </div>
-                            <div class="col-md mb-3">
-                                <input type="text" class="form-control" id="searchInput"
-                                       ng-model="searchQuery" placeholder="Enter name or MID">
-                            </div>
-                        </div>
-                    </form>
-
-                    <!-- Search Results -->
-                    <div ng-if="searchResults.length > 0">
-                        <h5>Search Results:</h5>
-                        <ul class="list-group">
-                            <li class="lsist-group-item" ng-repeat="patient in searchResults">
-                                {{patient.name}} (MID: {{patient.mid}})
-                                <button class="btn btn-success btn-sm" ng-click="confirmDeclaration(patient)">
-                                    Confirm Declaration</button>
-                            </li>
-                        </ul>
+                        <!-- Display All Food Diary -->
+                        <table class="table table-bordered">
+                            <tbody>
+                            <!-- Contents -->
+                            <tr>
+                                <th class="col-md-6">Date</th>
+                                <td><!--data--></td>
+                            </tr>
+                            <tr>
+                                <th class="col-md-6">Type of Meal</th>
+                                <td><!--data--></td>
+                            </tr>
+                            <tr>
+                                <th class="col-md-6">Name of the Food Item</th>
+                                <td><!--data--></td>
+                            </tr>
+                            <tr>
+                                <th class="col-md-6">Number of Servings Consumed</th>
+                                <td><!--data--></td>
+                            </tr>
+                            <tr>
+                                <th class="col-md-6">Calories per Serving</th>
+                                <td><!--data--></td>
+                            </tr>
+                            <tr>
+                                <th class="col-md-6">Grams of Fat per Serving</th>
+                                <td><!--data--></td>
+                            </tr>
+                            <tr>
+                                <th class="col-md-6">Milligrams of Sodium per Serving</th>
+                                <td><!--data--></td>
+                            </tr>
+                            <tr>
+                                <th class="col-md-6">Grams of Carbs per Serving</th>
+                                <td><!--data--></td>
+                            </tr>
+                            <tr>
+                                <th class="col-md-6">Grams of Sugars per Serving</th>
+                                <td><!--data--></td>
+                            </tr>
+                            <tr>
+                                <th class="col-md-6">Grams of Fiber per Serving</th>
+                                <td><!--data--></td>
+                            </tr>
+                            <tr>
+                                <th class="col-md-6">Grams of Protein per Serving</th>
+                                <td><!--data--></td>
+                            </tr>
+                            <!-- To be modified -->
+                            </tbody>
+                        </table>
                     </div>
-                    <!-- No Results Message -->
-                    <div ng-if="searchResults.length === 0 && searchQuery">
-                        <p style="font-size: 1.5rem;">No matching patients found.</p>
+                    <!-- Buttons to view all food Diary-->
+                    <div class="row" style="width: 300px; margin: 0 auto;">
+                        <button class="btn btn-primary" style="float: left; font-size:16px; width=100px;"
+                                ng-click="ctrl.prevPage()">Previous
+                        </button>
+                        <button class="btn btn-primary" style="float: right;font-size:16px; width=100px"
+                                ng-click="ctrl.nextPage()">Next
+                        </button>
+                        
+                        <!-- To be modified -->
+                        <p style="margin: 10 auto; width: 100px; text-align: center; font-size:16px;">
+                            Page: 1</p>
+                        <!-- To be modified -->
+                        
                     </div>
-
-                <div name="success">{{message}}</div>
+                </div>
             </div>
         </div>
     </div>
