@@ -121,7 +121,7 @@ a {
 						navbarparent.removeChild(erdropdown);
 					}
 					if (!role.includes('LABTECH')) {
-						navbarparent.removeChild(ltdropdown);
+						navbarparent.parentNode.removeChild(ltdropdown); // Why
 					}
 
 				});
@@ -214,7 +214,7 @@ a {
 								href="/iTrust2/patient/manageAppointmentRequest"
 								id="requestappointment">Manage Appointment Requests</a></li>
 							<li><a href="/iTrust2/patient/officeVisit/viewOfficeVisits"
-								id="viewOfficeVisits">Past Office Visits</a></li>
+								id="viewOfficeVisits">View Office Visits</a></li>
 							<li><a href="/iTrust2/patient/officeVisit/viewDiagnoses"
 								id="viewDiagnoses">Diagnoses</a></li>
 							<li><a href="/iTrust2/patient/officeVisit/viewPrescriptions"
