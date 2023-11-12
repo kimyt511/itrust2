@@ -1,7 +1,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <head th:include="layout :: head(title=~{::title},links=~{})">
-    <title>View Prescriptions</title>
+    <title>Personal Representatives</title>
 </head>
 
 <body th:include="layout :: body" th:with="content=~{::content}">
@@ -11,32 +11,168 @@
     <script th:inline="javascript">
         /* Otherwise Thymeleaf tries to parse Javascript as XML and breaks itself sometimes.  Sigh */
         /*<![CDATA[*/
+
+        // define Angular JS module
         const app = angular.module("PersonalRepresentativesApp", []);
 
-
-        // API name to need to be adjusted
+        // define Angular Js controller
         app.controller('PersonalRepresentativesCtrl', function ($scope, $http) {
-            $scope.representatives = [];
-            $scope.searchResults = []; // Added this line
 
+            //Initialize data container, access these variables in html part below
+            $scope.myRepresentatives = [];
+            $scope.myPatients = [];
+
+        ////////////////////////////My Representatives data////////////////////////////////////////
             $scope.loadTable = function () {
-                // API endpoint connection
+                // API endpoint connection to myRepresentatives
                 $http.get("/iTrust2/api/v1/pr/myrepresentatives").then(
                     function (response) {
                         console.log(response.data);
-                        $scope.representatives = response.data;
+                        $scope.myRepresentatives = response.data;
                         $scope.message = "";
                     }, function (rejection) {
                         $scope.representatives = [];
                         $scope.message = "Could not display representatives";
                     });
+            ////////////////////////////My Representatives data////////////////////////////////////////
+
+            ////////////////////////////My Patients data//////////////////////////////////////////////
+                // API endpoint connection to myPatients
+                $http.get("/iTrust2/api/v1/pr/mypatients").then(
+                    function (response) {
+                        console.log(response.data);
+                        $scope.myPatients = response.data;
+                        $scope.message = "";
+                    }, function (rejection) {
+                        $scope.representatives = [];
+                        $scope.message = "Could not display patients";
+                    });
             }
+            ////////////////////////////My Patients data//////////////////////////////////////////////
+
+
+            ////////////////////////////Undeclare Representatives//////////////////////////////////////////////
+
+            // Initialize array to track selected representatives
+            $scope.selectedRepresentatives = [];
+
+            ///////////////////Updating selected Representatives/////////////////////
+            // Function to update the selectedRepresentatives array
+            $scope.updateSelectedRepresentatives = function (representative) {
+                if (representative.selected) {
+                    $scope.selectedRepresentatives.push(representative);
+                } else {
+                    // Remove from the array if deselected
+                    const index = $scope.selectedRepresentatives.indexOf(representative);
+                    if (index !== -1) {
+                        $scope.selectedRepresentatives.splice(index, 1);
+                    }
+                }
+            };
+            ///////////////////Updating selected Representatives/////////////////////
+
+            /////////////Actual Function that undeclare Presentatives//////////////////
+            $scope.undeclareSelectedRepresentatives = function () {
+                // Send requests to undeclare each selected representative
+                $scope.selectedRepresentatives.forEach(function (representative) {
+                    $http.delete('/iTrust2/api/v1/pr/undeclare/' + representative.id)
+                        .then(function (response) {
+
+                            ////////////To be reconsidered, remove if passing ID is enough////////
+                            $scope.representative.patient = "";
+                            $scope.representative.representative = "";
+                            $scope.representative.comment = "";
+                            ////////////To be reconsidered////////
+
+                            console.log('Undeclare request successful');
+                            $scope.message= "Undeclaration confirmed successfully";
+                        })
+                        .catch(function (error) {
+                            // Handle error, if needed
+                            console.error('Error in undeclare request');
+                        });
+                });
+
+                // Reset the selectedRepresentatives array
+                $scope.selectedRepresentatives = [];
+            };
+            /////////////Actual Function that undeclare Presentatives//////////////////
+
+            ////////////////////////////Undeclare Representatives//////////////////////////////////////////////
+
+            ////////////////////////////Undeclare Patients////////////////////////////////////////////////////
+            // Initialize array to track selected representatives
+            $scope.selectedPatients = [];
+
+            ///////////////////Updating selected Patientss///////////////////
+            // Function to update the patients array
+            $scope.updateSelectedPatients = function (patient) {
+                if (patient.selected) {
+                    $scope.selectedPatients.push(patient);
+                } else {
+                    // Remove from the array if deselected
+                    const index = $scope.selectedPatients.indexOf(representative);
+                    if (index !== -1) {
+                        $scope.selectedPatients.splice(index, 1);
+                    }
+                }
+            };
+            ///////////////////Updating selected Patients/////////////////////
+
+            /////////////Actual Function that undeclare Patients/////////////////////
+            $scope.undeclareSelectedPatients = function () {
+                // Send requests to undeclare each selected patient
+                $scope.selectedPatients.forEach(function (patient) {
+                    $http.delete('/iTrust2/api/v1/pr/undeclare/' + patient.id)
+                        .then(function (response) {
+
+                            ////////////To be reconsidered, remove if passing ID is enough////////
+                            $scope.patient.patient = "";
+                            $scope.patient.representative = "";
+                            $scope.patient.comment = "";
+                            ////////////To be reconsidered////////
+
+                            console.log('Undeclare request successful');
+                            $scope.message= "Undeclaration confirmed successfully";
+                        })
+                        .catch(function (error) {
+                            // Handle error, if needed
+                            console.error('Error in undeclare request');
+                        });
+                });
+
+                // Reset the selectedRepresentatives array
+                $scope.selectedPatients = [];
+            };
+            /////////////Actual Function that undeclare Patients//////////////////
+
+            ////////////////////////////Undeclare Patients //////////////////////////////////////////////
+
+            ////////////////////////////Search Section////////////////////////////////////////////////////
 
             // Function to display the search section
             $scope.declareRepresentative = function () {
                 // Toggle the visibility of the search section
                 $scope.showSearchSection = !$scope.showSearchSection;
             };
+
+            $scope.displayName = function (p) {
+                return p.firstName + " " + p.lastName + " (" + p.username + ")";
+            }
+
+            // documentation on Angular filters: https://docs.angularjs.org/api/ng/filter/filter
+            $scope.searchFilter = "";
+            $scope.filterPatients = function (patient) {
+                 return ($scope.displayName(patient)).toLowerCase().match($scope.searchFilter.toLowerCase());
+            }
+
+            $http.get("/iTrust2/api/v1/patients").then(
+                        function (response) {
+                            $scope.patients = response.data;
+                  });
+
+            //initialize search results container
+            $scope.searchResults = [];
 
             // Function for handling search
             $scope.searchPatients = function () {
@@ -49,10 +185,10 @@
                     }
                 );
             };
+            ////////////////////////////Search Section////////////////////////////////////////////////////
 
             //Function to confirm declaration
             $scope.confirmDeclaration = function (patient) {
-
                 //api
                 $http.post("/iTrust2/api/v1/pr/declare", { patientId: patient.id }).then(
                     function (response) {
@@ -65,40 +201,6 @@
                 );
             };
 
-            // Function to remove selected representatives
-            $scope.undeclareRepresentatives = function () {
-                // Filter out the selected representatives
-                var remainingRepresentatives = $scope.representatives.filter(function (representative) {
-                    return !representative.selected;
-                });
-
-                // Make a request to the server to update the backend
-                $http.post("/iTrust2/api/v1/removeRepresentatives", remainingRepresentatives)
-                    .then(function (response) {
-                        // Update the front-end representation
-                        $scope.representatives = remainingRepresentatives;
-                        $scope.message = "Selected representatives undeclared successfully.";
-                    })
-                    .catch(function (error) {
-                        $scope.message = "Failed to undeclare selected representatives.";
-                    });
-            };
-
-            // For API Testing
-            //
-            // TODO: Replace to `declareRepresentative()`
-            $scope.testDeclare = function() {
-                $http.post("/iTrust2/api/v1/pr/declare", $scope.repr).then(
-                    function (response) {
-                        $scope.repr.patient = "";
-                        $scope.repr.representative = "";
-                        $scope.repr.comment = "";
-                    }
-                )
-            }
-
-
-
             $scope.loadTable();
         });
         /*]]>*/
@@ -109,17 +211,20 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-12">
+                    <!--------------------------------- Panel--------------------------------------------------->
                     <div class="panel panel-primary">
                         <div class="panel-heading">
                             <h3>Personal Representatives</h3>
                         </div>
                         <div class="panel-body">
 
-                            <!-- Representative of -->
+                            <!------------------------- Representative of ---------------------------------->
                             <table class="table table-bordered">
                                 <caption>
-                                    Representative of:
-                                    <button ng-click="Undeclare()" style="float: right;">Undeclare</button>
+                                    Representative for:
+                                    <button ng-click="undeclarePatients()" style="float: right;">
+                                        Undeclare
+                                    </button>
                                 </caption>
                                 <thead>
                                 <tr>
@@ -131,25 +236,31 @@
                                 </thead>
                                 <tbody>
                                 <!-- Contents -->
-                                <tr name="representativesTableRow" ng-repeat="r in representatives"
-                                    representativeId={{r.id}}>
-                                    <td name="nameCell">{{r.name}}</td>
-                                    <td name="midCell">{{r.mid}}</td>
-                                    <td name="commentCell">{{r.comment}}</td>
+                                <tr name="patientsTableRow"
+                                    ng-repeat="p in myPatients"
+                                    representativeId={{p.id}}>
+                                    <td name="nameCell">{{p.patient.username}}</td>
+                                    <td name="midCell">{{p.patient.id}}</td>
+                                    <td name="commentCell">{{p.comment}}</td>
+
+                                    <!--------target of undeclaration------>
                                     <td name="selectCell" class="text-center">
-                                        <input type="checkbox" ng-model="r.selected">
+                                        <input type="checkbox" ng-model="p.selected"
+                                               ng-change="updateSelectedPatients(p)">
+                                        <!--------target of undeclaration------>
                                     </td>
                                 </tr>
-                                <!-- To be modified -->
                                 </tbody>
                             </table>
+                            <!------------------------- Representative of ---------------------------------->
 
-
-                            <!-- My Representatives -->
+                            <!------------------------- My Representatives --------------------------------->
                             <table class="table table-bordered">
                                 <caption>
                                      My Representatives:
-                                    <button ng-click="Undeclare()" style="float: right;">Undeclare</button>
+                                    <button ng-click="undeclareRepresentatives()"style="float: right;">
+                                        Undeclare
+                                    </button>
                                 </caption>
                                 <thead>
                                 <tr>
@@ -161,71 +272,86 @@
                                 </thead>
                                 <tbody>
                                 <!-- Contents -->
-                                <tr name="representativesTableRow" ng-repeat="r in representatives"
+                                <tr name="RepresentativesTableRow"
+                                    ng-repeat="r in myRepresentatives"
                                     representativeId={{r.id}}>
                                     <td name="nameCell">{{r.representative.username}}</td>
-                                    <td name="midCell">{{r.representative.username}}</td>
+                                    <td name="midCell">{{r.representative.id}}</td>
                                     <td name="commentCell">{{r.comment}}</td>
+
+                                    <!--------target of undeclaration------>
                                     <td name="selectCell" class="text-center">
-                                        <input type="checkbox" ng-model="r.selected">
+                                        <input type="checkbox" ng-model="r.selected"
+                                               ng-change="updateSelectedRepresentatives(r)">
+                                        <!--------target of undeclaration------>
                                 </tr>
 
-                                <!-- To be modified -->
                                 </tbody>
                             </table>
+                            <!------------------------- My Representatives --------------------------------->
                         </div>
                     </div>
+                    <!--------------------------------- Panel--------------------------------------------------->
 
-                    <!-- Button to declare a representative -->
-                    <div class="text-center">
-                        <button class="btn btn-primary" ng-click="declareRepresentative()">
+
+                    <!-------------------------Button to declare a representative------------>
+                    <!---This button shows hidden search section---->
+                    <div class="text-center" style="margin-bottom: 20px;">
+                        <button class="btn btn-primary"  ng-click="declareRepresentative()">
                             Declare a Representative</button>
                     </div>
+                    <!-------------------------Button to declare a representative------------>
 
-
-                    <!-- FOR API TESTING PURPOSE -->
-                    <form class="form-horizontal" role="form" name="addRepresentativeForm" ng-submit="testDeclare(addRepresentativeForm.$valid)">
-                        <input type="text" name="patient" ng-model="repr.patient" placeholder="Patient" />
-                        <input type="text" name="representative" ng-model="repr.representative" placeholder="Representative" />
-                        <input type="text" name="comment" ng-model="repr.comment" placeholder="Comment" />
-                        <button type="submit" name="submit">Declare</button>
-                    </form>
-
-                    <!-- END API TESTING -->
-
-
-                    <!-- Search Section -->
+                    <!----------------------------- Search Section----------------------------------->
                     <div ng-show="showSearchSection" class="search-section">
                         <!-- Search Form -->
                         <form>
                             <div class="form-row align-items-center">
-                                <div class="col-md mb-3">
-                                    <label for="searchInput" style="font-size: 1.7rem;">Enter Name or MID:</label>
+                                <div class="col-md mb-3" style="float: left;padding-left: 10%; margin-right: 20px;">
+                                    <label for="searchInput" style="font-size: 2rem;">Enter Name or MID:</label>
                                 </div>
                                 <div class="col-md mb-3">
-                                    <input type="text" class="form-control" id="searchInput"
-                                           ng-model="searchQuery" placeholder="Enter name or MID">
+                                    <input type="text" name="search" ng-model="searchFilter"
+                                           placeholder="Enter name or MID" style="padding-left: 20%;
+                                            width:700; height: 30px; margin-bottom: 15px;">
                                 </div>
                             </div>
                         </form>
 
                         <!-- Search Results -->
-                        <div ng-if="searchResults.length > 0">
-                            <h5>Search Results:</h5>
+                        <div>
                             <ul class="list-group">
-                                <li class="lsist-group-item" ng-repeat="patient in searchResults">
+                                <li class="lsist-group-item" ng-repeat="patient in patients | filter:filterPatients">
+
+                                    <!--
                                     {{patient.name}} (MID: {{patient.mid}})
                                     <button class="btn btn-success btn-sm" ng-click="confirmDeclaration(patient)">
                                         Confirm Declaration</button>
+                                    -->
+
+                                    <!--To be completed-->
+                                    <div class="col-md mb-3" style="padding-left: 27%;">
+                                        <label style="font-size: 18px; display: inline-block;">
+                                            <input type="checkbox"
+                                               ng-model="$parent.selectedPatient"
+                                               name="patient"
+                                               value="{{patient.username}}"
+                                               ng-click='$parent.selectPatient(patient)' />
+                                            &nbsp;
+                                            {{$parent.displayName(patient)}}
+                                        </label>
+                                    </div>
+                                    <!--To be completed-->
                                 </li>
                             </ul>
                         </div>
 
                         <!-- No Results Message -->
-                        <div ng-if="searchResults.length === 0 && searchQuery">
+                        <div ng-if="(patient in patients | filter:filterPatients).length === 0">
                             <p style="font-size: 1.5rem;">No matching patients found.</p>
                         </div>
                     </div>
+                    <!----------------------------- Search Section----------------------------------->
                 </div>
             </div>
         </div>
@@ -235,3 +361,14 @@
 
 </html>
 
+<!-------------------------Button to declare a representative------------>
+
+<!--FOR API TESTING PURPOSE
+<form class="form-horizontal" role="form" name="addRepresentativeForm"
+      ng-submit="testDeclare(addRepresentativeForm.$valid)">
+    <input type="text" name="patient" ng-model="repr.patient" placeholder="Patient" />
+    <input type="text" name="representative" ng-model="repr.representative" placeholder="Representative" />
+    <input type="text" name="comment" ng-model="repr.comment" placeholder="Comment" />
+    <button type="submit" name="submit">Declare</button>
+</form>
+END API TESTING -->
