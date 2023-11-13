@@ -1,8 +1,9 @@
 package edu.ncsu.csc.iTrust2.controllers.api;
 
 import java.util.List;
+import java.util.logging.Logger;
 
-import edu.ncsu.csc.iTrust2.models.enums.ProcedureStatus;
+import edu.ncsu.csc.iTrust2.models.enums.*;
 import edu.ncsu.csc.iTrust2.models.Procedure;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,9 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 import edu.ncsu.csc.iTrust2.forms.ProcedureForm;
 import edu.ncsu.csc.iTrust2.models.User;
 import edu.ncsu.csc.iTrust2.models.Procedure;
-import edu.ncsu.csc.iTrust2.models.enums.Priority;
-import edu.ncsu.csc.iTrust2.models.enums.Status;
-import edu.ncsu.csc.iTrust2.models.enums.TransactionType;
 import edu.ncsu.csc.iTrust2.services.ProcedureService;
 import edu.ncsu.csc.iTrust2.services.UserService;
 import edu.ncsu.csc.iTrust2.utils.LoggerUtil;
@@ -81,6 +79,7 @@ public class APIProcedureController extends APIController {
     @PreAuthorize ( "hasAnyRole('ROLE_HCP', 'ROLE_LABTECH')" )
     @PutMapping ( BASE_PATH + "/procedure" )
     public ResponseEntity editProcedure ( @RequestBody final ProcedureForm form ) {
+        final User self = userService.findByName(LoggerUtil.currentUser());
         try {
             // Check for existing Procedure in database
             final Procedure savedProcedure = (Procedure) service.findById( form.getId() );
@@ -92,12 +91,23 @@ public class APIProcedureController extends APIController {
             final Procedure procedure = new Procedure( form );
 
             service.save( procedure ); /* Overwrite existing Procedure */
+            if (self.getRoles().contains(Role.ROLE_HCP)){
+                loggerUtil.log( TransactionType.HCP_EDIT_PROC, LoggerUtil.currentUser(),
+                        "Procedure with id " + procedure.getId() + " edited" );
+            }else if (self.getRoles().contains(Role.ROLE_LABTECH)){
+                loggerUtil.log( TransactionType.LABTECH_EDIT_PROC, LoggerUtil.currentUser(),
+                        "Procedure with id " + procedure.getId() + " edited" );
+            }
 
-            loggerUtil.log( TransactionType.HCP_EDIT_PROC, LoggerUtil.currentUser(),
-                    "Procedure with id " + procedure.getId() + " edited" );
             return new ResponseEntity( procedure, HttpStatus.OK );
         }
         catch ( final Exception e ) {
+            if (self.getRoles().contains(Role.ROLE_HCP)){
+                loggerUtil.log( TransactionType.HCP_EDIT_PROC, LoggerUtil.currentUser(), "Failed to edit Procedure" );
+            }else if (self.getRoles().contains(Role.ROLE_LABTECH)){
+                loggerUtil.log( TransactionType.LABTECH_EDIT_PROC, LoggerUtil.currentUser(), "Failed to edit Procedure" );
+            }
+
             loggerUtil.log( TransactionType.HCP_EDIT_PROC, LoggerUtil.currentUser(), "Failed to edit Procedure" );
             return new ResponseEntity( errorResponse( "Could not update Procedure: " + e.getMessage() ),
                     HttpStatus.BAD_REQUEST );
