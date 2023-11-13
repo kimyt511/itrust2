@@ -26,6 +26,13 @@
             });
             ///////////////////////get current user(patient)//////////////////////////////////////////
 
+            ////////////////Refresh Function////////////////////////////////
+            $scope.refreshTable = function() {
+                // Reload the page
+                $scope.loadTable();
+            };
+            ////////////////Refresh Function////////////////////////////////
+
             //Initialize data container, access these variables in html part below
             $scope.myRepresentatives = [];
             $scope.myPatients = [];
@@ -94,6 +101,7 @@
 
                             console.log('Undeclare request successful');
                             $scope.message= "Undeclaration confirmed successfully";
+                            $scope.refreshTable();
                         })
                         .catch(function (error) {
                             // Handle error, if needed
@@ -142,6 +150,7 @@
 
                             console.log('Undeclare request successful');
                             $scope.message= "Undeclaration confirmed successfully";
+                            $scope.refreshTable();
                         })
                         .catch(function (error) {
                             // Handle error, if needed
@@ -218,6 +227,7 @@
                 .then(
                 function(response) {
                     $scope.message = "Declaration confirmed successfully";
+                    $scope.refreshTable();
 
                     // Optionally, you can reset the selected patient and search filter after declaring
                     $scope.selectedPatient = null;
@@ -241,7 +251,6 @@
                 //api
                 $http.post("/iTrust2/api/v1/pr/declare", { patientId: patient.id }).then(
                     function (response) {
-
                         $scope.message = "Declaration confirmed successfully";
                     },
                     function (rejection) {
