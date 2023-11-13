@@ -18,6 +18,14 @@
         // define Angular Js controller
         app.controller('PersonalRepresentativesCtrl', function ($scope, $http) {
 
+            ///////////////////////get current user(patient)//////////////////////////////////////////
+            $http.get("/iTrust2/api/v1/patient").then(function (response) {
+                $scope.patient = response.data;
+            }, function (rejection) {
+                console.err("Could not retrieve expected Patient record");
+            });
+            ///////////////////////get current user(patient)//////////////////////////////////////////
+
             //Initialize data container, access these variables in html part below
             $scope.myRepresentatives = [];
             $scope.myPatients = [];
@@ -151,7 +159,7 @@
             ////////////////////////////Search Section////////////////////////////////////////////////////
 
             // Function to display the search section
-            $scope.declareRepresentative = function () {
+            $scope.showDeclareRepresentative = function () {
                 // Toggle the visibility of the search section
                 $scope.showSearchSection = !$scope.showSearchSection;
             };
@@ -185,7 +193,48 @@
                     }
                 );
             };
+
+            /////////////////////update search filter////////////////////////////////////
+            $scope.selectedPatient = null;
+
+            $scope.selectPatient = function(patient) {
+            $scope.selectedPatient = patient;
+                // Update the search filter to display the selected patient's name or MID in the search box
+                   $scope.searchFilter = $scope.displayName(patient);
+            };
+            /////////////////////update search filter////////////////////////////////////
             ////////////////////////////Search Section////////////////////////////////////////////////////
+
+            ////////////////////////////Declare Representative////////////////////////////////////////////////////
+            // Function to declare a representative
+            $scope.declareRepresentative = function() {
+                if ($scope.selectedPatient) {
+                    // Send the selected patient as a representative to the backend
+
+                    // need to be modified here.
+                    $http.post("/iTrust2/api/v1/pr/declare",{ patient: $score.patient, patient: $scope.selectedPatient})
+                    // need to be modified here.
+
+                .then(
+                function(response) {
+                    $scope.message = "Declaration confirmed successfully";
+
+                    // Optionally, you can reset the selected patient and search filter after declaring
+                    $scope.selectedPatient = null;
+                    $scope.searchFilter = '';
+                },
+                function(rejection) {
+                    $scope.message = "Failed to confirm declaration";
+                }
+            );
+    } else {
+        // Handle the case where no patient is selected
+        $scope.message = "No patient selected for declaration";
+    }
+};
+
+            ////////////////////////////Declare Representative////////////////////////////////////////////////////
+
 
             //Function to confirm declaration
             $scope.confirmDeclaration = function (patient) {
@@ -210,9 +259,9 @@
     <div ng-app="PersonalRepresentativesApp" ng-controller="PersonalRepresentativesCtrl">
         <div class="container">
             <div class="row">
-                <div class="col-md-12">
+                <div class="col-md-8"  style="margin-left: 15%;">
                     <!--------------------------------- Panel--------------------------------------------------->
-                    <div class="panel panel-primary">
+                    <div class="panel panel-primary mx-auto d-flex justify-content-center">
                         <div class="panel-heading">
                             <h3>Personal Representatives</h3>
                         </div>
@@ -230,7 +279,9 @@
                                 <tr>
                                     <th style="width: 200px;">Name</th>
                                     <th style="width: 200px;">MID</th>
+                                    <!--
                                     <th>Comment</th>
+                                    -->
                                     <th style="width: 50px;">Select</th>
                                 </tr>
                                 </thead>
@@ -241,7 +292,9 @@
                                     representativeId={{p.id}}>
                                     <td name="nameCell">{{p.patient.username}}</td>
                                     <td name="midCell">{{p.patient.id}}</td>
+                                    <!--
                                     <td name="commentCell">{{p.comment}}</td>
+                                    -->
 
                                     <!--------target of undeclaration------>
                                     <td name="selectCell" class="text-center">
@@ -266,7 +319,9 @@
                                 <tr>
                                     <th style="width: 200px;">Name</th>
                                     <th style="width: 200px;">MID</th>
+                                    <!--
                                     <th>Comment</th>
+                                    -->
                                     <th style="width: 50px;">Select</th>
                                 </tr>
                                 </thead>
@@ -277,7 +332,9 @@
                                     representativeId={{r.id}}>
                                     <td name="nameCell">{{r.representative.username}}</td>
                                     <td name="midCell">{{r.representative.id}}</td>
+                                    <!--
                                     <td name="commentCell">{{r.comment}}</td>
+                                    -->
 
                                     <!--------target of undeclaration------>
                                     <td name="selectCell" class="text-center">
@@ -297,7 +354,7 @@
                     <!-------------------------Button to declare a representative------------>
                     <!---This button shows hidden search section---->
                     <div class="text-center" style="margin-bottom: 20px;">
-                        <button class="btn btn-primary"  ng-click="declareRepresentative()">
+                        <button class="btn btn-primary"  ng-click="showDeclareRepresentative()">
                             Declare a Representative</button>
                     </div>
                     <!-------------------------Button to declare a representative------------>
@@ -307,13 +364,16 @@
                         <!-- Search Form -->
                         <form>
                             <div class="form-row align-items-center">
-                                <div class="col-md mb-3" style="float: left;padding-left: 10%; margin-right: 20px;">
-                                    <label for="searchInput" style="font-size: 2rem;">Enter Name or MID:</label>
+                                <div style="float: left;padding-left: 0%; margin-right: 20px;">
+                                    <label style="font-size: 2rem;">Enter Name or MID:</label>
                                 </div>
-                                <div class="col-md mb-3">
+                                <div style="float: left; margin-right: 20px;">
                                     <input type="text" name="search" ng-model="searchFilter"
-                                           placeholder="Enter name or MID" style="padding-left: 20%;
-                                            width:700; height: 30px; margin-bottom: 15px;">
+                                           style="width:520px; height: 30px; margin-bottom: 15px;text-align: left;">
+                                </div>
+                                <div style="float: left;">
+                                    <button class="btn btn-primary"  ng-click="DeclareRepresentative()">
+                                        Declare</button>
                                 </div>
                             </div>
                         </form>
@@ -322,23 +382,11 @@
                         <div>
                             <ul class="list-group">
                                 <li class="lsist-group-item" ng-repeat="patient in patients | filter:filterPatients">
-
-                                    <!--
-                                    {{patient.name}} (MID: {{patient.mid}})
-                                    <button class="btn btn-success btn-sm" ng-click="confirmDeclaration(patient)">
-                                        Confirm Declaration</button>
-                                    -->
-
                                     <!--To be completed-->
-                                    <div class="col-md mb-3" style="padding-left: 27%;">
-                                        <label style="font-size: 18px; display: inline-block;">
-                                            <input type="checkbox"
-                                               ng-model="$parent.selectedPatient"
-                                               name="patient"
-                                               value="{{patient.username}}"
-                                               ng-click='$parent.selectPatient(patient)' />
-                                            &nbsp;
-                                            {{$parent.displayName(patient)}}
+                                    <div class="col-md mb-3" style="padding-left: 25%;">
+                                        <label style="font-size: 18px; display: inline-block; cursor: pointer;"
+                                               ng-click="$parent.selectPatient(patient)">
+                                            {{ $parent.displayName(patient) }}
                                         </label>
                                     </div>
                                     <!--To be completed-->
