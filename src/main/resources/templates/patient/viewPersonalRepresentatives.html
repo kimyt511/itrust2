@@ -20,18 +20,20 @@
 
             ///////////////////////get current user(patient)//////////////////////////////////////////
             $http.get("/iTrust2/api/v1/patient").then(function (response) {
-                $scope.patient = response.data;
-            }, function (rejection) {
-                console.err("Could not retrieve expected Patient record");
-            });
+                $scope.currentPatient = response.data;
+                }, function (rejection) {
+                    console.error("Could not retrieve expected Patient record");
+                }
+            );
             ///////////////////////get current user(patient)//////////////////////////////////////////
 
             //Initialize data container, access these variables in html part below
             $scope.myRepresentatives = [];
             $scope.myPatients = [];
 
-        ////////////////////////////My Representatives data////////////////////////////////////////
+            ////////////////////////////My Representatives & patient data////////////////////////////////////////
             $scope.loadTable = function () {
+                ////////////////////////////My Representatives data//////////////////////////////////////////////
                 // API endpoint connection to myRepresentatives
                 $http.get("/iTrust2/api/v1/pr/myrepresentatives").then(
                     function (response) {
@@ -43,28 +45,25 @@
                         $scope.message = "Could not display representatives";
                     }
                 );
+                ////////////////////////////My Patients data//////////////////////////////////////////////
+                // API endpoint connection to myPatients
+                $http.get("/iTrust2/api/v1/pr/mypatients").then(
+                    function (response) {
+                        console.log(response.data);
+                        $scope.myPatients = response.data;
+                        $scope.message = "";
+                    }, function (rejection) {
+                        $scope.representatives = [];
+                        $scope.message = "Could not display patients";
+                    }
+                );
             };
-            ////////////////////////////My Representatives data////////////////////////////////////////
-
-            ////////////////////////////My Patients data//////////////////////////////////////////////
-            // API endpoint connection to myPatients
-            $http.get("/iTrust2/api/v1/pr/mypatients").then(
-                function (response) {
-                    console.log(response.data);
-                    $scope.myPatients = response.data;
-                    $scope.message = "";
-                }, function (rejection) {
-                    $scope.representatives = [];
-                    $scope.message = "Could not display patients";
-                }
-            );
-
-            ////////////////////////////My Patients data//////////////////////////////////////////////
+            ////////////////////////////My Representatives & patient data////////////////////////////////////////
 
             ////////////////Refresh Function////////////////////////////////
             $scope.refreshTable = function() {
-                // Reload the page
-
+                // Reload the table
+                $scope.loadTable();
             };
             ////////////////Refresh Function////////////////////////////////
 
@@ -89,19 +88,12 @@
             };
             ///////////////////Updating selected Representatives/////////////////////
 
-            /////////////Actual Function that undeclare Presentatives//////////////////
+            /////////////Actual Function that undeclare representatives//////////////////
             $scope.undeclareSelectedRepresentatives = function () {
                 // Send requests to undeclare each selected representative
                 $scope.selectedRepresentatives.forEach(function (representative) {
                     $http.delete('/iTrust2/api/v1/pr/undeclare/' + representative.id)
                         .then(function (response) {
-
-                            ////////////To be reconsidered, remove if passing ID is enough////////
-                            $scope.representative.patient = "";
-                            $scope.representative.representative = "";
-                            $scope.representative.comment = "";
-                            ////////////To be reconsidered////////
-
                             console.log('Undeclare request successful');
                             $scope.message= "Undeclaration confirmed successfully";
                             $scope.refreshTable();
@@ -116,8 +108,7 @@
                 // Reset the selectedRepresentatives array
                 $scope.selectedRepresentatives = [];
             };
-            /////////////Actual Function that undeclare Presentatives//////////////////
-
+            /////////////Actual Function that undeclare Representatives//////////////////
             ////////////////////////////Undeclare Representatives//////////////////////////////////////////////
 
             ////////////////////////////Undeclare Patients////////////////////////////////////////////////////
@@ -145,7 +136,6 @@
                 $scope.selectedPatients.forEach(function (patient) {
                     $http.delete('/iTrust2/api/v1/pr/undeclare/' + patient.id)
                         .then(function (response) {
-
                             console.log('Undeclare request successful');
                             $scope.message= "Undeclaration confirmed successfully";
                             $scope.refreshTable();
@@ -173,7 +163,7 @@
             };
 
             $scope.displayName = function (p) {
-                return p.firstName + " " + p.lastName + " (" + p.username + ")";
+                return p.firstName + " " + p.lastName + " (" + p.id + ")";
             };
 
             // documentation on Angular filters: https://docs.angularjs.org/api/ng/filter/filter
@@ -206,13 +196,20 @@
             // Function to declare a representative
             $scope.declareRepresentative = function() {
                 if ($scope.selectedPatient) {
+                     var requestData = {
+                        patient: "",
+                        representative: $scope.selectedPatient,
+                        comment: "hello"
+                    };
+
 
                     // Send the selected patient as a representative to the backend
                     // need to be modified here.
-                    $http.post("/iTrust2/api/v1/pr/declare/"+patient.id)
+                    $http.post("/iTrust2/api/v1/pr/declare", requestData)
                 .then(
                     function(response) {
                         $scope.message = "Declaration confirmed successfully";
+                        $scope.refreshTable();
 
                         //reset the selected patient and search filter after declaring
                         $scope.selectedPatient = null;
@@ -229,9 +226,9 @@
             };
             ////////////////////////////Declare Representative////////////////////////////////////////////////////
 
+		    ///////////////////////////Initially Load Table/////////////////////////
+			$scope.loadTable();
 
-            ///////////////////////////Initially Load Table/////////////////////////
-            $scope.loadTable();
         });
         /*]]>*/
     </script>
@@ -351,7 +348,7 @@
                                 </div>
                                 <div style="float: left; margin-right: 20px;">
                                     <input name="search" ng-model="searchFilter"
-                                           style="width:520px; height: 30px; margin-bottom: 15px;text-align: left;"
+                                           style="width:520px; height: 30px;text-align: left;"
                                            type="text">
                                 </div>
                                 <div style="float: left;">
@@ -363,10 +360,11 @@
                         </form>
                         <div style="clear: both;"></div>
                         <!-- Search Results -->
-                        <div style="margin-left:27%">
+                        <div style="margin-left:254px">
                             <ul class="list-group">
                                 <li class="list-group-item" ng-repeat="patient in patients | filter:filterPatients"
-                                    style="width: 520px; height:40px;border: none;">
+                                    ng-if="patient.id !== currentPatient.id"
+                                    style="width: 520px; height:40px;">
                                     <!--To be completed-->
                                     <div>
                                         <label ng-click="$parent.selectPatient(patient)"
@@ -404,3 +402,12 @@
     <button type="submit" name="submit">Declare</button>
 </form>
 END API TESTING -->
+<!--
+///////////////////////get current user(patient)//////////////////////////////////////////
+$http.get("/iTrust2/api/v1/patient").then(function (response) {
+$scope.patient = response.data;
+}, function (rejection) {
+console.err("Could not retrieve expected Patient record");
+});
+///////////////////////get current user(patient)//////////////////////////////////////////
+-->
