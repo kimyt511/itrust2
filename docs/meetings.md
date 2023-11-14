@@ -116,6 +116,32 @@
 
 ## Team 1 Meetings
 
+### Meeting 1
+
+**Date**: 2023.11.8
+
+- UC16 & UC19 Frontend - 김성환, 강재현
+- UC16 & UC19 Backend - 유지민
+- Generate new branch 16, 19
+
+### Meeting 2
+**Date**: 2023.11.11
+
+- Problem solved: SQL connection
+- Announcement by team leader, all uppercases be unified to lowercases
+- Recognition of each person's role
+- Front-end design decisions briefly
+- Share API format
+
+### Meeting 3
+**Date**: 2023.11.12
+
+- Front-end UC16 design decisions
+- Share declare/ undeclare API function
+
+### Meeting 4
+**Date**: 2023.11.14
+- Front-end UC16 function decisions
 ---
 
 ## Team 2 Meetings
