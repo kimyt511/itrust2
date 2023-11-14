@@ -194,6 +194,34 @@ public class APIDiagnosisTest {
             }
         }
         assertTrue( flag );
+        
+        //UC15
+        content = mvc.perform( get( "/api/v1/diagnoses/search/" + "patient" ).contentType( MediaType.APPLICATION_JSON ) )
+                .andReturn().getResponse().getContentAsString();
+        List<Diagnosis> dlist1 = gson.fromJson( content, new TypeToken<ArrayList<Diagnosis>>() {
+        }.getType() );
+        boolean flag1 = false;
+        for ( final Diagnosis dd : dlist1 ) {
+            if ( dd.getCode().equals( d.getCode() ) && dd.getNote().equals( d.getNote() ) ) {
+                flag1 = true;
+                d.setId( dd.getId() );
+
+            }
+        }
+        assertTrue( flag1 );
+        flag1 = false;
+        for ( final Diagnosis dd : dlist1 ) {
+            if ( dd.getCode().equals( d2.getCode() ) && dd.getNote().equals( d2.getNote() ) ) {
+                flag1 = true;
+                d2.setId( dd.getId() );
+            }
+        }
+        assertTrue( flag1 );
+        for ( final Diagnosis dd : dlist1 ) {
+        	System.out.println(dd.getId());
+        }
+        
+        
 
         // edit a diagnosis within the editing of office visit and check they
         // work.
@@ -205,22 +233,22 @@ public class APIDiagnosisTest {
 
         content = mvc.perform( get( "/api/v1/diagnosesforvisit/" + id ) ).andReturn().getResponse()
                 .getContentAsString();
-        dlist = gson.fromJson( content, new TypeToken<ArrayList<Diagnosis>>() {
+        dlist1 = gson.fromJson( content, new TypeToken<ArrayList<Diagnosis>>() {
         }.getType() );
-        flag = false;
-        for ( final Diagnosis dd : dlist ) {
+        flag1 = false;
+        for ( final Diagnosis dd : dlist1 ) {
             if ( dd.getCode().equals( d.getCode() ) && dd.getNote().equals( d.getNote() ) ) {
-                flag = true;
+                flag1 = true;
             }
         }
-        assertTrue( flag );
-        flag = false;
-        for ( final Diagnosis dd : dlist ) {
+        assertTrue( flag1 );
+        flag1 = false;
+        for ( final Diagnosis dd : dlist1 ) {
             if ( dd.getCode().equals( d2.getCode() ) && dd.getNote().equals( d2.getNote() ) ) {
-                flag = true;
+                flag1 = true;
             }
         }
-        assertTrue( flag );
+        assertTrue( flag1 );
 
         // edit the office visit and remove a diagnosis
 
@@ -232,20 +260,20 @@ public class APIDiagnosisTest {
         // check that the removed one is gone
         content = mvc.perform( get( "/api/v1/diagnosesforvisit/" + id ) ).andReturn().getResponse()
                 .getContentAsString();
-        dlist = gson.fromJson( content, new TypeToken<ArrayList<Diagnosis>>() {
+        dlist1 = gson.fromJson( content, new TypeToken<ArrayList<Diagnosis>>() {
         }.getType() );
-        for ( final Diagnosis dd : dlist ) {
+        for ( final Diagnosis dd : dlist1 ) {
             if ( dd.getCode().equals( d.getCode() ) && dd.getNote().equals( d.getNote() ) ) {
                 Assert.fail( "Was not deleted!" );
             }
         }
-        flag = false;
-        for ( final Diagnosis dd : dlist ) {
+        flag1 = false;
+        for ( final Diagnosis dd : dlist1 ) {
             if ( dd.getCode().equals( d2.getCode() ) && dd.getNote().equals( d2.getNote() ) ) {
-                flag = true;
+                flag1 = true;
             }
         }
-        assertTrue( flag );
+        assertTrue( flag1 );
 
         /* Make sure all the editing didn't create any duplicates */
         Assert.assertEquals( 2, diagnosisService.count() );

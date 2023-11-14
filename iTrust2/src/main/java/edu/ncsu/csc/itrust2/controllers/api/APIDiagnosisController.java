@@ -1,5 +1,6 @@
 package edu.ncsu.csc.iTrust2.controllers.api;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,8 +100,12 @@ public class APIDiagnosisController extends APIController {
     
     @GetMapping ( BASE_PATH + "/diagnoses/search/{username}" )
     public List<Diagnosis> getDiagnosisByName (@PathVariable final String username) {
-        final User patient = userService.findByName( username );
-        return diagnosisService.findByPatient( patient );
+        final List<Long> diag_list = diagnosisService.findByUserName(username);
+        List<Diagnosis> list = new ArrayList<Diagnosis>();
+        for(Long id:diag_list) {
+        	list.add((Diagnosis) diagnosisService.findById(id));
+        }
+        return list;
     }
 
 }

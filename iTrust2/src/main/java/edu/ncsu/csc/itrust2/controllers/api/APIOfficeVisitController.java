@@ -159,5 +159,15 @@ public class APIOfficeVisitController extends APIController {
                     HttpStatus.BAD_REQUEST );
         }
     }
+    
+    @GetMapping ( BASE_PATH + "/officevisits/search/{username}" )
+    @PreAuthorize ( "hasRole('ROLE_HCP')" )
+    public List<OfficeVisit> getOfficeVisitByName ( @PathVariable final String username ) {
+        final User patient = userService.findByName( username );
+        return officeVisitService.findByPatient(patient);
+    }
+
+    
+    
 
 }

@@ -1,5 +1,6 @@
 package edu.ncsu.csc.iTrust2.controllers.api;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import edu.ncsu.csc.iTrust2.forms.PrescriptionForm;
+import edu.ncsu.csc.iTrust2.models.Diagnosis;
 import edu.ncsu.csc.iTrust2.models.Prescription;
 import edu.ncsu.csc.iTrust2.models.User;
 import edu.ncsu.csc.iTrust2.models.enums.TransactionType;
@@ -176,8 +178,12 @@ public class APIPrescriptionController extends APIController {
     
     @GetMapping ( BASE_PATH + "/prescriptions/search/{username}" )
     public List<Prescription> getPrescription ( @PathVariable final String username ) {
-    	final User patient = userService.findByName( username );
-		return prescriptionService.findByPatient(patient);
+    	final List<Long> pre_list = prescriptionService.findByUserName(username);
+    	List<Prescription> list = new ArrayList<Prescription>();
+    	for(Long id:pre_list) {
+        	list.add((Prescription) prescriptionService.findById(id));
+        }
+		return list;
         
     }
 
