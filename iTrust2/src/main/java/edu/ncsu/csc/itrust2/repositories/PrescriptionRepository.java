@@ -16,7 +16,7 @@ public interface PrescriptionRepository extends JpaRepository<Prescription, Long
     @Query(value = "SELECT p.id FROM prescription p " +
             "JOIN office_visit_prescriptions ovp ON p.id = ovp.prescriptions_id " +
             "JOIN office_visit v ON ovp.office_visit_id = v.id " +
-            "WHERE p.patient_id = :patientId AND v.date >= CURRENT_DATE - 90" + 
+            "WHERE p.patient_id = :patientId AND v.date >= DATE_SUB(CURDATE(), INTERVAL 90 DAY)" + 
             "ORDER BY v.date DESC", nativeQuery = true)
     List<Long> findPrescriptionIdsForPatientLast90Days(@Param("patientId") String patientId);
 

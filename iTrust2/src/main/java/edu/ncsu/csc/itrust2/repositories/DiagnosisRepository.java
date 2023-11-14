@@ -16,7 +16,7 @@ public interface DiagnosisRepository extends JpaRepository<Diagnosis, Long> {
     @Query(value = "SELECT d.id FROM diagnoses d " +
             "JOIN office_visit_diagnoses ovd ON d.id = ovd.diagnoses_id " +
             "JOIN office_visit v ON ovd.office_visit_id = v.id " +
-            "WHERE v.patient_id = :patientId AND v.date >= CURRENT_DATE - 60 " +
+            "WHERE v.patient_id = :patientId AND v.date >= DATE_SUB(CURDATE(), INTERVAL 60 DAY)" +
             "ORDER BY v.date DESC", nativeQuery = true)
     List<Long> findDiagnosisIdsForPatientLast60Days(@Param("patientId") String patientId);
 

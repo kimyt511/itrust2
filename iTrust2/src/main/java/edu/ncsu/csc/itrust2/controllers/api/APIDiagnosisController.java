@@ -105,6 +105,9 @@ public class APIDiagnosisController extends APIController {
         for(Long id:diag_list) {
         	list.add((Diagnosis) diagnosisService.findById(id));
         }
+        for(Diagnosis dd:list) {
+        	System.out.println(dd.getVisit().getDate());
+        }
         return list;
     }
 
