@@ -31,17 +31,6 @@
             $scope.myPatients = [];
 
         ////////////////////////////My Representatives data////////////////////////////////////////
-            $http.get("/iTrust2/api/v1/pr/myrepresentatives").then(
-                function (response) {
-                    console.log(response.data);
-                    $scope.myRepresentatives = response.data;
-                    $scope.message = "";
-                }, function (rejection) {
-                    $scope.representatives = [];
-                    $scope.message = "Could not display representatives";
-                }
-            );
-            
             $scope.loadTable = function () {
                 // API endpoint connection to myRepresentatives
                 $http.get("/iTrust2/api/v1/pr/myrepresentatives").then(
@@ -239,6 +228,10 @@
                 }
             };
             ////////////////////////////Declare Representative////////////////////////////////////////////////////
+
+
+            ///////////////////////////Initially Load Table/////////////////////////
+            $scope.loadTable();
         });
         /*]]>*/
     </script>
