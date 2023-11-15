@@ -97,7 +97,7 @@ public class HCPController {
      */
     @GetMapping("/hcp/hcpPersonalRepresentatives")
     @PreAuthorize("hasRole('ROLE_HCP')")
-    public String hclPersonalRepresentatives(final Model model) {
+    public String hcpPersonalRepresentatives(final Model model) {
         return "/hcp/hcpPersonalRepresentatives";
     }
 }
