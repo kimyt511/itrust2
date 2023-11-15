@@ -53,7 +53,6 @@ public class APIPersonalRepresentativeController extends APIController {
     @PreAuthorize("hasRole('ROLE_PATIENT')")
     public List<PersonalRepresentative> getMyRepresentatives() {
         final User self = userService.findByName(LoggerUtil.currentUser());
-        /** TODO: loggerUtil */
         return personalRepresentativeService.findByPatient(self);
     }
 
@@ -65,7 +64,6 @@ public class APIPersonalRepresentativeController extends APIController {
     @PreAuthorize("hasRole('ROLE_PATIENT')")
     public List<PersonalRepresentative> getMyPatients() {
         final User self = userService.findByName(LoggerUtil.currentUser());
-        /** TODO: LoggerUtil */
         return personalRepresentativeService.findByRepresentative(self);
     }
 
@@ -147,6 +145,7 @@ public class APIPersonalRepresentativeController extends APIController {
     public ResponseEntity deleteRepresentative(@PathVariable final String id) {
         try {
             final PersonalRepresentative pr = (PersonalRepresentative) personalRepresentativeService.findById(Long.parseLong(id));
+            // Wrong ID value
             if (pr == null) {
                 loggerUtil.log(
                     TransactionType.REMOVE_PR,
@@ -156,11 +155,27 @@ public class APIPersonalRepresentativeController extends APIController {
                     errorResponse("No ID with " + id), HttpStatus.NOT_FOUND);
             }
 
+            // Undeclare PR
+            TransactionType transactionType;
+            User primaryUser;
+            User secondaryUser;
+
+            // Undeclare a PR
+            if (pr.getPatient() == userService.findByName(LoggerUtil.currentUser())) {
+                transactionType = TransactionType.REMOVE_PR;
+                primaryUser = pr.getPatient();
+                secondaryUser = pr.getRepresentative();
+            } else { // Undeclare self as PR
+                transactionType = TransactionType.REMOVE_SELF_AS_PR;
+                primaryUser = pr.getRepresentative();
+                secondaryUser = pr.getPatient();
+            }
+
             personalRepresentativeService.delete(pr);
             loggerUtil.log(
-                TransactionType.REMOVE_PR,
-                LoggerUtil.currentUser(),
-                "Deleted representative with ID" + id);
+                transactionType,
+                primaryUser,
+                secondaryUser);
             return new ResponseEntity(id, HttpStatus.OK);
         } catch (Exception e) {
             loggerUtil.log(
