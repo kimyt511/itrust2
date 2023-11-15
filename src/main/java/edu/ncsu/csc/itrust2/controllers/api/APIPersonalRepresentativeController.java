@@ -115,7 +115,7 @@ public class APIPersonalRepresentativeController extends APIController {
                         LoggerUtil.currentUser(),
                         "Conflict: Representative " + pr.getRepresentative() + " already exists");
                 return new ResponseEntity(
-                        errorResponse("Representative " + pr.getRepresentative() + " already exists"),
+                        errorResponse("Representative already declared"),
                         HttpStatus.CONFLICT);
             }
 

@@ -34,7 +34,7 @@
                 // API endpoint connection to myRepresentatives
                 $http.get("/iTrust2/api/v1/pr/myrepresentatives").then(
                     function (response) {
-                        console.log(response.data);
+                        // console.log(response.data);
                         $scope.myRepresentatives = response.data;
                         $scope.message = "";
                     }, function (rejection) {
@@ -46,7 +46,7 @@
                 // API endpoint connection to myPatients
                 $http.get("/iTrust2/api/v1/pr/mypatients").then(
                     function (response) {
-                        console.log(response.data);
+                        // console.log(response.data);
                         $scope.myPatients = response.data;
                         $scope.message = "";
                     }, function (rejection) {
@@ -74,22 +74,23 @@
             // Function to update the selectedRepresentatives array
             $scope.updateSelectedRepresentatives = function (representative) {
                 if (representative.selected) {
-                    $scope.selectedRepresentatives.push(representative);
+                    $scope.selectedRepresentatives.push(representative.id);
                 } else {
                     // Remove from the array if deselected
-                    const index = $scope.selectedRepresentatives.indexOf(representative);
+                    const index = $scope.selectedRepresentatives.indexOf(representative.id);
                     if (index !== -1) {
                         $scope.selectedRepresentatives.splice(index, 1);
                     }
                 }
+                console.log($scope.selectedRepresentatives);
             };
             ///////////////////Updating selected Representatives/////////////////////
 
             /////////////Actual Function that undeclare representatives//////////////////
             $scope.undeclareSelectedRepresentatives = function () {
                 // Send requests to undeclare each selected representative
-                $scope.selectedRepresentatives.forEach(function (representative) {
-                    $http.delete('/iTrust2/api/v1/pr/undeclare/' + representative.id)
+                $scope.selectedRepresentatives.forEach(function (id) {
+                    $http.delete('/iTrust2/api/v1/pr/undeclare/' + id)
                         .then(function (response) {
                             console.log('Undeclare request successful');
                             $scope.message= "Undeclaration confirmed successfully";
@@ -116,22 +117,23 @@
             // Function to update the patients array
             $scope.updateSelectedPatients = function (patient) {
                 if (patient.selected) {
-                    $scope.selectedPatients.push(patient);
+                    $scope.selectedPatients.push(patient.id);
                 } else {
                     // Remove from the array if deselected
-                    const index = $scope.selectedPatients.indexOf(representative);
+                    const index = $scope.selectedPatients.indexOf(patient.id);
                     if (index !== -1) {
                         $scope.selectedPatients.splice(index, 1);
                     }
                 }
+                console.log($scope.selectedPatients);
             };
             ///////////////////Updating selected Patients/////////////////////
 
             /////////////Actual Function that undeclare Patients/////////////////////
             $scope.undeclareSelectedPatients = function () {
                 // Send requests to undeclare each selected patient
-                $scope.selectedPatients.forEach(function (patient) {
-                    $http.delete('/iTrust2/api/v1/pr/undeclare/' + patient.id)
+                $scope.selectedPatients.forEach(function (id) {
+                    $http.delete('/iTrust2/api/v1/pr/undeclare/' + id)
                         .then(function (response) {
                             console.log('Undeclare request successful');
                             $scope.message= "Undeclaration confirmed successfully";
@@ -201,7 +203,7 @@
                     $http.post("/iTrust2/api/v1/pr/declare", $scope.declare)
                 .then(
                     function(response) {
-                        $scope.message = "Declaration confirmed successfully";
+                        $scope.declareMessage = "Declaration confirmed successfully";
                         $scope.refreshTable();
 
                         //reset the selected patient and search filter after declaring
@@ -209,7 +211,7 @@
                         $scope.searchFilter = '';
                     },
                     function(rejection) {
-                        $scope.message = "Failed to confirm declaration";
+                        $scope.declareMessage = "Failed to confirm declaration: " + rejection.data.message;
                     }
                 );
                 } else {
@@ -242,7 +244,7 @@
                             <table class="table table-bordered">
                                 <caption>
                                     Representative for:
-                                    <button ng-click="undeclarePatients()" style="float: right;">
+                                    <button ng-click="undeclareSelectedPatients()" style="float: right;">
                                         Undeclare
                                     </button>
                                 </caption>
@@ -284,7 +286,7 @@
                             <table class="table table-bordered">
                                 <caption>
                                     My Representatives:
-                                    <button ng-click="undeclareRepresentatives()" style="float: right;">
+                                    <button ng-click="undeclareSelectedRepresentatives()" style="float: right;">
                                         Undeclare
                                     </button>
                                 </caption>
@@ -342,6 +344,7 @@
                             <div class="form-row align-items-center">
                                 <div style="float: left;padding-left: 5%; margin-right: 20px;">
                                     <label style="font-size: 2rem;">Enter Name or MID:</label>
+                                    <p style="color: red" ng-model="declareMessage">{{declareMessage}}</p>
                                 </div>
                                 <div style="float: left; margin-right: 20px;">
                                     <input name="search" ng-model="searchFilter"
@@ -389,13 +392,3 @@
 </body>
 
 </html>
-
-<!--FOR API TESTING PURPOSE
-<form class="form-horizontal" role="form" name="addRepresentativeForm"
-      ng-submit="testDeclare(addRepresentativeForm.$valid)">
-    <input type="text" name="patient" ng-model="repr.patient" placeholder="Patient" />
-    <input type="text" name="representative" ng-model="repr.representative" placeholder="Representative" />
-    <input type="text" name="comment" ng-model="repr.comment" placeholder="Comment" />
-    <button type="submit" name="submit">Declare</button>
-</form>
-END API TESTING -->
