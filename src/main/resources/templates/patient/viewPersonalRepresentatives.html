@@ -261,7 +261,9 @@
                                 <tr name="patientsTableRow"
                                     ng-repeat="p in myPatients"
                                     representativeId={{p.id}}>
-                                    <td name="nameCell">{{p.patient.username}}</td>
+                                    <td name="nameCell">{{p.patient.firstName
+                                                        ? p.patient.firstName + " " + p.patient.lastName
+                                                        : p.patient.username}}</td>
                                     <td name="midCell">{{p.patient.id}}</td>
                                     <!--
                                     <td name="commentCell">{{p.comment}}</td>
@@ -301,7 +303,9 @@
                                 <tr name="RepresentativesTableRow"
                                     ng-repeat="r in myRepresentatives"
                                     representativeId={{r.id}}>
-                                    <td name="nameCell">{{r.representative.username}}</td>
+                                    <td name="nameCell">{{r.representative.firstName
+                                                        ? r.representative.firstName + " " + r.representative.lastName
+                                                        : r.representative.username}}</td>
                                     <td name="midCell">{{r.representative.id}}</td>
                                     <!--
                                     <td name="commentCell">{{r.comment}}</td>
