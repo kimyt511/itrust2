@@ -28,9 +28,6 @@
             ///////////////////////get current user(patient)//////////////////////////////////////////
 
             //Initialize data container, access these variables in html part below
-            $scope.myRepresentatives = [];
-            $scope.myPatients = [];
-
             ////////////////////////////My Representatives & patient data////////////////////////////////////////
             $scope.loadTable = function () {
                 ////////////////////////////My Representatives data//////////////////////////////////////////////
@@ -197,9 +194,9 @@
             $scope.declareRepresentative = function() {
                 if ($scope.selectedPatient) {
                      var requestData = {
-                        patient: "",
+                        patient: $scope.currentPatient,
                         representative: $scope.selectedPatient,
-                        comment: "hello"
+                        comment: ""
                     };
 
 
@@ -363,7 +360,7 @@
                         <div style="margin-left:254px">
                             <ul class="list-group">
                                 <li class="list-group-item" ng-repeat="patient in patients | filter:filterPatients"
-                                    ng-if="patient.id !== currentPatient.id"
+                                    ng-if="patient.username !== currentPatient.username"
                                     style="width: 520px; height:40px;">
                                     <!--To be completed-->
                                     <div>
@@ -403,11 +400,3 @@
 </form>
 END API TESTING -->
 <!--
-///////////////////////get current user(patient)//////////////////////////////////////////
-$http.get("/iTrust2/api/v1/patient").then(function (response) {
-$scope.patient = response.data;
-}, function (rejection) {
-console.err("Could not retrieve expected Patient record");
-});
-///////////////////////get current user(patient)//////////////////////////////////////////
--->
