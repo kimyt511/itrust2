@@ -29,6 +29,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
+import edu.ncsu.csc.iTrust2.Dto.DiagnosisDto;
 import edu.ncsu.csc.iTrust2.common.TestUtils;
 import edu.ncsu.csc.iTrust2.forms.DiagnosisForm;
 import edu.ncsu.csc.iTrust2.forms.OfficeVisitForm;
@@ -196,19 +197,14 @@ public class APIDiagnosisTest {
         assertTrue( flag );
         
         //UC15 TEST
-//        content = mvc.perform( get( "/api/v1/diagnoses/search/" + "patient" ).contentType( MediaType.APPLICATION_JSON ) )
-//                .andReturn().getResponse().getContentAsString();
-//        List<Diagnosis> dlist1 = gson.fromJson( content, new TypeToken<ArrayList<Diagnosis>>() {
-//        }.getType() );
-//        boolean flag1 = false;
-//        System.out.println(dlist1.size());
-//        if(dlist1.isEmpty()) {
-//        	System.out.println("empty");
-//        }
-//        for ( final Diagnosis dd : dlist1 ) {
-//        	
-//            System.out.println(dd.getId());
-//        }
+        content = mvc.perform( get( "/api/v1/diagnoses/search/" + "patient" ).contentType( MediaType.APPLICATION_JSON ) )
+                .andReturn().getResponse().getContentAsString();
+        List<DiagnosisDto> dlist1 = gson.fromJson( content, new TypeToken<ArrayList<Diagnosis>>() {
+        }.getType() );
+        boolean flag1 = false;
+        if(dlist1.isEmpty()) {
+           System.out.println("empty");
+        }
 
         
         
@@ -223,17 +219,17 @@ public class APIDiagnosisTest {
 
         content = mvc.perform( get( "/api/v1/diagnosesforvisit/" + id ) ).andReturn().getResponse()
                 .getContentAsString();
-        dlist1 = gson.fromJson( content, new TypeToken<ArrayList<Diagnosis>>() {
+        dlist = gson.fromJson( content, new TypeToken<ArrayList<Diagnosis>>() {
         }.getType() );
         flag1 = false;
-        for ( final Diagnosis dd : dlist1 ) {
+        for ( final Diagnosis dd : dlist ) {
             if ( dd.getCode().equals( d.getCode() ) && dd.getNote().equals( d.getNote() ) ) {
                 flag1 = true;
             }
         }
         assertTrue( flag1 );
         flag1 = false;
-        for ( final Diagnosis dd : dlist1 ) {
+        for ( final Diagnosis dd : dlist ) {
             if ( dd.getCode().equals( d2.getCode() ) && dd.getNote().equals( d2.getNote() ) ) {
                 flag1 = true;
             }
@@ -250,15 +246,15 @@ public class APIDiagnosisTest {
         // check that the removed one is gone
         content = mvc.perform( get( "/api/v1/diagnosesforvisit/" + id ) ).andReturn().getResponse()
                 .getContentAsString();
-        dlist1 = gson.fromJson( content, new TypeToken<ArrayList<Diagnosis>>() {
+        dlist = gson.fromJson( content, new TypeToken<ArrayList<Diagnosis>>() {
         }.getType() );
-        for ( final Diagnosis dd : dlist1 ) {
+        for ( final Diagnosis dd : dlist ) {
             if ( dd.getCode().equals( d.getCode() ) && dd.getNote().equals( d.getNote() ) ) {
                 Assert.fail( "Was not deleted!" );
             }
         }
         flag1 = false;
-        for ( final Diagnosis dd : dlist1 ) {
+        for ( final Diagnosis dd : dlist ) {
             if ( dd.getCode().equals( d2.getCode() ) && dd.getNote().equals( d2.getNote() ) ) {
                 flag1 = true;
             }

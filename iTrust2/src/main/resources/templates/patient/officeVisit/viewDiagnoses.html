@@ -21,7 +21,7 @@
 			var app = angular.module("viewDiagnoses", []);
 			app.controller('controller', function($scope, $http) {
 				// get all diagnoses of patient and display in table			
-				$http.get("/iTrust2/api/v1/diagnoses").then(
+				$http.get("/iTrust2/api/v1/diagnoses/dto").then(
 						function(response) {
 							$scope.diagnoses = response.data;
 							$scope.message = "";
@@ -67,8 +67,8 @@
 					</thead>
 					<tbody>
 						<tr ng-repeat="d in diagnoses" name="diagnosis">
-							<td name="date">{{getDate(d.visit.date)}}</td>
-							<td name="hcp">{{d.visit.hcp.username}}</td>
+							<td name="date">{{d.date | date : 'MM/dd/yyyy'}}</td>
+							<td name="hcp">{{d.hcp.username}}</td>
 							<td name="code">{{d.code.code}}</td>
 							<td name="description">{{d.code.description}}</td>
 							<td name="note">{{d.note}}</td>
