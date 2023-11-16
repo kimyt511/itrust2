@@ -36,9 +36,11 @@
                 $scope.selectedPatient = patient;
                 // Update the search filter to display the selected patient's name or MID in the search box
                 $scope.searchFilter = $scope.displayName(patient);
+
                 // Toggle the visibility of the search section
                 if($scope.showSearchSection){
                     $scope.showSearchSection = !$scope.showSearchSection;
+                    $scope.searchFilter2 = "";
                 }
             };
             //////////////////////////////Search for patient, part 1/////////////////////////////////////
@@ -48,7 +50,7 @@
             $scope.loadTable = function () {
                 ////////////////////////////My Representatives data//////////////////////////////////////////////
                 // API endpoint connection to PRs of selected patient
-                $http.get("/iTrust2/api/v1/pr/"+$scope.selectedPatient.username).then(
+                $http.get("/iTrust2/api/v1/pr/"+$scope.selectedPatient.id).then(
                     function (response) {
                         console.log(response.data);
                         $scope.PRofSelected = response.data;
@@ -61,7 +63,8 @@
                 );
                 ////////////////////////////My Patients data//////////////////////////////////////////////
                 // API endpoint connection to patients of selected patient
-                $http.get("/iTrust2/api/v1/pr/"+$scope.selectedPatient.username).then(
+                //need to be changed here
+                $http.get("/iTrust2/api/v1/pr/"+$scope.selectedPatient.id).then(
                     function (response) {
                         console.log(response.data);
                         $scope.PofSelected = response.data;
@@ -96,18 +99,49 @@
             );
 
             $scope.selectedPatient2 = null;
+            $scope.declare = { patient: "", representative: "", comment: "" };
             $scope.searchFilter2 = "";
 
             $scope.selectPatient2 = function(patient2) {
                 $scope.selectedPatient2 = patient2;
+                $scope.declare.representative = $scope.selectedPatient2.username;
                 // Update the search filter to display the selected patient's name or MID in the search box
                 $scope.searchFilter2 = $scope.displayName(patient2);
+                $scope.declare.patient = $scope.selectedPatient.username;
             };
 
             $scope.filterPatients2 = function (patient2) {
                 return ($scope.displayName(patient2)).toLowerCase().match($scope.searchFilter2.toLowerCase());
             };
             //////////////////////////////Search for patient, part 2/////////////////////////////////////
+
+            ////////////////////////////Confirm Representative////////////////////////////////////////////////////
+            // Function to declare a representative
+            $scope.confirmRepresentative = function() {
+                if ($scope.selectedPatient) {
+                    // Send the selected patient as a representative to the backend
+                    // need to be modified here.
+                    $http.post("/iTrust2/api/v1/pr/declare", $scope.declare)
+                        .then(
+                            function(response) {
+                                $scope.declareMessage = "Declaration confirmed successfully";
+                                $scope.refreshTable();
+
+                                //reset the selected patient2 and search filter after declaring
+                                $scope.selectedPatient2 = null;
+                                $scope.searchFilter2 = '';
+                                /////////////////////////////update Table/////////////////////////
+                            },
+                            function(rejection) {
+                                $scope.declareMessage = "Failed to confirm declaration: " + rejection.data.message;
+                            }
+                        );
+                } else {
+                    // Handle the case where no patient is selected
+                    $scope.message = "No patient selected for declaration";
+                }
+            };
+            ////////////////////////////Confirm Representative////////////////////////////////////////////////////
 
         });
 
@@ -133,7 +167,7 @@
                     style="width: 215px; height:40px;">
                     <!--To be completed-->
                     <div>
-                        <label ng-click="$parent.selectPatient(patient)"
+                        <label ng-click="$parent.selectPatient(patient); $parent.refreshTable()"
                                style="font-size: 18px; cursor: pointer;">
                             {{ $parent.displayName(patient) }}
                         </label>
@@ -155,13 +189,15 @@
                         <td style="text-align: center; padding: 5px; width: 150px"><b>MID</b></td>
                     </tr>
 
-                    <!-- need to be modified -->
-                    <tr ng-repeat="r in PRofSelected">
-                        <td>{{ $pindex + 1 }}</td>
-                        <td>{{ r.firstName + " " + r.lastName }}</td>
-                        <td>{{ r.id }}</td>
+                    <tr name="RepresentativesTableRow"
+                        ng-repeat="r in PRofSelected"
+                        representativeId={{r.id}}>
+                        <td name="nameCell">
+                            {{r.representative.firstName
+                            ? r.representative.firstName + " " + r.representative.lastName
+                            : r.representative.username}}</td>
+                        <td name="midCell">{{r.representative.id}}</td>
                     </tr>
-                    <!-- need to be modified -->
 
                 </table>
                 <h4>Representative for: </h4>
@@ -172,13 +208,15 @@
                         <td style="text-align: center; padding: 5px; width: 150px"><b>MID</b></td>
                     </tr>
 
-                    <!-- need to be modified -->
-                    <tr ng-repeat="p in PofSelected">
-                        <td>{{ $rindex + 1 }}</td>
-                        <td>{{ p.firstName + " " + p.lastName }}</td>
-                        <td>{{ p.id }}</td>
+                    <tr name="patientsTableRow"
+                        ng-repeat="p in PofSelected"
+                        patientId={{p.id}}>
+                        <td name="nameCell">
+                            {{p.patient.firstName
+                            ? p.patient.firstName + " " + p.patient.lastName
+                            : p.patient.username}}</td>
+                        <td name="midCell">{{p.patient.id}}</td>
                     </tr>
-                    <!-- need to be modified -->
 
                 </table>
                 <br/>
@@ -201,7 +239,7 @@
                                        placeholder="Enter name or MID">
                         </div>
                         <div style="float: left;">
-                            <button class="btn btn-primary" ng-click="declareRepresentative()">
+                            <button class="btn btn-primary" ng-click="confirmRepresentative()">
                                 confirm
                             </button>
                         </div>
@@ -212,9 +250,10 @@
                 <div>
                     <ul class="list-group" style="overflow: auto;height: 90%; padding-left: 0%">
                         <li class="list-group-item" ng-repeat="patient2 in patients2 | filter:filterPatients2"
+                            ng-if="selectedPatient.username !== patient2.username"
                             style="width: 520px; height:35px;margin-left: 330px;">
                             <!--To be completed-->
-                            <div>
+                            <div >
                                 <label ng-click="$parent.selectPatient2(patient2)"
                                        style="font-size: 16px; cursor: pointer;">
                                     {{ $parent.displayName(patient2) }}
