@@ -185,50 +185,30 @@
 				<h2 id="header0">Emergency Health Records</h2>
 				<div ng-show="selectedPatient">
 					<!-- <h3>Username: {{selectedPatient}}</h3> -->
-					<h3>Demographics: </h3>
-					<table>
-						<tr>
-							<td style="text-align: right; padding: 5px"><b>First
-									Name:</b></td>
-							<td name="firstName", ng-bind="patientForm.firstName"></td>
-						</tr>
-						<tr>
-							<td style="text-align: right; padding: 5px"><b>Last
-									Name:</b></td>
-							<td name="lastName", ng-bind="patientForm.lastName"></td>
-						</tr>
-						<tr>
-							<td style="text-align: right; padding: 5px"><b>MID:</b></td>
-							<td>{{selectedPatient}}</td>
-						</tr>
-						<tr>
-							<td style="text-align: right; padding: 5px"><b>Age:</b></td>
-							<td name="Age", ng-bind="patientForm.age"></td>
-						</tr>
-						<tr>
-							<td style="text-align: right; padding: 5px"><b>Date of
-									Birth:</b></td>
-							<!-- <td><input type="date" name="dateOfBirth"
-								ng-model="patientForm.dateOfBirth" /></td> -->
-							<td name="dateOfBirth", ng-bind="patientForm.dateOfBirth"></td>
-						</tr>
-						<tr>
-							<td style="text-align: right; padding: 5px"><b>Gender:</b></td>
-							<!-- <td><select name="gender" ng-model="patientForm.gender">
-									<option ng-repeat="gen in genders">{{gen.name}}</option>
-							</select></td> -->
-							<td name="gender", ng-bind="patientForm.gender"></td>
-						</tr>
-						<tr>
-							<td style="text-align: right; padding: 5px"><b>Blood
-									Type:</b></td>
-							<!-- <td><select name="bloodType"
-								ng-model="patientForm.bloodType">
-									<option ng-repeat="bt in bloodTypes">{{bt.name}}</option>
-							</select></td> -->
-							<td name="bloodType", ng-bind="patientForm.bloodType"></td>
-						</tr>
-						
+					<h3>Demographics</h3>
+					<table style="width: 100%" class="table table-hover">
+						<thead>
+							<tr>
+								<th>First Name</th>
+								<th>Last Name</th>
+								<th>MID</th>
+								<th>Age</th>
+								<th>Date of Birth</th>
+								<th>Gender</th>
+								<th>Blood Type</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr name="demographics">
+								<td name="firstName", ng-bind="patientForm.firstName"></td>
+								<td name="lastName", ng-bind="patientForm.lastName"></td>
+								<td>{{selectedPatient}}</td>
+								<td name="Age", ng-bind="patientForm.age"></td>
+								<td name="dateOfBirth", ng-bind="patientForm.dateOfBirth"></td>
+								<td name="gender", ng-bind="patientForm.gender"></td>
+								<td name="bloodType", ng-bind="patientForm.bloodType"></td>
+							</tr>
+						</tbody>
 					</table>
 
 					<h3>Diagnoses</h3>
@@ -241,7 +221,7 @@
 						</thead>
 						<tbody>
 							<tr ng-repeat="d in diagnoses | orderBy: 'visit' " name="diagnosis">
-								<td name="date">{{d.visit.date}}</td>
+								<td name="date">{{d.date | date : 'MM/dd/yyyy'}}</td>
 								<td name="code">{{d.code.code}}</td>
 							</tr>
 						</tbody>
@@ -260,7 +240,7 @@
 						</thead>
 						<tbody>
 							<tr name="prescriptionTableRow"
-								ng-repeat="p in prescriptions | orderBy: 'startDate'"
+								ng-repeat="p in prescriptions"
 								prescriptionId={{p.id}}>
 								<td name="drugCell">{{p.drug.name}}</td>
 								<td name="codeCell">{{p.dosage}}</td>
