@@ -5,10 +5,7 @@ import edu.ncsu.csc.itrust2.models.PersonalRepresentative;
 import edu.ncsu.csc.itrust2.models.User;
 import edu.ncsu.csc.itrust2.repositories.PersonalRepresentativeRepository;
 
-import java.time.LocalDate;
-import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.Optional;
 import javax.transaction.Transactional;
 
 import lombok.RequiredArgsConstructor;

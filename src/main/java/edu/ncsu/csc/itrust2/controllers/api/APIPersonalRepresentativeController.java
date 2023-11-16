@@ -40,14 +40,25 @@ public class APIPersonalRepresentativeController extends APIController {
     @PreAuthorize("hasRole('ROLE_HCP')")
     public ResponseEntity getPersonalRepresentatives(@PathVariable final String username) {
         final User patient = userService.findByName(username);
-        /** TODO: loggerUtil */
         return new ResponseEntity(
                 personalRepresentativeService.findByPatient(patient), HttpStatus.OK);
     }
 
     /**
+     * Retrieves a list of patients representative for.
+     * 
+     */
+    @GetMapping("/pr/declared/{username}")
+    @PreAuthorize("hasRole('ROLE_HCP')")
+    public List<PersonalRepresentative> getDeclared(@PathVariable final String username) {
+        final User patient = userService.findByName(username);
+        return personalRepresentativeService.findByRepresentative(patient);
+    }
+
+    /**
      * Retrieves all representatives for the current patient
      *
+     * @TODO: Replace to getPersonalRepresentatives()
      */
     @GetMapping("/pr/myrepresentatives")
     @PreAuthorize("hasRole('ROLE_PATIENT')")
@@ -59,6 +70,7 @@ public class APIPersonalRepresentativeController extends APIController {
     /**
      * Retrieves all the patients the current user is representative to.
      *
+     * @TODO: Replace to getDeclared()
      */
     @GetMapping("/pr/mypatients")
     @PreAuthorize("hasRole('ROLE_PATIENT')")
@@ -66,32 +78,6 @@ public class APIPersonalRepresentativeController extends APIController {
         final User self = userService.findByName(LoggerUtil.currentUser());
         return personalRepresentativeService.findByRepresentative(self);
     }
-
-//    /**
-//     * From HCP, create and save a new representative relationship from the RequestBody
-//     * provided.
-//     *
-//     * @param prForm The relationship to be saved
-//     * @return response
-//     */
-//    @PostMapping("/pr/{patient}")
-//    @PreAuthorize("hasRole('ROLE_HCP')")
-//    public ResponseEntity createPersonalRepresentative(@RequestBody final PersonalRepresentativeForm prForm) {
-//        try {
-//            final PersonalRepresentative pr = personalRepresentativeService.build(prForm);
-//
-//            personalRepresentativeService.save(pr);
-//            return new ResponseEntity(pr, HttpStatus.OK);
-//        } catch (final Exception e) {
-//            e.printStackTrace();
-//            return new ResponseEntity(
-//                    errorResponse(
-//                            "Could not save PersonalRepresentative provided due to "
-//                                + e.getMessage()),
-//                    HttpStatus.BAD_REQUEST
-//            );
-//        }
-//    }
 
     /**
      * From patient, create and save a new representative relationship from the RequestBody
@@ -101,7 +87,6 @@ public class APIPersonalRepresentativeController extends APIController {
      * @return response
      */
     @PostMapping("/pr/declare")
-    @PreAuthorize("hasRole('ROLE_PATIENT')")
     public ResponseEntity createRepresentative(@RequestBody final PersonalRepresentativeForm prForm) {
         try {
             final PersonalRepresentative pr = personalRepresentativeService.build(prForm);
