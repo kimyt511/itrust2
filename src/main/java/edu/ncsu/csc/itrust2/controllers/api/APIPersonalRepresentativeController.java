@@ -88,10 +88,16 @@ public class APIPersonalRepresentativeController extends APIController {
      */
     @PostMapping("/pr/declare")
     public ResponseEntity createRepresentative(@RequestBody final PersonalRepresentativeForm prForm) {
+        /** Logging */
+        User primaryUser = userService.findByName(LoggerUtil.currentUser());
+        User secondaryUser;
+        TransactionType transactionType = primaryUser.isDoctor() 
+                                            ? TransactionType.HCP_DECLARE_PR 
+                                            : TransactionType.DECLARE_PR;
         try {
             final PersonalRepresentative pr = personalRepresentativeService.build(prForm);
 
-            // If duplicate representative
+            /** If duplicate representative */
             if (personalRepresentativeService.existsByPatientAndRepresentative(pr.getPatient(), pr.getRepresentative())) {
                 loggerUtil.log(
                         TransactionType.DECLARE_PR,
@@ -103,19 +109,19 @@ public class APIPersonalRepresentativeController extends APIController {
             }
 
             personalRepresentativeService.save(pr);
+            secondaryUser = pr.getRepresentative();
             loggerUtil.log(
-                    TransactionType.DECLARE_PR, 
-                    pr.getPatient(),
-                    pr.getRepresentative());
-
+                    transactionType,
+                    primaryUser,
+                    secondaryUser);
             return new ResponseEntity(pr, HttpStatus.OK);
         } catch (final Exception e) {
             loggerUtil.log(
-                    TransactionType.DECLARE_PR, 
+                    transactionType,
                     LoggerUtil.currentUser(), 
                     "Failed to declare representative");
             return new ResponseEntity(
-                    errorResponse("Could not declare representative: " + e.getMessage()), HttpStatus.BAD_REQUEST);
+                    errorResponse("Could nt declare representative: " + e.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -130,7 +136,7 @@ public class APIPersonalRepresentativeController extends APIController {
     public ResponseEntity deleteRepresentative(@PathVariable final String id) {
         try {
             final PersonalRepresentative pr = (PersonalRepresentative) personalRepresentativeService.findById(Long.parseLong(id));
-            // Wrong ID value
+            /** Wrong ID value */
             if (pr == null) {
                 loggerUtil.log(
                     TransactionType.REMOVE_PR,
@@ -140,17 +146,17 @@ public class APIPersonalRepresentativeController extends APIController {
                     errorResponse("No ID with " + id), HttpStatus.NOT_FOUND);
             }
 
-            // Undeclare PR
+            /** Logging */
             TransactionType transactionType;
             User primaryUser;
             User secondaryUser;
 
-            // Undeclare a PR
+            /** Undeclare PR */
             if (pr.getPatient() == userService.findByName(LoggerUtil.currentUser())) {
                 transactionType = TransactionType.REMOVE_PR;
                 primaryUser = pr.getPatient();
                 secondaryUser = pr.getRepresentative();
-            } else { // Undeclare self as PR
+            } else { /** Undeclare self as PR */
                 transactionType = TransactionType.REMOVE_SELF_AS_PR;
                 primaryUser = pr.getRepresentative();
                 secondaryUser = pr.getPatient();
