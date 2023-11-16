@@ -16,6 +16,7 @@
                 return p.firstName + " " + p.lastName + " (" + p.username + ")";
             };
 
+            //////////////////////////////Search for patient, part 1/////////////////////////////////////
              // documentation on Angular filters: https://docs.angularjs.org/api/ng/filter/filter
             $scope.searchFilter = "";
             $scope.filterPatients = function (patient) {
@@ -27,8 +28,6 @@
                     $scope.patients = response.data;
                 }
             );
-            //initialize search results container
-            $scope.searchResults = [];
 
             /////////////////////update search filter////////////////////////////////////
             $scope.selectedPatient = null;
@@ -37,7 +36,12 @@
                 $scope.selectedPatient = patient;
                 // Update the search filter to display the selected patient's name or MID in the search box
                 $scope.searchFilter = $scope.displayName(patient);
+                // Toggle the visibility of the search section
+                if($scope.showSearchSection){
+                    $scope.showSearchSection = !$scope.showSearchSection;
+                }
             };
+            //////////////////////////////Search for patient, part 1/////////////////////////////////////
 
 
             ////////////////////////////My Representatives & patient data////////////////////////////////////////
@@ -84,6 +88,7 @@
                 $scope.showSearchSection = !$scope.showSearchSection;
             };
 
+            //////////////////////////////Search for patient, part 2/////////////////////////////////////
             $http.get("/iTrust2/api/v1/patients").then(
                 function (response) {
                     $scope.patients2 = response.data;
@@ -93,15 +98,16 @@
             $scope.selectedPatient2 = null;
             $scope.searchFilter2 = "";
 
-            $scope.selectPatient2 = function(patient) {
-                $scope.selectedPatient2 = patient;
+            $scope.selectPatient2 = function(patient2) {
+                $scope.selectedPatient2 = patient2;
                 // Update the search filter to display the selected patient's name or MID in the search box
-                $scope.searchFilter2 = $scope.displayName(patient);
+                $scope.searchFilter2 = $scope.displayName(patient2);
             };
 
-            $scope.filterPatients2 = function (patient) {
-                return ($scope.displayName(patient)).toLowerCase().match($scope.searchFilter.toLowerCase());
+            $scope.filterPatients2 = function (patient2) {
+                return ($scope.displayName(patient2)).toLowerCase().match($scope.searchFilter2.toLowerCase());
             };
+            //////////////////////////////Search for patient, part 2/////////////////////////////////////
 
         });
 
@@ -180,38 +186,43 @@
                 <div class="text-center">
                     <button class="btn btn-primary" ng-click="showAssign()">assign</button>
                 </div>
+            </div>
 
                 <!-- Search Section -->
-                <div ng-show="showSearchSection" class="search-section">
+            <div ng-show="showSearchSection" class="search-section">
                     <!-- Search Form -->
-                    <form>
-                        <div class="form-row align-items-center">
-                            <div style="float: left;padding-left: 10%; margin-right: 20px;">
-                                <label style="font-size: 2.0rem;">Enter Name or MID:</label>
-                            </div>
-                            <div style="float: left; margin-right: 20px;">
-                                <input type="text" ng-model="searchFilter2"  style="width:520px; height: 30px"
-                                       placeholder="Enter name or MID">
-                            </div>
+                <form>
+                    <div class="form-row align-items-center">
+                        <div style="float: left;padding-left: 10%; margin-right: 20px;">
+                            <label style="font-size: 2.2rem;">Enter Name or MID:</label>
                         </div>
-                    </form>
-                    <div style="clear: both;"></div>
-                    <!-- Search Results -->
-                    <div>
-                        <ul class="list-group" style="overflow: auto;height: 90%; padding-left: 0%">
-                            <li class="list-group-item" ng-repeat="patient in patients | filter:filterPatients"
-                                style="width: 215px; height:40px;">
-                                <!--To be completed-->
-                                <div>
-                                    <label ng-click="$parent.selectPatient(patient)"
-                                           style="font-size: 18px; cursor: pointer;">
-                                        {{ $parent.displayName(patient) }}
-                                    </label>
-                                </div>
-                                <!--To be completed-->
-                            </li>
-                        </ul>
+                        <div style="float: left; margin-right: 20px;">
+                            <input type="text" ng-model="searchFilter2"  style="width:520px; height: 35px"
+                                       placeholder="Enter name or MID">
+                        </div>
+                        <div style="float: left;">
+                            <button class="btn btn-primary" ng-click="declareRepresentative()">
+                                confirm
+                            </button>
+                        </div>
                     </div>
+                </form>
+                <div style="clear: both;"></div>
+                <!-- Search Results -->
+                <div>
+                    <ul class="list-group" style="overflow: auto;height: 90%; padding-left: 0%">
+                        <li class="list-group-item" ng-repeat="patient2 in patients2 | filter:filterPatients2"
+                            style="width: 520px; height:35px;margin-left: 330px;">
+                            <!--To be completed-->
+                            <div>
+                                <label ng-click="$parent.selectPatient2(patient2)"
+                                       style="font-size: 16px; cursor: pointer;">
+                                    {{ $parent.displayName(patient2) }}
+                                </label>
+                            </div>
+                            <!--To be completed-->
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>
