@@ -4,6 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -46,6 +47,11 @@ public class APIFoodDiaryController extends APIController {
     @PreAuthorize("hasRole('ROLE_HCP')")
     public List<FoodDiary> getFoodDiaries(@PathVariable final String username) {
         User patient = userService.findByName(username);
+        loggerUtil.log(
+            TransactionType.HCP_VIEW_FOOD_DIARY_ENTRY,
+            LoggerUtil.currentUser(),
+            username,
+            "HCP views food diary");
         return foodDiaryService.findByPatient(patient);
     }
 
@@ -57,6 +63,9 @@ public class APIFoodDiaryController extends APIController {
     @PreAuthorize("hasRole('ROLE_PATIENT')")
     public List<FoodDiary> getMyFoodDiaries() {
         User patient = userService.findByName(LoggerUtil.currentUser());
+        loggerUtil.log(
+            TransactionType.PATIENT_VIEW_FOOD_DIARY_ENTRY,
+            LoggerUtil.currentUser());
         return foodDiaryService.findByPatient(patient);
     }
 
