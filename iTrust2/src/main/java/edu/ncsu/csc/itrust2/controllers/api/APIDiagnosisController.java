@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
+import edu.ncsu.csc.iTrust2.Dto.DiagnosisDto;
 import edu.ncsu.csc.iTrust2.models.Diagnosis;
 import edu.ncsu.csc.iTrust2.models.OfficeVisit;
 import edu.ncsu.csc.iTrust2.models.User;
@@ -97,18 +98,39 @@ public class APIDiagnosisController extends APIController {
 
         return diagnosisService.findByPatient( self );
     }
+
+    
+    @GetMapping ( BASE_PATH + "/diagnoses/dto" )
+    public List<DiagnosisDto> getDiagnosisDto () {
+        final User self = userService.findByName( LoggerUtil.currentUser() );
+        if ( self == null ) {
+            return null;
+        }
+        loggerUtil.log( TransactionType.DIAGNOSIS_PATIENT_VIEW_ALL, self.getUsername(),
+                self.getUsername() + " viewed their diagnoses" );
+        
+        List <DiagnosisDto> dto_list = new ArrayList<DiagnosisDto>();
+        for(Diagnosis d: diagnosisService.findByPatient( self )) {
+        	DiagnosisDto dto = new DiagnosisDto(d);
+        	dto_list.add(dto);
+        }
+        return dto_list;
+    }
+    
     
     @GetMapping ( BASE_PATH + "/diagnoses/search/{username}" )
-    public List<Diagnosis> getDiagnosisByName (@PathVariable final String username) {
+    public List<DiagnosisDto> getDiagnosisByName (@PathVariable final String username) {
         final List<Long> diag_list = diagnosisService.findByUserName(username);
         List<Diagnosis> list = new ArrayList<Diagnosis>();
         for(Long id:diag_list) {
         	list.add((Diagnosis) diagnosisService.findById(id));
         }
-        for(Diagnosis dd:list) {
-        	System.out.println(dd.getVisit().getDate());
+        List <DiagnosisDto> dto_list = new ArrayList<DiagnosisDto>();
+        for(Diagnosis d: list) {
+        	DiagnosisDto dto = new DiagnosisDto(d);
+        	dto_list.add(dto);
         }
-        return list;
+        return dto_list;
     }
 
 }

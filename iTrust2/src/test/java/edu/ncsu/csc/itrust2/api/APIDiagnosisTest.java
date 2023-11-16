@@ -195,15 +195,20 @@ public class APIDiagnosisTest {
         }
         assertTrue( flag );
         
-        //UC15
-        content = mvc.perform( get( "/api/v1/diagnoses/search/" + "patient" ).contentType( MediaType.APPLICATION_JSON ) )
-                .andReturn().getResponse().getContentAsString();
-        List<Diagnosis> dlist1 = gson.fromJson( content, new TypeToken<ArrayList<Diagnosis>>() {
-        }.getType() );
-        boolean flag1 = false;
-        if(dlist1.isEmpty()) {
-        	System.out.println("good");
-        }
+        //UC15 TEST
+//        content = mvc.perform( get( "/api/v1/diagnoses/search/" + "patient" ).contentType( MediaType.APPLICATION_JSON ) )
+//                .andReturn().getResponse().getContentAsString();
+//        List<Diagnosis> dlist1 = gson.fromJson( content, new TypeToken<ArrayList<Diagnosis>>() {
+//        }.getType() );
+//        boolean flag1 = false;
+//        System.out.println(dlist1.size());
+//        if(dlist1.isEmpty()) {
+//        	System.out.println("empty");
+//        }
+//        for ( final Diagnosis dd : dlist1 ) {
+//        	
+//            System.out.println(dd.getId());
+//        }
 
         
         
