@@ -27,7 +27,7 @@ public class LabtechController {
     @RequestMapping ( value = "labtech/index" )
     @PreAuthorize ( "hasRole('ROLE_LABTECH')" )
     public String index ( final Model model ) {
-        return Role.ROLE_LABTECH.getLanding();
+        return Role.ROLE_LABTECH.getLandingPage();
     }
 
     /**

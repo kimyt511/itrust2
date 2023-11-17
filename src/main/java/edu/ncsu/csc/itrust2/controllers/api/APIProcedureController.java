@@ -5,6 +5,7 @@ import java.util.logging.Logger;
 
 import edu.ncsu.csc.itrust2.models.enums.*;
 import edu.ncsu.csc.itrust2.models.Procedure;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +32,7 @@ import edu.ncsu.csc.itrust2.utils.LoggerUtil;
  */
 @SuppressWarnings ( { "unchecked", "rawtypes" } )
 @RestController
+@RequiredArgsConstructor
 public class APIProcedureController extends APIController {
 
     @Autowired
@@ -51,7 +53,7 @@ public class APIProcedureController extends APIController {
      * @return the created Procedure
      */
     @PreAuthorize ( "hasRole('ROLE_HCP')" )
-    @PostMapping ( BASE_PATH + "/procedure" )
+    @PostMapping ( "/procedure" )
     public ResponseEntity addProcedure ( @RequestBody final ProcedureForm form ) {
         try {
             final Procedure procedure = new Procedure( form );
@@ -77,7 +79,7 @@ public class APIProcedureController extends APIController {
      * @return the edited Procedure or an error message
      */
     @PreAuthorize ( "hasAnyRole('ROLE_HCP', 'ROLE_LABTECH')" )
-    @PutMapping ( BASE_PATH + "/procedure" )
+    @PutMapping ( "/procedure" )
     public ResponseEntity editProcedure ( @RequestBody final ProcedureForm form ) {
         final User self = userService.findByName(LoggerUtil.currentUser());
         try {
@@ -124,7 +126,7 @@ public class APIProcedureController extends APIController {
      * @return the id of the deleted Procedure
      */
     @PreAuthorize ( "hasRole('ROLE_HCP')" )
-    @DeleteMapping ( BASE_PATH + "/procedure/{id}" )
+    @DeleteMapping ( "/procedure/{id}" )
     public ResponseEntity deleteProcedure ( @PathVariable final String id ) {
         try {
             final Procedure procedure= (Procedure) service.findById( Long.parseLong( id ) );
@@ -155,7 +157,7 @@ public class APIProcedureController extends APIController {
      *
      * @return a list of Procedure
      */
-    @GetMapping ( BASE_PATH + "/procedure" )
+    @GetMapping ( "/procedure" )
     @PreAuthorize ( "hasRole('ROLE_HCP')" )
     public List<Procedure> getProcedure () {
         loggerUtil.log( TransactionType.HCP_VIEW_PROCS, LoggerUtil.currentUser(), "Fetched list of Procedures" );
@@ -169,7 +171,7 @@ public class APIProcedureController extends APIController {
      *
      * KEEP IN MIND the path is BASE_PATH + "/procedureForLabtech"
      */
-    @GetMapping ( BASE_PATH + "/procedureForLabtech" )
+    @GetMapping ( "/procedureForLabtech" )
     @PreAuthorize ( "hasRole('ROLE_LABTECH')" )
     public List<Procedure> getProcedureForLabtech () {
         final User labtech = userService.findByName( LoggerUtil.currentUser() );
@@ -184,7 +186,7 @@ public class APIProcedureController extends APIController {
      *
      * KEEP IN MIND the path is BASE_PATH + "/procedureForPatient"
      */
-    @GetMapping ( BASE_PATH + "/procedureForPatient" )
+    @GetMapping ( "/procedureForPatient" )
     @PreAuthorize ( "hasRole('ROLE_PATIENT')" )
     public List<Procedure> getProcedureForPatient () {
         final User patient = userService.findByName( LoggerUtil.currentUser() );
@@ -197,7 +199,7 @@ public class APIProcedureController extends APIController {
      *
      * @return a list of Procedure
      */
-    @GetMapping ( BASE_PATH + "/procedureForHcp/{id}" )
+    @GetMapping ( "/procedureForHcp/{id}" )
     @PreAuthorize ( "hasRole('ROLE_HCP')" )
     public ResponseEntity getProcedureForHcpAndPatient (@PathVariable ( "id" ) final String id ) {
         final User hcp = userService.findByName( LoggerUtil.currentUser() );
@@ -221,7 +223,7 @@ public class APIProcedureController extends APIController {
      *            the Procedure form
      * @return the edited Procedure or an error message
      */
-    @PutMapping ( BASE_PATH + "/procedureReassign/{id}" )
+    @PutMapping ( "/procedureReassign/{id}" )
     @PreAuthorize ( "hasRole('ROLE_LABTECH')" )
     public ResponseEntity reassignProcedure ( @PathVariable ( "id" ) final String id, @RequestBody final ProcedureForm form ) {
         try {

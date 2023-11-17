@@ -5,6 +5,7 @@ import edu.ncsu.csc.itrust2.models.Loinc;
 import edu.ncsu.csc.itrust2.models.enums.TransactionType;
 import edu.ncsu.csc.itrust2.services.LoincService;
 import edu.ncsu.csc.itrust2.utils.LoggerUtil;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,7 @@ import java.util.List;
  */
 @SuppressWarnings ( { "unchecked", "rawtypes" } )
 @RestController
+@RequiredArgsConstructor
 public class APILoincController extends APIController {
 
     @Autowired
@@ -37,7 +39,7 @@ public class APILoincController extends APIController {
      * @return the created LOINC
      */
     @PreAuthorize ( "hasRole('ROLE_ADMIN')" )
-    @PostMapping ( BASE_PATH + "/loinccodes" )
+    @PostMapping ( "/loinccodes" )
     public ResponseEntity addLoinc ( @RequestBody final LoincForm form ) {
         try {
             final Loinc loinc = new Loinc( form );
@@ -72,7 +74,7 @@ public class APILoincController extends APIController {
      * @return the edited LOINC or an error message
      */
     @PreAuthorize ( "hasRole('ROLE_ADMIN')" )
-    @PutMapping ( BASE_PATH + "/loinccodes" ) // Keep an eye on nothing added after loinccodes.
+    @PutMapping ( "/loinccodes" ) // Keep an eye on nothing added after loinccodes.
     public ResponseEntity editLoinc ( @RequestBody final LoincForm form ) {
         try {
             // Check for existing LOINC in database
@@ -115,7 +117,7 @@ public class APILoincController extends APIController {
     @PreAuthorize ( "hasRole('ROLE_ADMIN')" )
     // CHECK DELETE MAPPING FOR REFERENCE.
     // ALWAYS TAKE REFERENCE FROM API FORMATS
-    @DeleteMapping ( BASE_PATH + "/loinccodes/{id}" ) //Keep an eye on {id}
+    @DeleteMapping ( "/loinccodes/{id}" ) //Keep an eye on {id}
     public ResponseEntity deleteLoinc ( @PathVariable final String id ) {
         try {
             final Loinc loinc = (Loinc) service.findById( Long.parseLong( id ) );
@@ -141,7 +143,7 @@ public class APILoincController extends APIController {
      *
      * @return a list of LOINC
      */
-    @GetMapping ( BASE_PATH + "/loinccodes" )
+    @GetMapping ( "/loinccodes" )
     public List<Loinc> getLoinc () {
         return (List<Loinc>) service.findAll();
     }

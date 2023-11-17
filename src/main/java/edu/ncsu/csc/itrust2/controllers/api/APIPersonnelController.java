@@ -1,8 +1,15 @@
 package edu.ncsu.csc.itrust2.controllers.api;
 
+import edu.ncsu.csc.itrust2.forms.PersonnelForm;
+import edu.ncsu.csc.itrust2.models.Personnel;
+import edu.ncsu.csc.itrust2.models.enums.Role;
+import edu.ncsu.csc.itrust2.models.enums.TransactionType;
+import edu.ncsu.csc.itrust2.services.PersonnelService;
+import edu.ncsu.csc.itrust2.utils.LoggerUtil;
+
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -12,50 +19,38 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import edu.ncsu.csc.itrust2.forms.PersonnelForm;
-import edu.ncsu.csc.itrust2.models.Personnel;
-import edu.ncsu.csc.itrust2.models.enums.Role;
-import edu.ncsu.csc.itrust2.models.enums.TransactionType;
-import edu.ncsu.csc.itrust2.services.PersonnelService;
-import edu.ncsu.csc.itrust2.utils.LoggerUtil;
-
 /**
- * Controller responsible for providing various REST API endpoints for the
- * Personnel model.
+ * Controller responsible for providing various REST API endpoints for the Personnel model.
  *
  * @author Kai Presler-Marshall
- *
  */
 @RestController
-@SuppressWarnings ( { "rawtypes", "unchecked" } )
+@RequiredArgsConstructor
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class APIPersonnelController extends APIController {
 
-    @Autowired
-    private LoggerUtil       loggerUtil;
+    private final LoggerUtil loggerUtil;
 
-    @Autowired
-    private PersonnelService service;
+    private final PersonnelService service;
 
     /**
      * Retrieves and returns a list of all Personnel stored in the system
      *
      * @return list of personnel
      */
-    @GetMapping ( BASE_PATH + "/personnel" )
-    @PreAuthorize ( "hasAnyRole('ROLE_HCP', 'ROLE_ADMIN')" )
-    public List<Personnel> getPersonnel () {
+    @GetMapping("/personnel")
+    @PreAuthorize("hasAnyRole('ROLE_HCP', 'ROLE_ADMIN')")
+    public List<Personnel> getPersonnel() {
         return (List<Personnel>) service.findAll();
     }
 
     /**
      * Retrieves and returns the Personnel with the username provided
      *
-     * @param id
-     *            The username of the Personnel to be retrieved, as stored in
-     *            the Users table
+     * @param id The username of the Personnel to be retrieved, as stored in the Users table
      * @return response
      */
-    @GetMapping ( BASE_PATH + "/personnel/{id}" )
+    @GetMapping ( "/personnel/{id}" )
     @PreAuthorize ( "hasAnyRole('ROLE_HCP', 'ROLE_ADMIN')" )
     public ResponseEntity getPersonnel ( @PathVariable ( "id" ) final String id ) {
         final Personnel personnel = (Personnel) service.findByName( id );
@@ -69,13 +64,13 @@ public class APIPersonnelController extends APIController {
     }
 
     /**
-     * If you are logged in as a personnel, then you can use this convenience
-     * lookup to find your own information without remembering your id. This
-     * allows you the shorthand of not having to look up the id in between.
+     * If you are logged in as a personnel, then you can use this convenience lookup to find your
+     * own information without remembering your id. This allows you the shorthand of not having to
+     * look up the id in between.
      *
      * @return The personnel object for the currently authenticated user.
      */
-    @GetMapping ( BASE_PATH + "/curPersonnel" )
+    @GetMapping ( "/curPersonnel" )
     @PreAuthorize ( "hasAnyRole('ROLE_HCP', 'ROLE_ADMIN')" )
     public ResponseEntity getCurrentPersonnel () {
         final String username = LoggerUtil.currentUser();
@@ -92,17 +87,15 @@ public class APIPersonnelController extends APIController {
     }
 
     /**
-     * Updates the Personnel with the id provided by overwriting it with the new
-     * Personnel record that is provided. If the ID provided does not match the
-     * ID set in the Patient provided, the update will not take place
+     * Updates the Personnel with the id provided by overwriting it with the new Personnel record
+     * that is provided. If the ID provided does not match the ID set in the Patient provided, the
+     * update will not take place
      *
-     * @param id
-     *            The username of the Personnel to be updated
-     * @param personnelF
-     *            The updated Personnel to save
+     * @param id The username of the Personnel to be updated
+     * @param personnelF The updated Personnel to save
      * @return response
      */
-    @PutMapping ( BASE_PATH + "/personnel/{id}" )
+    @PutMapping ( "/personnel/{id}" )
     @PreAuthorize ( "hasAnyRole('ROLE_HCP', 'ROLE_ADMIN')" )
     public ResponseEntity updatePersonnel ( @PathVariable final String id,
                                             @RequestBody final PersonnelForm personnelF ) {
@@ -134,11 +127,10 @@ public class APIPersonnelController extends APIController {
     /**
      * Returns only personnel of a specific role, based on what the user wants.
      *
-     * @param role
-     *            the role to filter out personnel by
+     * @param role the role to filter out personnel by
      * @return response and list of personnel matching query
      */
-    @GetMapping ( BASE_PATH + "/personnel/getbyroles/{role}" )
+    @GetMapping ( "/personnel/getbyroles/{role}" )
     @PreAuthorize ( "hasAnyRole('ROLE_HCP', 'ROLE_ADMIN', 'ROLE_PATIENT', 'ROLE_LABTECH')" )
     public ResponseEntity getPersonnelByRole ( @PathVariable ( "role" ) final String role ) {
         final List<Personnel> allPersonnel = (List<Personnel>) service.findAll();
@@ -153,7 +145,5 @@ public class APIPersonnelController extends APIController {
         catch ( final IllegalArgumentException iae ) {
             return new ResponseEntity( errorResponse( "Invalid role" ), HttpStatus.BAD_REQUEST );
         }
-
     }
-
 }
