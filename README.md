@@ -38,7 +38,7 @@ Follow these steps to get started:
    Use Docker Compose to start the MySQL database server.
 
    ```bash
-   docker-compose up -d
+   docker compose up -d
    ```
 
    Or you can use your own MySQL server. Make sure to update the `application.yml` file accordingly.
