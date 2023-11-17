@@ -32,16 +32,25 @@ Follow these steps to get started:
    ```
 
 3. **Configure Application Settings**:
-   Place the `application.yml` file in the `src/main/resources` directory. You can either use your own configuration or our provided `application-dev.yml` file for local Docker MySQL server setup.
+   Place the `application.yml` file in the `src/main/resources` directory. You can either use your own configuration or our provided `application.yml` file for local Docker MySQL server setup.
 
-4. **Start the Application**:
+4. **Start the Database**:
+   Use Docker Compose to start the MySQL database server.
+
+   ```bash
+   docker-compose up -d
+   ```
+
+   Or you can use your own MySQL server. Make sure to update the `application.yml` file accordingly.
+
+5. **Start the Application**:
    Use the Gradle wrapper to run the application. For Windows, use `gradlew.bat` instead of `./gradlew`.
 
    ```bash
    ./gradlew bootRun
    ```
 
-5. **Access the Web Interface**:
+6. **Access the Web Interface**:
    Open your browser and visit `http://localhost:8080/iTrust2` to view the application.
 
 ## Quality Assurance
