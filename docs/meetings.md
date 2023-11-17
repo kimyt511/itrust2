@@ -99,6 +99,16 @@
 
 ### Meeting 6
 
+**Date**: 2023-11-05
+
+#### Discussion:
+
+- Allocate leader roles for Iteration 2.
+- Set initial deadline for UC implementations.
+- Discuss about using AWS RDS for development & testing DB. 
+
+### Meeting 7
+
 **Date**: 2023-11-10
 
 #### Discussion:
@@ -111,6 +121,23 @@
   - Decided to migrate to Gradle.
   - Dicussed about the migration plan.
   - Troubleshooted the build error.
+
+### Meeting 8
+
+**Date**: 2023-11-17
+
+#### Discussion:
+
+- Discuss the progress of each team
+  - Team 1: UC19 WIP
+  - Team 2: UC18 WIP
+  - Team 3: UC23 WIP
+- Discuss about the contents for upcoming presentation of Iteration 2
+  - Include implemented features
+  - Some details about migrations from original source
+- Future plans for Iteration 3
+  - Focus on unit testing
+  - Features will be merged to `develop` branch after test coverage of 80% or above.
 
 ---
 
@@ -142,6 +169,13 @@
 ### Meeting 4
 **Date**: 2023.11.14
 - Front-end UC16 function decisions
+
+### Meeting 5
+**Date**: 2023.11.16
+- Discuss minor details about UC16 API endpoints
+- Backend for UC16 completed
+- TODO: Discuss about UC19
+
 ---
 
 ## Team 2 Meetings
@@ -157,3 +191,23 @@
 ---
 
 # Team 3 Meetings
+
+### Meeting 1
+**Date**: 2023-11-07
+
+What we did:
+- Understanding of UC17
+- Understanding of what frontend and backend will do
+
+Todo:
+ - backend -> make Loinc and Procedure Units
+ - Frontend -> make Procedure template for admin
+
+### Meeting 2
+**Date**: 2023-11-09
+What we did:
+- Create, edit, delete Loinc code by Admin
+
+Todo:
+- Frontend -> Create, edit, delete Procedure by HCP
+- Backend -> view, edit API for Labtech, view API for patient
