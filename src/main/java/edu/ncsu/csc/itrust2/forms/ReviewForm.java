@@ -2,6 +2,7 @@ package edu.ncsu.csc.itrust2.forms;
 
 import edu.ncsu.csc.itrust2.models.Review;
 import edu.ncsu.csc.itrust2.models.User;
+import edu.ncsu.csc.itrust2.models.Hospital;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -17,6 +18,7 @@ public class ReviewForm {
     private Long id;
     private User patient;
     private User hcp;
+    private Hospital hospital;
     private double rate;
     private String comment;
 
@@ -29,6 +31,7 @@ public class ReviewForm {
         setId(review.getId());
         setPatient(review.getPatient());
         setHcp(review.getHcp());
+        setHospital(review.getHospital());
         setRate(review.getRate());
         setComment(review.getComment());
     }

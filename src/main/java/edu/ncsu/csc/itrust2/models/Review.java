@@ -28,9 +28,15 @@ public class Review extends DomainObject {
 
     /** The hcp who has received this review */
     @Setter
-    @NotNull @ManyToOne
+    @ManyToOne
     @JoinColumn(name = "hcp_id", columnDefinition = "varchar(100)")
     private User hcp;
+
+    /** The hospital which has received this review */
+    @Setter
+    @ManyToOne
+    @JoinColumn(name = "hospital_id", columnDefinition = "varchar(100)")
+    private Hospital hospital;
 
     @Setter
     @NotNull
@@ -44,6 +50,7 @@ public class Review extends DomainObject {
         setId(form.getId());
         setPatient(form.getPatient());
         setHcp(form.getHcp());
+        setHospital(form.getHospital());
         setRate(form.getRate());
         setComment(form.getComment());
     }

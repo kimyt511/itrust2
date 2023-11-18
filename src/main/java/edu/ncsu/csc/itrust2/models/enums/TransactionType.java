@@ -243,6 +243,17 @@ public enum TransactionType {
     /** Patient views basic health metrics for an ophthalmology surgery */
     OPHTHALMOLOGY_SURGERY_PATIENT_VIEW(2210, "View ophthalmology surgery by Patient", true),
 
+    /** Patient rates an HCP */
+    PATIENT_RATE_HCP(2301, "Patient rates an HCP", true),
+    /** Patient rates a hospital */
+    PATIENT_RATE_HOSPITAL(2302, "Patient rates a hospital", true),
+    /** Fails to create a review */
+    RATE_CREATE_FAILURE(2303, "Failed to create a review", true),
+    /** Patient edits a review */
+    RATE_EDIT(2304, "Patient edits a review", true),
+    /** Patient deletes a review */
+    RATE_DELETE(2305, "Patient deletes a review", true),
+
     /** ophthalmology surgery is deleted */
     OPHTHALMOLOGY_SURGERY_DELETE(2211, "ophthalmology surgery deleted", true),
     /** Blood Sugar Diary entry is created */
