@@ -211,3 +211,8 @@ What we did:
 Todo:
 - Frontend -> Create, edit, delete Procedure by HCP
 - Backend -> view, edit API for Labtech, view API for patient
+
+### Meeting 3
+**Date**: 2023-11-17
+- Organizing progress
+- Overall planning for UC23
