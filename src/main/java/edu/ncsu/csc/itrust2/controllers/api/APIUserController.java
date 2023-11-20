@@ -105,7 +105,7 @@ public class APIUserController extends APIController {
      * @param id The username of the user to be retrieved
      * @return response
      */
-    @GetMapping ( BASE_PATH + "/users/{id}" )
+    @GetMapping ( "/users/{id}" )
     public ResponseEntity getUser ( @PathVariable ( "id" ) final String id ) {
         final User user = userService.findByName( id );
         loggerUtil.log( TransactionType.VIEW_USER, id );

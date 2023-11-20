@@ -132,7 +132,7 @@ public class APIEnumController extends APIController {
                 .subList(1, PatientSmokingStatus.values().length);
     }
 
-    @GetMapping ( BASE_PATH + "/priority" )
+    @GetMapping ( "/priority" )
     public List<Priority> getPriorities () {
         return Arrays.asList( Priority.values() );
     }
@@ -142,7 +142,7 @@ public class APIEnumController extends APIController {
      *
      * @return procedure statuses
      */
-    @GetMapping ( BASE_PATH + "/procedureStatus" )
+    @GetMapping ( "/procedureStatus" )
     public List<ProcedureStatus> getProcedureStatuses () {
         final List<ProcedureStatus> ret = Arrays.asList( ProcedureStatus.values() ).subList( 1,
                 ProcedureStatus.values().length );
