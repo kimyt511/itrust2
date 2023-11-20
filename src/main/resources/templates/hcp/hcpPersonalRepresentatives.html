@@ -64,7 +64,7 @@
                 ////////////////////////////My Patients data//////////////////////////////////////////////
                 // API endpoint connection to patients of selected patient
                 //need to be changed here
-                $http.get("/iTrust2/api/v1/pr/"+$scope.selectedPatient.id).then(
+                $http.get("/iTrust2/api/v1/pr/declared/"+$scope.selectedPatient.id).then(
                     function (response) {
                         console.log(response.data);
                         $scope.PofSelected = response.data;
@@ -157,14 +157,14 @@
             <h3>Search Patients:</h3>
             <!-- info on filtering taken from here: https://www.w3schools.com/angular/angular_filters.asp
                 and https://docs.angularjs.org/api/ng/filter/filter -->
-            <h4 style = "padding-left: 2%">
-                <input type="text" name="search" ng-model="searchFilter" style = "padding-left: 2%"/>
+            <h4 style = "margin: 5% 5% 5% 0;">
+                <input class="form-control" type="text" name="search" ng-model="searchFilter" placeholder="Search by name or MID"/>
             </h4>
             <!-- Info on scrolling taken from here: https://www.w3schools.com/cssref/pr_pos_overflow.asp -->
             <!-- and here: https://stackoverflow.com/questions/9560330/how-to-hide-a-vertical-scroll-bar-when-not-needed -->
-            <ul class="list-group" style="overflow: auto;height: 90%; padding-left: 0%">
+            <ul class="list-group" style="overflow: auto;height: 90%; margin-right: 5%">
                 <li class="list-group-item" ng-repeat="patient in patients | filter:filterPatients"
-                    style="width: 215px; height:40px;">
+                    style="width: 100%; height:40px;">
                     <!--To be completed-->
                     <div>
                         <label ng-click="$parent.selectPatient(patient); $parent.refreshTable()"
@@ -180,67 +180,74 @@
         <div style="float: left; width: 75%; border-left: 1px solid #bbb;padding-left: 3%; height: 100%; overflow-y: auto">
             <h2 id="header0">Personal Representatives</h2>
             <div ng-show="selectedPatient">
-                <h3>Username: {{selectedPatient.id}}</h3>
-                <h4>Representatives of</h4>
+                <h3>Username: {{selectedPatient.firstName ? selectedPatient.firstName + " " + selectedPatient.lastName + " (" + selectedPatient.id + ")" : selectedPatient.id}}</h3>
+                <h4>Representatives</h4>
                 <table border="1" style="width: 100%;">
                     <tr>
-                        <td style="text-align: center; padding: 5px; width: 50px;"><b>No.</b></td>
-                        <td style="text-align: center; padding: 5px; width: 150px"><b>Name</b></td>
-                        <td style="text-align: center; padding: 5px; width: 150px"><b>MID</b></td>
+                        <!-- <td style="text-align: center; padding: 5px; width: 50px;"><b>No.</b></td> -->
+                        <td style="text-align: center; padding: 5px; width: 30%"><b>MID</b></td>
+                        <td style="text-align: center; padding: 5px; width: 35%"><b>First Name</b></td>
+                        <td style="text-align: center; padding: 5px; width: 35%"><b>Last Name</b></td>
                     </tr>
 
                     <tr name="RepresentativesTableRow"
                         ng-repeat="r in PRofSelected"
                         representativeId={{r.id}}>
-                        <td name="nameCell">
+                        <td name="midCell" style="padding-left: 10px; height: 35px;">{{r.representative.id}}</td>
+                        <td name="firstNameCell" style="padding-left: 10px; height: 35px;">{{r.representative.firstName}}</td>
+                        <td name="lastNameCell" style="padding-left: 10px; height: 35px;">{{r.representative.lastName}}</td>
+                        <!-- <td name="nameCell">
                             {{r.representative.firstName
                             ? r.representative.firstName + " " + r.representative.lastName
-                            : r.representative.username}}</td>
-                        <td name="midCell">{{r.representative.id}}</td>
+                            : r.representative.username}}</td> -->
                     </tr>
 
                 </table>
-                <h4>Representative for: </h4>
+                <h4>Representative for</h4>
                 <table border="1" style="width: 100%;">
                     <tr>
-                        <td style="text-align: center; padding: 5px; width: 50px;"><b>No.</b></td>
-                        <td style="text-align: center; padding: 5px; width: 150px"><b>Name</b></td>
-                        <td style="text-align: center; padding: 5px; width: 150px"><b>MID</b></td>
+                        <!-- <td style="text-align: center; padding: 5px; width: 50px;"><b>No.</b></td> -->
+                        <td style="text-align: center; padding: 5px; width: 30%"><b>MID</b></td>
+                        <td style="text-align: center; padding: 5px; width: 35%"><b>First Name</b></td>
+                        <td style="text-align: center; padding: 5px; width: 35%"><b>Last Name</b></td>
                     </tr>
 
                     <tr name="patientsTableRow"
                         ng-repeat="p in PofSelected"
                         patientId={{p.id}}>
-                        <td name="nameCell">
+                        <!-- <td name="nameCell">
                             {{p.patient.firstName
                             ? p.patient.firstName + " " + p.patient.lastName
-                            : p.patient.username}}</td>
-                        <td name="midCell">{{p.patient.id}}</td>
+                            : p.patient.username}}</td> -->
+                        <td name="midCell" style="padding-left: 10px; height: 35px;">{{p.patient.id}}</td>
+                        <td name="firstNameCell" style="padding-left: 10px; height: 35px;">{{p.patient.firstName}}</td>
+                        <td name="lastNameCell" style="padding-left: 10px; height: 35px;">{{p.patient.lastName}}</td>
                     </tr>
 
                 </table>
                 <br/>
 
                 <div class="text-center">
-                    <button class="btn btn-primary" ng-click="showAssign()">assign</button>
+                    <button class="btn btn-primary" ng-click="showAssign()">Assign Patient Representative</button>
                 </div>
             </div>
 
                 <!-- Search Section -->
-            <div ng-show="showSearchSection" class="search-section">
+            <div ng-show="showSearchSection" class="search-section" style="display:flex; flex-direction: column; margin-top: 5%">
                     <!-- Search Form -->
+                <div style="float: left;">
+                    <label style="font-size: 2.2rem;">Enter Name or MID:</label>
+                    <p style="color: red" ng-model="declareMessage">{{declareMessage}}</p>
+                </div>
                 <form>
                     <div class="form-row align-items-center">
-                        <div style="float: left;padding-left: 10%; margin-right: 20px;">
-                            <label style="font-size: 2.2rem;">Enter Name or MID:</label>
-                        </div>
-                        <div style="float: left; margin-right: 20px;">
-                            <input type="text" ng-model="searchFilter2"  style="width:520px; height: 35px"
+                        <div style="float: left; width: 70%; margin-right: 2%;">
+                            <input class="form-control" type="text" ng-model="searchFilter2"  style="width:100%; height: 35px"
                                        placeholder="Enter name or MID">
                         </div>
-                        <div style="float: left;">
-                            <button class="btn btn-primary" ng-click="confirmRepresentative()">
-                                confirm
+                        <div style="float: left; width: 28%;">
+                            <button class="btn btn-primary" ng-click="confirmRepresentative()" style="width: 100%;">
+                                Confirm Assignment
                             </button>
                         </div>
                     </div>
@@ -251,7 +258,7 @@
                     <ul class="list-group" style="overflow: auto;height: 90%; padding-left: 0%">
                         <li class="list-group-item" ng-repeat="patient2 in patients2 | filter:filterPatients2"
                             ng-if="selectedPatient.username !== patient2.username"
-                            style="width: 520px; height:35px;margin-left: 330px;">
+                            style="width: 70%; height:35px;">
                             <!--To be completed-->
                             <div >
                                 <label ng-click="$parent.selectPatient2(patient2)"
