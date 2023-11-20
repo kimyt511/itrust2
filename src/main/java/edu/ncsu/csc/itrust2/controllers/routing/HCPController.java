@@ -88,4 +88,16 @@ public class HCPController {
     public String documentOfficeVisit(final Model model) {
         return "/hcp/documentOfficeVisit";
     }
+
+    /**
+     * Returns the form page for a HCP to document an editProcedures
+     *
+     * @param model The data for the front end
+     * @return Page to display to the user
+     */
+    @GetMapping("/hcp/editProcedures")
+    @PreAuthorize("hasRole('ROLE_HCP')")
+    public String editProcedures(final Model model) {
+        return "/hcp/editProcedures";
+    }
 }
