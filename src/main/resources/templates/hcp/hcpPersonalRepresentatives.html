@@ -85,6 +85,7 @@
             $scope.showAssign = function () {
                 // Toggle the visibility of the search section
                 $scope.showSearchSection = !$scope.showSearchSection;
+                $scope.viewRepresentative = null;
             };
 
             //////////////////////////////Search for patient, part 2/////////////////////////////////////
@@ -140,6 +141,7 @@
 
             // $scope.viewRepresentative = null;
             $scope.showMore = function (patient) {
+                $scope.showSearchSection = false;
                 $scope.viewRepresentative = patient;
             }
             ////////////////////////////Confirm Representative////////////////////////////////////////////////////
@@ -232,9 +234,8 @@
                 </div>
             </div>
 
-                <!-- Search Section -->
-            <div ng-show="showSearchSection" class="search-section" style="display:flex; flex-direction: column; margin-top: 5%">
-                    <!-- Search Form -->
+            <!-- Search Section -->
+            <!-- <div ng-show="showSearchSection" class="search-section" style="display:flex; flex-direction: column; margin-top: 5%">
                 <div style="float: left;">
                     <label style="font-size: 2.2rem;">Enter Name or MID:</label>
                     <p style="color: red" ng-model="declareMessage">{{declareMessage}}</p>
@@ -253,6 +254,44 @@
                     </div>
                 </form>
                 <div style="clear: both;"></div>
+                <div>
+                    <ul class="list-group" style="overflow: auto;height: 90%; padding-left: 0%">
+                        <li class="list-group-item" ng-repeat="patient2 in patients2 | filter:filterPatients2"
+                            ng-if="selectedPatient.username !== patient2.username"
+                            style="width: 70%; height:35px;">
+                            <div >
+                                <label ng-click="$parent.selectPatient2(patient2)"
+                                       style="font-size: 16px; cursor: pointer;">
+                                    {{ $parent.displayName(patient2) }}
+                                </label>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div> -->
+        </div>
+        <div style="float: left; width: 30%; border-left: 1px solid #bbb;padding: 0 3% 0 3%; height: 100%; overflow-y: auto">
+            <!-- Search Section -->
+            <div ng-show="showSearchSection" class="search-section" style="display:flex; flex-direction: column; margin-top: 5%">
+                <!-- Search Form -->
+                <div style="float: left;">
+                    <h3 style="font-size: 2.2rem;">Enter Name or MID:</h3>
+                    <p style="color: red" ng-model="declareMessage">{{declareMessage}}</p>
+                </div>
+                <form>
+                    <div class="form-row align-items-center">
+                        <div style="float: left; width: 70%; margin-right: 2%;">
+                            <input class="form-control" type="text" ng-model="searchFilter2"  style="width:100%; height: 35px"
+                                    placeholder="Enter name or MID">
+                        </div>
+                        <div style="float: left; width: 28%;">
+                            <button class="btn btn-primary" ng-click="confirmRepresentative()" style="width: 100%;">
+                                Confirm
+                            </button>
+                        </div>
+                    </div>
+                </form>
+                <div style="clear: both;"></div>
                 <!-- Search Results -->
                 <div>
                     <ul class="list-group" style="overflow: auto;height: 90%; padding-left: 0%">
@@ -262,7 +301,7 @@
                             <!--To be completed-->
                             <div >
                                 <label ng-click="$parent.selectPatient2(patient2)"
-                                       style="font-size: 16px; cursor: pointer;">
+                                    style="font-size: 16px; cursor: pointer;">
                                     {{ $parent.displayName(patient2) }}
                                 </label>
                             </div>
@@ -271,8 +310,6 @@
                     </ul>
                 </div>
             </div>
-        </div>
-        <div style="float: left; width: 30%; border-left: 1px solid #bbb;padding: 0 3% 0 3%; height: 100%; overflow-y: auto">
             <div ng-if="viewRepresentative">
                 <h3 style="margin: 20% 0 10% 0;">{{ displayName(viewRepresentative) }}</h3>
                 <table border="1" style="width: 100%;" class="table table-hover table-bordered">
