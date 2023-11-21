@@ -14,6 +14,7 @@ import edu.ncsu.csc.iTrust2.Dto.DiagnosisDto;
 import edu.ncsu.csc.iTrust2.models.Diagnosis;
 import edu.ncsu.csc.iTrust2.models.OfficeVisit;
 import edu.ncsu.csc.iTrust2.models.User;
+import edu.ncsu.csc.iTrust2.models.enums.Role;
 import edu.ncsu.csc.iTrust2.models.enums.TransactionType;
 import edu.ncsu.csc.iTrust2.services.DiagnosisService;
 import edu.ncsu.csc.iTrust2.services.OfficeVisitService;
@@ -106,8 +107,6 @@ public class APIDiagnosisController extends APIController {
         if ( self == null ) {
             return null;
         }
-        loggerUtil.log( TransactionType.DIAGNOSIS_PATIENT_VIEW_ALL, self.getUsername(),
-                self.getUsername() + " viewed their diagnoses" );
         
         List <DiagnosisDto> dto_list = new ArrayList<DiagnosisDto>();
         for(Diagnosis d: diagnosisService.findByPatient( self )) {
@@ -130,6 +129,16 @@ public class APIDiagnosisController extends APIController {
         	DiagnosisDto dto = new DiagnosisDto(d);
         	dto_list.add(dto);
         }
+        final User self = userService.findByName( LoggerUtil.currentUser() );
+        if(self.getRoles().contains( Role.ROLE_HCP )) {
+        	loggerUtil.log( TransactionType.HCP_VIEW_ER, self.getUsername(),
+                    username,  self.getUsername() + " viewed a " + username +"'s Emergency Health Records" );
+        }
+        else if(self.getRoles().contains( Role.ROLE_ER )) {
+        	loggerUtil.log( TransactionType.ER_VIEW_ER, self.getUsername(),
+                    username,  self.getUsername() + " viewed a " + username +"'s Emergency Health Records" );
+        }
+        
         return dto_list;
     }
 
