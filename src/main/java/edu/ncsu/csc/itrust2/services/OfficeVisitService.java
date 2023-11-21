@@ -2,6 +2,7 @@ package edu.ncsu.csc.itrust2.services;
 
 import edu.ncsu.csc.itrust2.forms.OfficeVisitForm;
 import edu.ncsu.csc.itrust2.forms.PrescriptionForm;
+import edu.ncsu.csc.itrust2.forms.ProcedureForm;
 import edu.ncsu.csc.itrust2.models.AppointmentRequest;
 import edu.ncsu.csc.itrust2.models.Diagnosis;
 import edu.ncsu.csc.itrust2.models.OfficeVisit;
@@ -38,6 +39,8 @@ public class OfficeVisitService extends Service {
     private final PrescriptionService prescriptionService;
 
     private final DiagnosisService diagnosisService;
+
+    private final ProcedureService procedureService;
 
     @Override
     protected JpaRepository getRepository() {
@@ -122,6 +125,13 @@ public class OfficeVisitService extends Service {
             ov.setPrescriptions(
                     ps.stream().map(prescriptionService::build).collect(Collectors.toList()));
         }
+
+        final List<ProcedureForm> pc = ovf.getProcedures();
+        if (pc != null) {
+            ov.setProcedures(
+                    pc.stream().map(procedureService::build).collect(Collectors.toList()));
+        }
+
 
         final Patient p = (Patient) ov.getPatient();
         if (p == null || p.getDateOfBirth() == null) {

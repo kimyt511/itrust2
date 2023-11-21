@@ -105,6 +105,11 @@ public class OfficeVisit extends DomainObject {
     @JsonManagedReference
     private List<Prescription> prescriptions;
 
+    @Setter
+    @OneToMany(cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<Procedure> procedures;
+
     public void validateDiagnoses() {
         if (diagnoses == null) {
             return;
