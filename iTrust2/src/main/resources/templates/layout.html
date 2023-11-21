@@ -105,6 +105,12 @@ a {
 					var erdropdown = document.getElementById('er-dropdown');
 					var ltdropdown = document.getElementById('labtech-dropdown');
 					var virologistdropdown = document.getElementById('virologist-dropdown');
+					if (!role.includes('ROLE_ER')) {
+						navbarparent.removeChild(erdropdown);
+					}
+					if (!role.includes('ROLE_LABTECH')) {
+						navbarparent.removeChild(ltdropdown);
+					}
 					if (!role.includes('PATIENT')) {
 						navbarparent.removeChild(patientdropdown);
 					}
@@ -117,12 +123,7 @@ a {
 					if (!role.includes('VIROLOGIST')) {
 						navbarparent.removeChild(virologistdropdown);
 					}
-					if (!role.includes('ER')) {
-						navbarparent.removeChild(erdropdown);
-					}
-					if (!role.includes('LABTECH')) {
-						navbarparent.removeChild(ltdropdown);
-					}
+					
 
 				});
 			/* Otherwise Thymeleaf tries to parse Javascript as XML and breaks itself sometimes.  Sigh */
@@ -140,6 +141,15 @@ a {
 				<div class="navbar-header">
 					<a class="navbar-brand" th:href="@{/}" id="homePage">iTrust2</a>
 				</div>
+				<!-- ER navbar -->
+				<ul id="er-dropdown" class="nav navbar-nav">
+					<li class="dropdown"><a class="dropdown-toggle"
+						data-toggle="dropdown" href="#" id="erDropDown">ER<span class="caret"></span></a>
+						<ul class="dropdown-menu">
+							<li><a href="/iTrust2/er/EmergencyHealthRecords"
+								id="EmergencyHealthRecords">View Emergency Health Records</a></li>
+						</ul></li>
+				</ul>
 				<!-- Admin navbar -->
 				<ul id="admin-dropdown" class="nav navbar-nav">
 					<li class="dropdown"><a class="dropdown-toggle"
@@ -178,7 +188,7 @@ a {
 							<li><a href="/iTrust2/hcp/foodDiary"
 								id="foodDiary">View Food Diary(UC19)</a></li>
 							<li><a href="/iTrust2/hcp/EmergencyHealthRecords"
-								id="EmergencyHealthRecords">View Emergency Health Records(UC15)</a></li>
+								id="EmergencyHealthRecords">View Emergency Health Records</a></li>
 							<li><a href="/iTrust2/hcp/viewVaccinations"
 								id="patientVaccinations">View Vaccinations(UC18)</a></li>
 						</ul></li>
@@ -193,8 +203,6 @@ a {
 								id="editPrescriptions-personnel">Edit Prescriptions</a></li>
 						</ul></li>
 				</ul>
-				
-
 				<!-- Patient dropdown -->
 				<ul id="patient-dropdown" class="nav navbar-nav">
 					<li class="dropdown"><a class="dropdown-toggle"
@@ -232,7 +240,6 @@ a {
 								id="myFoodDiary">My Food Diary(UC19)</a></li>
 						</ul></li>
 				</ul>
-
 				<!-- Labtech navbar -->
 				<ul id="labtech-dropdown" class="nav navbar-nav">
 					<li class="dropdown"><a class="dropdown-toggle"
