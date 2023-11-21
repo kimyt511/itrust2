@@ -54,7 +54,6 @@
                     function (response) {
                         console.log(response.data);
                         $scope.PRofSelected = response.data;
-                        $scope.rindex = 1;
                         $scope.message = "";
                     }, function (rejection) {
                         $scope.representatives = [];
@@ -68,7 +67,6 @@
                     function (response) {
                         console.log(response.data);
                         $scope.PofSelected = response.data;
-                        $scope.pindex = 1;
                         $scope.message = "";
                     }, function (rejection) {
                         $scope.representatives = [];
@@ -149,9 +147,6 @@
     </script>
 
 
-    <!-- need to be modified -->
-    <!-- The controller should be defined -->
-    <!-- Here used editPatientDemographicsCtrl" to give an idea -->
     <div ng-app="HCPPersonalRepresentativeApp" ng-controller="HCPPersonalRepresentativeCtrl">
         <div style="float: left; width: 20%; height: 75%; overflow-y: auto">
             <h3>Search Patients:</h3>
