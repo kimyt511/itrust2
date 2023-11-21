@@ -52,7 +52,6 @@
                 // API endpoint connection to PRs of selected patient
                 $http.get("/iTrust2/api/v1/pr/"+$scope.selectedPatient.id).then(
                     function (response) {
-                        console.log(response.data);
                         $scope.PRofSelected = response.data;
                         $scope.message = "";
                     }, function (rejection) {
@@ -65,7 +64,6 @@
                 //need to be changed here
                 $http.get("/iTrust2/api/v1/pr/declared/"+$scope.selectedPatient.id).then(
                     function (response) {
-                        console.log(response.data);
                         $scope.PofSelected = response.data;
                         $scope.message = "";
                     }, function (rejection) {
@@ -139,6 +137,11 @@
                     $scope.message = "No patient selected for declaration";
                 }
             };
+
+            // $scope.viewRepresentative = null;
+            $scope.showMore = function (patient) {
+                $scope.viewRepresentative = patient;
+            }
             ////////////////////////////Confirm Representative////////////////////////////////////////////////////
 
         });
@@ -172,21 +175,22 @@
             </ul>
         </div>
         <!-- information on vertical rule found here: https://stackoverflow.com/questions/571900/is-there-a-vr-vertical-rule-in-html  -->
-        <div style="float: left; width: 75%; border-left: 1px solid #bbb;padding-left: 3%; height: 100%; overflow-y: auto">
+        <div style="float: left; width: 50%; border-left: 1px solid #bbb;padding: 0 3% 0 3%; height: 100%; overflow-y: auto">
             <h2 id="header0">Personal Representatives</h2>
             <div ng-show="selectedPatient">
-                <h3>Username: {{selectedPatient.firstName ? selectedPatient.firstName + " " + selectedPatient.lastName + " (" + selectedPatient.id + ")" : selectedPatient.id}}</h3>
+                <h3>Username: {{selectedPatient.firstName ? displayName(selectedPatient) : selectedPatient.id}}</h3>
                 <h4>Representatives</h4>
-                <table border="1" style="width: 100%;">
-                    <tr>
+                <table border="1" style="width: 100%;" class="table table-hover table-bordered">
+                    <thead><tr>
                         <!-- <td style="text-align: center; padding: 5px; width: 50px;"><b>No.</b></td> -->
-                        <td style="text-align: center; padding: 5px; width: 30%"><b>MID</b></td>
-                        <td style="text-align: center; padding: 5px; width: 35%"><b>First Name</b></td>
-                        <td style="text-align: center; padding: 5px; width: 35%"><b>Last Name</b></td>
-                    </tr>
+                        <th style="text-align: center; padding: 5px; width: 30%"><b>MID</b></td>
+                        <th style="text-align: center; padding: 5px; width: 35%"><b>First Name</b></td>
+                        <th style="text-align: center; padding: 5px; width: 35%"><b>Last Name</b></td>
+                    </tr></thead>
 
-                    <tr name="RepresentativesTableRow"
+                    <tbody><tr name="RepresentativesTableRow"
                         ng-repeat="r in PRofSelected"
+                        ng-click="showMore(r.representative)"
                         representativeId={{r.id}}>
                         <td name="midCell" style="padding-left: 10px; height: 35px;">{{r.representative.id}}</td>
                         <td name="firstNameCell" style="padding-left: 10px; height: 35px;">{{r.representative.firstName}}</td>
@@ -195,20 +199,21 @@
                             {{r.representative.firstName
                             ? r.representative.firstName + " " + r.representative.lastName
                             : r.representative.username}}</td> -->
-                    </tr>
+                    </tr></tbody>
 
                 </table>
                 <h4>Representative for</h4>
-                <table border="1" style="width: 100%;">
-                    <tr>
+                <table border="1" style="width: 100%;" class="table table-hover table-bordered">
+                    <thead><tr>
                         <!-- <td style="text-align: center; padding: 5px; width: 50px;"><b>No.</b></td> -->
-                        <td style="text-align: center; padding: 5px; width: 30%"><b>MID</b></td>
-                        <td style="text-align: center; padding: 5px; width: 35%"><b>First Name</b></td>
-                        <td style="text-align: center; padding: 5px; width: 35%"><b>Last Name</b></td>
-                    </tr>
+                        <th style="text-align: center; padding: 5px; width: 30%"><b>MID</b></td>
+                        <th style="text-align: center; padding: 5px; width: 35%"><b>First Name</b></td>
+                        <th style="text-align: center; padding: 5px; width: 35%"><b>Last Name</b></td>
+                    </tr></thead>
 
-                    <tr name="patientsTableRow"
+                    <tbody><tr name="patientsTableRow"
                         ng-repeat="p in PofSelected"
+                        ng-click="showMore(p.patient)"
                         patientId={{p.id}}>
                         <!-- <td name="nameCell">
                             {{p.patient.firstName
@@ -217,7 +222,7 @@
                         <td name="midCell" style="padding-left: 10px; height: 35px;">{{p.patient.id}}</td>
                         <td name="firstNameCell" style="padding-left: 10px; height: 35px;">{{p.patient.firstName}}</td>
                         <td name="lastNameCell" style="padding-left: 10px; height: 35px;">{{p.patient.lastName}}</td>
-                    </tr>
+                    </tr></tbody>
 
                 </table>
                 <br/>
@@ -265,6 +270,37 @@
                         </li>
                     </ul>
                 </div>
+            </div>
+        </div>
+        <div style="float: left; width: 30%; border-left: 1px solid #bbb;padding: 0 3% 0 3%; height: 100%; overflow-y: auto">
+            <div ng-if="viewRepresentative">
+                <h3 style="margin: 20% 0 10% 0;">{{ displayName(viewRepresentative) }}</h3>
+                <table border="1" style="width: 100%;" class="table table-hover table-bordered">
+                    <tr>
+                        <td style="width: 40%;"><b>First Name</b></td>
+                        <td style="padding-left: 10px; height: 35px;">{{viewRepresentative.firstName}}</td>
+                    </tr>
+                    <tr>
+                        <td><b>Last Name</b></td>
+                        <td style="padding-left: 10px; height: 35px;">{{viewRepresentative.lastName}}</td>
+                    </tr>
+                    <tr>
+                        <td><b>Date of Birth</b></td>
+                        <td style="padding-left: 10px; height: 35px;">{{viewRepresentative.dateOfBirth}}</td>
+                    </tr>
+                    <tr>
+                        <td><b>Phone</b></td>
+                        <td style="padding-left: 10px; height: 35px;">{{viewRepresentative.phone}}</td>
+                    </tr>
+                    <tr>
+                        <td><b>Email</b></td>
+                        <td style="padding-left: 10px; height: 35px;">{{viewRepresentative.email}}</td>
+                    </tr>
+                    <tr>
+                        <td><b>MID</b></td>
+                        <td style="padding-left: 10px; height: 35px;">{{viewRepresentative.username}}</td>
+                    </tr>
+                </table>
             </div>
         </div>
     </div>
