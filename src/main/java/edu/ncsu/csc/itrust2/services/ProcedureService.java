@@ -62,10 +62,7 @@ public class ProcedureService extends Service {
     }
 
     public List<Procedure> findByPatient(final User patient) {
-        return officeVisitRepository.findByPatient(patient).stream()
-                .map(e -> findByVisit(e))
-                .flatMap(e -> e.stream())
-                .collect(Collectors.toList());
+        return repository.findByPatient(patient);
     }
 
     public boolean existsByLabtech ( final User labtech ) {
@@ -91,7 +88,4 @@ public class ProcedureService extends Service {
 
     public List<Procedure> findByHcpAndPatient(final User hcp, final User patient){ return repository.findByHcpAndPatient(hcp, patient);}
 
-    public List<Procedure> findByVisit(final OfficeVisit visit) {
-        return repository.findByVisit(visit);
-    }
 }
