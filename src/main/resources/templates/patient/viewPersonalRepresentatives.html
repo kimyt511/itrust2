@@ -161,6 +161,7 @@
             $scope.showDeclareRepresentative = function () {
                 // Toggle the visibility of the search section
                 $scope.showSearchSection = !$scope.showSearchSection;
+                $scope.viewRepresentative = null;   
             };
 
             $scope.displayName = function (p) {
@@ -221,6 +222,11 @@
                     $scope.message = "No patient selected for declaration";
                 }
             };
+
+            $scope.showMore = function (patient) {
+                $scope.showSearchSection = false;
+                $scope.viewRepresentative = patient;
+            }
             ////////////////////////////Declare Representative////////////////////////////////////////////////////
 
 		    ///////////////////////////Initially Load Table/////////////////////////
@@ -234,165 +240,154 @@
     <div ng-app="PersonalRepresentativesApp" ng-controller="PersonalRepresentativesCtrl">
         <div class="container">
             <div class="row">
-                <div class="col-md-8" style="margin-left: 15%;">
-                    <!--------------------------------- Panel--------------------------------------------------->
+                <div class="col-md-8" style="width: 100%;">
+                    <!-- Panel -->
                     <div class="panel panel-primary mx-auto d-flex justify-content-center">
                         <div class="panel-heading">
                             <h3>Personal Representatives</h3>
                         </div>
-                        <div class="panel-body">
+                        <div class="panel-body" style="display: flex; flex-direction: row;">
+                            <!-- Dislay Section -->
+                            <div style="width: 70%; padding: 1%;">
+                                <table class="table table-hover table-bordered">
+                                    <caption>
+                                        Representative for:
+                                        <button ng-click="undeclareSelectedPatients()" style="float: right;">
+                                            Undeclare
+                                        </button>
+                                    </caption>
+                                    <thead><tr>
+                                        <th style="width: 30%;">MID</th>
+                                        <th style="width: 30%;">First Name</th>
+                                        <th style="width: 30%;">Last Name</th>
+                                        <th style="width: 50px;">Select</th>
+                                    </tr></thead>
+                                    <!-- Contents -->
+                                    <tbody><tr name="patientsTableRow"
+                                        ng-repeat="p in myPatients"
+                                        ng-click="showMore(p.patient)"
+                                        representativeId={{p.id}}>
+                                        <td name="midCell">{{p.patient.id}}</td>
+                                        <td name="firstNameCell">{{p.patient.firstName}}</td>
+                                        <td name="lastNameCell">{{p.patient.lastName}}</td>
+    
+                                        <!-- Undeclaration target -->
+                                        <td class="text-center" name="selectCell">
+                                            <input ng-change="updateSelectedPatients(p)" ng-model="p.selected"
+                                                   type="checkbox">
+                                        </td>
+                                    </tr></tbody>
+                                </table>
+                                <p style="color: green" ng-model="undeclarePatientMessage">{{undeclarePatientMessage}}</p>
 
-                            <!------------------------- Representative of ---------------------------------->
-                            <table class="table table-hover table-bordered">
-                                <caption>
-                                    Representative for:
-                                    <button ng-click="undeclareSelectedPatients()" style="float: right;">
-                                        Undeclare
-                                    </button>
-                                </caption>
-                                <thead>
-                                <tr>
-                                    <th style="width: 30%;">MID</th>
-                                    <th style="width: 30%;">First Name</th>
-                                    <th style="width: 30%;">Last Name</th>
-                                    <th style="width: 50px;">Select</th>
-                                    <!--
-                                    <th>Comment</th>
-                                    -->
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <!-- Contents -->
-                                <tr name="patientsTableRow"
-                                    ng-repeat="p in myPatients"
-                                    representativeId={{p.id}}>
-                                    <!-- <td name="nameCell">{{p.patient.firstName
-                                                        ? p.patient.firstName + " " + p.patient.lastName
-                                                        : p.patient.username}}</td> -->
-                                    <td name="midCell">{{p.patient.id}}</td>
-                                    <td name="firstNameCell">{{p.patient.firstName}}</td>
-                                    <td name="lastNameCell">{{p.patient.lastName}}</td>
-                                    <!--
-                                    <td name="commentCell">{{p.comment}}</td>
-                                    -->
-
-                                    <!--------target of undeclaration------>
-                                    <td class="text-center" name="selectCell">
-                                        <input ng-change="updateSelectedPatients(p)" ng-model="p.selected"
-                                               type="checkbox">
+                                <!-- My Representatives -->
+                                <table class="table table-hover table-bordered">
+                                    <caption>
+                                        My Representatives:
+                                        <button ng-click="undeclareSelectedRepresentatives()" style="float: right;">
+                                            Undeclare
+                                        </button>
+                                    </caption>
+                                    <thead><tr>
+                                        <th style="width: 30%;">MID</th>
+                                        <th style="width: 30%;">First Name</th>
+                                        <th style="width: 30%;">Last Name</th>
+                                        <th style="width: 10%;">Select</th>
+                                    </tr></thead>
+                                    <!-- Contents -->
+                                    <tbody><tr name="RepresentativesTableRow"
+                                        ng-repeat="r in myRepresentatives"
+                                        ng-click="showMore(r.representative)"
+                                        representativeId={{r.id}}>
+                                        <td name="midCell">{{r.representative.id}}</td>
+                                        <td name="firstNameCell">{{r.representative.firstName}}</td>
+                                        <td name="lastNameCell">{{r.representative.lastName}}</td>
                                         <!--------target of undeclaration------>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-                            <p style="color: green" ng-model="undeclarePatientMessage">{{undeclarePatientMessage}}</p>
-                            <!------------------------- Representative of ---------------------------------->
-
-                            <!------------------------- My Representatives --------------------------------->
-                            <table class="table table-hover table-bordered">
-                                <caption>
-                                    My Representatives:
-                                    <button ng-click="undeclareSelectedRepresentatives()" style="float: right;">
-                                        Undeclare
+                                        <td class="text-center" name="selectCell">
+                                            <input ng-change="updateSelectedRepresentatives(r)" ng-model="r.selected"
+                                                   type="checkbox">
+                                    </tr></tbody>
+                                </table>
+                                <!-- Undeclare message -->
+                                <p style="color: green" ng-model="undeclareMessage">{{undeclareMessage}}</p>
+                                <div class="text-center" style="margin-bottom: 20px;">
+                                    <button class="btn btn-primary" ng-click="showDeclareRepresentative()">
+                                        Declare a Representative
                                     </button>
-                                </caption>
-                                <thead>
-                                <tr>
-                                    <th style="width: 30%;">MID</th>
-                                    <th style="width: 30%;">First Name</th>
-                                    <th style="width: 30%;">Last Name</th>
-                                    <th style="width: 10%;">Select</th>
-                                    <!--
-                                    <th>Comment</th>
-                                    -->
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <!-- Contents -->
-                                <tr name="RepresentativesTableRow"
-                                    ng-repeat="r in myRepresentatives"
-                                    representativeId={{r.id}}>
-                                    <!-- <td name="nameCell">{{r.representative.firstName
-                                                        ? r.representative.firstName + " " + r.representative.lastName
-                                                        : r.representative.username}}</td> -->
-                                    <td name="midCell">{{r.representative.id}}</td>
-                                    <td name="firstNameCell">{{r.representative.firstName}}</td>
-                                    <td name="lastNameCell">{{r.representative.lastName}}</td>
-                                    <!--
-                                    <td name="commentCell">{{r.comment}}</td>
-                                    -->
-
-                                    <!--------target of undeclaration------>
-                                    <td class="text-center" name="selectCell">
-                                        <input ng-change="updateSelectedRepresentatives(r)" ng-model="r.selected"
-                                               type="checkbox">
-                                        <!--------target of undeclaration------>
-                                </tr>
-
-                                </tbody>
-                            </table>
-                            <p style="color: green" ng-model="undeclareMessage">{{undeclareMessage}}</p>
-                            <!------------------------- My Representatives --------------------------------->
-                            <!-------------------------Button to declare a representative------------>
-                            <!---This button shows hidden search section---->
-                            <div class="text-center" style="margin-bottom: 20px;">
-                                <button class="btn btn-primary" ng-click="showDeclareRepresentative()">
-                                    Declare a Representative
-                                </button>
+                                </div>
                             </div>
-                            <!-------------------------Button to declare a representative------------>
 
-                            <!----------------------------- Search Section----------------------------------->
-                            <div class="search-section" ng-show="showSearchSection">
-                                <!-- Search Form -->
-                                <form>
-                                    <div class="form-row align-items-center" style="display: flex; flex-direction: column;">
-                                        <div style="float: left; margin: 2.5% 2.5% 0 2.5%;">
-                                            <label style="font-size: 2rem;">Enter Name or MID:</label>
-                                            <p style="color: red" ng-model="declareMessage">{{declareMessage}}</p>
-                                        </div>
-                                        <div style="float: left; margin: 0 2.5% 0 2.5%; display: flex; flex-direction: row;">
-                                            <input name="search" ng-model="searchFilter" class="form-control"
-                                                style="width:70%; height: 40px;text-align: left;"
-                                                type="text" placeholder="Name or MID">
-                                            <button class="btn btn-primary" ng-click="declareRepresentative()"
-                                                style="width: 27.5%; height: 40px; margin-left: 2.5%;">
-                                                Confirm Declaration
-                                            </button>
-                                    </div>
-                                </form>
-                                <div style="clear: both;"></div>
-                                <!-- Search Results -->
-                                <div style="margin: 0 2.5% 0 2.5%;">
-                                    <ul class="list-group">
-                                        <li class="list-group-item" ng-repeat="patient in patients | filter:filterPatients"
-                                            ng-if="patient.username !== currentPatient.username"
-                                            style="width: 70%; height:40px;">
-                                            <!--To be completed-->
-                                            <div>
-                                                <label ng-click="$parent.selectPatient(patient)"
-                                                    style="font-size: 18px; cursor: pointer;">
-                                                    {{ $parent.displayName(patient) }}
-                                                </label>
+                            <!-- Side Panel -->
+                            <div style="width: 30%; padding: 1%; border-left: 1px solid #bbb;">
+                                <!-- Search section -->
+                                <div>
+                                    <div class="search-section" ng-show="showSearchSection">
+                                        <h3>Enter Name or MID:</h3>
+                                        <p style="color: red" ng-model="declareMessage">{{declareMessage}}</p>
+                                        <!-- Search Form -->
+                                        <form>
+                                            <div class="form-row align-items-center" style="display: flex; flex-direction: column;">
+                                                <div style="float: left; display: flex; flex-direction: row;">
+                                                    <input name="search" ng-model="searchFilter" class="form-control"
+                                                        style="width:75%; height: 40px;text-align: left;"
+                                                        type="text" placeholder="Name or MID">
+                                                    <button class="btn btn-primary" ng-click="declareRepresentative()"
+                                                        style="width: 22.5%; height: 40px; margin-left: 2.5%;">
+                                                        Confirm
+                                                    </button>
+                                                </div>
                                             </div>
-                                            <!--To be completed-->
-                                        </li>
-                                    </ul>   
+                                        </form>
+                                        <div style="clear: both;"></div>
+                                        <!-- Search Results -->
+                                        <div>
+                                            <ul class="list-group">
+                                                <li class="list-group-item" ng-repeat="patient in patients | filter:filterPatients"
+                                                    ng-if="patient.username !== currentPatient.username"
+                                                    style="width: 75%; height:40px;">
+                                                    <!--To be completed-->
+                                                    <div>
+                                                        <label ng-click="$parent.selectPatient(patient)"
+                                                            style="font-size: 18px; cursor: pointer;">
+                                                            {{ $parent.displayName(patient) }}
+                                                        </label>
+                                                    </div>
+                                                    <!--To be completed-->
+                                                </li>
+                                            </ul>   
+                                        </div>
+                                    </div>
                                 </div>
-
-                                <!-- No result message
-                                <div ng-if="(patient in patients | filter:filterPatients).length === 0">
-                                    <p style="font-size: 1.5rem;">No matching patients found.</p>
+                                <!-- View selected representative -->
+                                <div ng-if="viewRepresentative">
+                                    <h3>{{ displayName(viewRepresentative) }}</h3>
+                                    <table border="1" style="width: 100%;" class="table table-hover table-bordered">
+                                        <tr>
+                                            <td style="width: 40%;"><b>First Name</b></td>
+                                            <td style="padding-left: 10px; height: 35px;">{{viewRepresentative.firstName}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><b>Last Name</b></td>
+                                            <td style="padding-left: 10px; height: 35px;">{{viewRepresentative.lastName}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><b>Date of Birth</b></td>
+                                            <td style="padding-left: 10px; height: 35px;">{{viewRepresentative.dateOfBirth}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><b>Phone</b></td>
+                                            <td style="padding-left: 10px; height: 35px;">{{viewRepresentative.phone}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><b>Email</b></td>
+                                            <td style="padding-left: 10px; height: 35px;">{{viewRepresentative.email}}</td>
+                                        </tr>
+                                    </table>
+                                    <button class="btn btn-primary" style="float: right;" onclick="location.href = '/iTrust2/hcp/'">See More</button>
                                 </div>
-                                -->
                             </div>
-                            <!----------------------------- Search Section----------------------------------->
                         </div>
                     </div>
-                    <!--------------------------------- Panel--------------------------------------------------->
-
-
-                    
                 </div>
             </div>
         </div>
