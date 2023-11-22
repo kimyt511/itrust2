@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import edu.ncsu.csc.itrust2.models.enums.*;
-import edu.ncsu.csc.itrust2.models.Procedure;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -36,7 +35,7 @@ import edu.ncsu.csc.itrust2.utils.LoggerUtil;
 public class APIProcedureController extends APIController {
 
     @Autowired
-    private ProcedureService service;
+    private ProcedureService procedureService;
 
     @Autowired
     private LoggerUtil  loggerUtil;
@@ -56,8 +55,8 @@ public class APIProcedureController extends APIController {
     @PostMapping ( "/procedure" )
     public ResponseEntity addProcedure ( @RequestBody final ProcedureForm form ) {
         try {
-            final Procedure procedure = new Procedure( form );
-            service.save( procedure );
+            final Procedure procedure = procedureService.build(form);
+            procedureService.save( procedure );
             loggerUtil.log( TransactionType.HCP_CREATE_PROC, LoggerUtil.currentUser(),
                     "Procedure created" );
             return new ResponseEntity(procedure, HttpStatus.OK );
@@ -84,15 +83,15 @@ public class APIProcedureController extends APIController {
         final User self = userService.findByName(LoggerUtil.currentUser());
         try {
             // Check for existing Procedure in database
-            final Procedure savedProcedure = (Procedure) service.findById( form.getId() );
+            final Procedure savedProcedure = (Procedure) procedureService.findById( form.getId() );
             if ( savedProcedure == null ) {
                 return new ResponseEntity( errorResponse( "No Procedure found" ),
                         HttpStatus.NOT_FOUND );
             }
 
-            final Procedure procedure = new Procedure( form );
+            final Procedure procedure = procedureService.build(form);
 
-            service.save( procedure ); /* Overwrite existing Procedure */
+            procedureService.save( procedure ); /* Overwrite existing Procedure */
             if (self.getRoles().contains(Role.ROLE_HCP)){
                 loggerUtil.log( TransactionType.HCP_EDIT_PROC, LoggerUtil.currentUser(),
                         "Procedure with id " + procedure.getId() + " edited" );
@@ -129,7 +128,7 @@ public class APIProcedureController extends APIController {
     @DeleteMapping ( "/procedure/{id}" )
     public ResponseEntity deleteProcedure ( @PathVariable final String id ) {
         try {
-            final Procedure procedure= (Procedure) service.findById( Long.parseLong( id ) );
+            final Procedure procedure= (Procedure) procedureService.findById( Long.parseLong( id ) );
             if ( procedure == null ) {
                 loggerUtil.log( TransactionType.HCP_DELETE_PROC, LoggerUtil.currentUser(),
                         "Could not find Procedure with id " + id );
@@ -140,7 +139,7 @@ public class APIProcedureController extends APIController {
                         "Could not delete Procedure with progress " + ProcedureStatus.getName(procedure.getProcedureStatus().ordinal()) );
                 return new ResponseEntity( errorResponse( "No Procedure found with id " + id ), HttpStatus.NOT_FOUND );
             }
-            service.delete( procedure );
+            procedureService.delete( procedure );
             loggerUtil.log( TransactionType.HCP_DELETE_PROC, LoggerUtil.currentUser(),
                     "Deleted Procedure with id " + procedure.getId() );
             return new ResponseEntity( id, HttpStatus.OK );
@@ -161,7 +160,7 @@ public class APIProcedureController extends APIController {
     @PreAuthorize ( "hasRole('ROLE_HCP')" )
     public List<Procedure> getProcedure () {
         loggerUtil.log( TransactionType.HCP_VIEW_PROCS, LoggerUtil.currentUser(), "Fetched list of Procedures" );
-        return (List<Procedure>) service.findAll();
+        return (List<Procedure>) procedureService.findAll();
     }
 
     /**
@@ -176,7 +175,7 @@ public class APIProcedureController extends APIController {
     public List<Procedure> getProcedureForLabtech () {
         final User labtech = userService.findByName( LoggerUtil.currentUser() );
         loggerUtil.log( TransactionType.LABTECH_VIEW_PROCS, LoggerUtil.currentUser(), "Fetched list of Procedures" );
-        return service.findByLabtech( labtech );
+        return procedureService.findByLabtech( labtech );
     }
 
     /**
@@ -191,7 +190,7 @@ public class APIProcedureController extends APIController {
     public List<Procedure> getProcedureForPatient () {
         final User patient = userService.findByName( LoggerUtil.currentUser() );
         loggerUtil.log( TransactionType.PATIENT_VIEW_PROCS, LoggerUtil.currentUser(), "Fetched list of Procedures" );
-        return service.findByPatient( patient );
+        return procedureService.findByPatient( patient );
     }
 
     /**
@@ -209,7 +208,7 @@ public class APIProcedureController extends APIController {
         }
         else{
             loggerUtil.log( TransactionType.HCP_VIEW_PROCS, LoggerUtil.currentUser(), "Fetched list of Procedures" );
-            return new ResponseEntity( service.findByHcpAndPatient(hcp, patient), HttpStatus.OK);
+            return new ResponseEntity( procedureService.findByHcpAndPatient(hcp, patient), HttpStatus.OK);
         }
 
     }
@@ -227,7 +226,7 @@ public class APIProcedureController extends APIController {
     @PreAuthorize ( "hasRole('ROLE_LABTECH')" )
     public ResponseEntity reassignProcedure ( @PathVariable ( "id" ) final String id, @RequestBody final ProcedureForm form ) {
         try {
-            final Procedure savedProcedure = (Procedure) service.findById( form.getId() );
+            final Procedure savedProcedure = (Procedure) procedureService.findById( form.getId() );
             if ( savedProcedure == null ) {
                 return new ResponseEntity( errorResponse( "No Procedure found" ),
                         HttpStatus.NOT_FOUND );
@@ -235,9 +234,9 @@ public class APIProcedureController extends APIController {
             final User labtech = userService.findByName( id );
             form.setLabtech( labtech );
 
-            final Procedure procedure = new Procedure( form );
+            final Procedure procedure = procedureService.build(form);
 
-            service.save( procedure ); /* Overwrite existing Procedure */
+            procedureService.save( procedure ); /* Overwrite existing Procedure */
 
             loggerUtil.log( TransactionType.LABTECH_REASSIGN_PROC, LoggerUtil.currentUser(),
                     "Labtech reassign to " + id);

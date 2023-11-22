@@ -4,15 +4,18 @@ import javax.transaction.Transactional;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
 
 import edu.ncsu.csc.itrust2.models.User;
 import edu.ncsu.csc.itrust2.models.Procedure;
+import edu.ncsu.csc.itrust2.forms.ProcedureForm;
 import edu.ncsu.csc.itrust2.repositories.ProcedureRepository;
 
 @Component
 @Transactional
+@RequiredArgsConstructor
 public class ProcedureService extends Service {
 
     @Autowired
@@ -24,6 +27,32 @@ public class ProcedureService extends Service {
     @Override
     protected JpaRepository getRepository () {
         return repository;
+    }
+
+
+    /*
+    Procedure build will be made to be in sync just as in PrescriptionService or DiagnosisService.
+    Create setters and getters in relation to the procedure form.
+    This method is created in other files, this was made for the sake of harmony
+
+     */
+    public Procedure build(final ProcedureForm form) {
+        final Procedure pr = new Procedure();
+
+
+        pr.setCode (form.getCode() );
+        pr.setName( form.getName());
+        pr.setHcp(form.getHcp());
+        pr.setLabtech(form.getLabtech());
+        pr.setPatient(form.getPatient());
+        pr.setComment(form.getComment());
+        pr.setPriority(form.getPriority());
+        pr.setProcedureStatus(form.getProcedureStatus());
+        if (form.getId() != null) {
+            pr.setId(form.getId());
+        }
+
+        return pr;
     }
 
     public boolean existsByLabtech ( final User labtech ) {

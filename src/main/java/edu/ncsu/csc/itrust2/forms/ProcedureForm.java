@@ -7,6 +7,10 @@ import edu.ncsu.csc.itrust2.models.Procedure;
 import edu.ncsu.csc.itrust2.models.User;
 import edu.ncsu.csc.itrust2.models.enums.Priority;
 import edu.ncsu.csc.itrust2.models.enums.ProcedureStatus;
+
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 /**
  * A form for REST API communication. Contains fields for constructing Procedure
  * objects.
@@ -29,8 +33,12 @@ public class ProcedureForm {
     /**
      * Empty constructor for filling in fields without a Procedure object.
      */
+
+
     public ProcedureForm () {
     }
+
+
 
     /**
      * Constructs a new form with information from the given Procedure.
@@ -38,16 +46,16 @@ public class ProcedureForm {
      * @param Procedure
      *            the Procedure object
      */
-    public ProcedureForm ( final Procedure Procedure ) {
-        setId( Procedure.getId() );
-        setCode( Procedure.getCode() );
-        setName( Procedure.getName() );
-        setHcp(Procedure.getHcp());
-        setLabtech(Procedure.getLabtech());
-        setPatient(Procedure.getPatient());
-        setComment(Procedure.getComment());
-        setPriority(Procedure.getPriority());
-        setProcedureStatus(Procedure.getProcedureStatus());
+    public ProcedureForm ( final Procedure procedure ) {
+        setId( procedure.getId() );
+        setCode( procedure.getCode() );
+        setName( procedure.getName() );
+        setHcp(procedure.getHcp());
+        setLabtech(procedure.getLabtech());
+        setPatient(procedure.getPatient());
+        setComment(procedure.getComment());
+        setPriority(procedure.getPriority());
+        setProcedureStatus(procedure.getProcedureStatus());
     }
 
 

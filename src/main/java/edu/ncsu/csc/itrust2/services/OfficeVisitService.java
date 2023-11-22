@@ -10,6 +10,9 @@ import edu.ncsu.csc.itrust2.models.User;
 import edu.ncsu.csc.itrust2.models.enums.AppointmentType;
 import edu.ncsu.csc.itrust2.repositories.OfficeVisitRepository;
 
+import edu.ncsu.csc.itrust2.models.Procedure;
+import edu.ncsu.csc.itrust2.forms.ProcedureForm;
+
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -38,6 +41,9 @@ public class OfficeVisitService extends Service {
     private final PrescriptionService prescriptionService;
 
     private final DiagnosisService diagnosisService;
+
+    // added procedure service
+    private final ProcedureService procedureService;
 
     @Override
     protected JpaRepository getRepository() {
@@ -75,10 +81,10 @@ public class OfficeVisitService extends Service {
             at = AppointmentType.valueOf(ovf.getType());
         } catch (final NullPointerException npe) {
             at = AppointmentType.GENERAL_CHECKUP; /*
-                                                   * If for some reason we don't
-                                                   * have a type, default to
-                                                   * general checkup
-                                                   */
+             * If for some reason we don't
+             * have a type, default to
+             * general checkup
+             */
         }
         ov.setType(at);
 
@@ -91,10 +97,10 @@ public class OfficeVisitService extends Service {
                                 .filter(e -> e.getDate().equals(ov.getDate()))
                                 .collect(Collectors.toList())
                                 .get(0); /*
-                                    * We should have one and only one
-                                    * appointment for the provided HCP & patient
-                                    * and the time specified
-                                    */
+                 * We should have one and only one
+                 * appointment for the provided HCP & patient
+                 * and the time specified
+                 */
                 ov.setAppointment(match);
             } catch (final Exception e) {
                 throw new IllegalArgumentException(
@@ -121,6 +127,13 @@ public class OfficeVisitService extends Service {
         if (ps != null) {
             ov.setPrescriptions(
                     ps.stream().map(prescriptionService::build).collect(Collectors.toList()));
+        }
+
+        // Tried to copy above method.
+        final List<ProcedureForm> pr = ovf.getProcedures();
+        if (pr != null) {
+            ov.setProcedures(
+                    pr.stream().map(procedureService::build).collect(Collectors.toList()));
         }
 
         final Patient p = (Patient) ov.getPatient();
