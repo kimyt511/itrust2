@@ -13,6 +13,10 @@ import javax.validation.constraints.NotNull;
 
 public interface ProcedureRepository extends JpaRepository<Procedure, Long> {
 
+    public boolean existsByPatient ( User patient );
+
+    public List<Procedure> findByPatient ( User patient );
+
     public boolean existsByLabtech ( User labtech );
 
     public List<Procedure> findByLabtech ( User labtech );

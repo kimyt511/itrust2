@@ -1,5 +1,6 @@
 package edu.ncsu.csc.itrust2.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import edu.ncsu.csc.itrust2.forms.ProcedureForm;
 import org.hibernate.validator.constraints.Length;
 import edu.ncsu.csc.itrust2.models.enums.Priority;
@@ -75,6 +76,14 @@ public class Procedure extends DomainObject {
     @JoinColumn ( name = "patient_id", columnDefinition = "varchar(100)" )
     private User patient;
 
+    @Setter @Getter
+//    @NotNull
+    @ManyToOne
+    @JoinColumn(name = "visit_id", nullable = false)
+    @JsonBackReference
+    private OfficeVisit visit;
+
+    @Getter
     @NotEmpty
     @Length( max = 500 )
     private String comment;

@@ -3,7 +3,9 @@ package edu.ncsu.csc.itrust2.controllers.api;
 import java.util.List;
 import java.util.logging.Logger;
 
+import edu.ncsu.csc.itrust2.models.OfficeVisit;
 import edu.ncsu.csc.itrust2.models.enums.*;
+import edu.ncsu.csc.itrust2.services.OfficeVisitService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -42,6 +44,8 @@ public class APIProcedureController extends APIController {
 
     @Autowired
     private UserService  userService;
+
+    private OfficeVisitService officeVisitService;
 
     /**
      * Adds a new Procedure to the system. Returns an
@@ -248,4 +252,47 @@ public class APIProcedureController extends APIController {
                     HttpStatus.BAD_REQUEST );
         }
     }
+
+    /**
+     * Returns the Procedure with the specified ID.
+     *
+     * @param id The id of the Procedure to retrieved
+     * @return Response Entity containing the diagnosis if it exists
+     */
+    @GetMapping("/procedure/{id}")
+    public ResponseEntity getProcedure(@PathVariable("id") final Long id) {
+        final Procedure d = (Procedure) procedureService.findById(id);
+        loggerUtil.log(
+                TransactionType.DIAGNOSIS_VIEW_BY_ID,
+                LoggerUtil.currentUser(),
+                "Retrieved procedure with id " + id);
+        return null == d
+                ? new ResponseEntity(
+                errorResponse("No procedure found for id " + id), HttpStatus.NOT_FOUND)
+                : new ResponseEntity(d, HttpStatus.OK);
+    }
+
+    /**
+     * Returns a list of procedure for a specified office visit
+     *
+     * @param id The ID of the office visit to get procedure for
+     * @return List of procedure objects for the given visit
+     */
+    @GetMapping("/procedureforvisit/{id}")
+    public List<Procedure> getProcedureForVisit(@PathVariable("id") final Long id) {
+        // Check if office visit exists
+        if (!officeVisitService.existsById(id)) {
+            return null;
+        }
+
+        final OfficeVisit visit = (OfficeVisit) officeVisitService.findById(id);
+
+        loggerUtil.log(
+                TransactionType.DIAGNOSIS_VIEW_BY_OFFICE_VISIT,
+                LoggerUtil.currentUser(),
+                (visit).getPatient().getUsername(),
+                "Retrieved procedures for office visit with id " + id);
+        return visit.getProcedures();
+    }
+
 }
