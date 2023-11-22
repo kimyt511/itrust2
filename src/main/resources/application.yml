@@ -3,7 +3,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/itrust2_test?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul&useSSL=false
     username: root
-    password: 1234
+    password: root
     hikari:
       idleTimeout: 500
       connectionTimeout: 15000
