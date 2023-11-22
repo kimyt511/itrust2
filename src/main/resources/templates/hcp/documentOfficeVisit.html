@@ -598,12 +598,12 @@
 											<div class="form-check">
 												<ul
 														style="max-height: 15%; overflow: auto; list-style: none;">
-														<li ng-repeat="patient in patients | filter:searchFilter">
-															<label> <input type="radio"
-																ng-model="$parent.visit.patient" name="name"
-																value="{{patient.username}}" required="true"
-																ng-change='patientSelect(patient)'
-																id="{{patient.username}}" />&nbsp;{{patient.username}}
+													<li ng-repeat="patient in patients | filter:searchFilter">
+														<label> <input type="radio"
+																	   ng-model="$parent.visit.patient" name="name"
+																	   value="{{patient.username}}" required="true"
+																	   ng-change='patientSelect(patient)'
+																	   id="{{patient.username}}" />&nbsp;{{patient.username}}
 														</label>
 													</li>
 												</ul>
