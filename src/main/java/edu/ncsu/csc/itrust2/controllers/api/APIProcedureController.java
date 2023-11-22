@@ -3,8 +3,9 @@ package edu.ncsu.csc.itrust2.controllers.api;
 import java.util.List;
 import java.util.logging.Logger;
 
+import edu.ncsu.csc.itrust2.models.*;
 import edu.ncsu.csc.itrust2.models.enums.*;
-import edu.ncsu.csc.itrust2.models.Procedure;
+import edu.ncsu.csc.itrust2.services.OfficeVisitService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import edu.ncsu.csc.itrust2.forms.ProcedureForm;
-import edu.ncsu.csc.itrust2.models.User;
 import edu.ncsu.csc.itrust2.models.Procedure;
 import edu.ncsu.csc.itrust2.services.ProcedureService;
 import edu.ncsu.csc.itrust2.services.UserService;
@@ -30,19 +30,18 @@ import edu.ncsu.csc.itrust2.utils.LoggerUtil;
  * edit, fetch, and delete LOINC.
  *
  */
-@SuppressWarnings ( { "unchecked", "rawtypes" } )
 @RestController
 @RequiredArgsConstructor
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class APIProcedureController extends APIController {
 
-    @Autowired
-    private ProcedureService service;
+    private final ProcedureService service;
 
-    @Autowired
-    private LoggerUtil  loggerUtil;
+    private final LoggerUtil  loggerUtil;
 
-    @Autowired
-    private UserService  userService;
+    private final UserService  userService;
+
+    private final OfficeVisitService officeVisitService;
 
     /**
      * Adds a new Procedure to the system. Returns an
@@ -159,7 +158,7 @@ public class APIProcedureController extends APIController {
      */
     @GetMapping ( "/procedure" )
     @PreAuthorize ( "hasRole('ROLE_HCP')" )
-    public List<Procedure> getProcedure () {
+    public List<Procedure> getProcedures () {
         loggerUtil.log( TransactionType.HCP_VIEW_PROCS, LoggerUtil.currentUser(), "Fetched list of Procedures" );
         return (List<Procedure>) service.findAll();
     }
@@ -249,4 +248,47 @@ public class APIProcedureController extends APIController {
                     HttpStatus.BAD_REQUEST );
         }
     }
+
+    /**
+     * Returns the Procedure with the specified ID.
+     *
+     * @param id The id of the Procedure to retrieved
+     * @return Response Entity containing the diagnosis if it exists
+     */
+    @GetMapping("/procedure/{id}")
+    public ResponseEntity getProcedure(@PathVariable("id") final Long id) {
+        final Procedure d = (Procedure) service.findById(id);
+        loggerUtil.log(
+                TransactionType.DIAGNOSIS_VIEW_BY_ID,
+                LoggerUtil.currentUser(),
+                "Retrieved procedure with id " + id);
+        return null == d
+                ? new ResponseEntity(
+                errorResponse("No procedure found for id " + id), HttpStatus.NOT_FOUND)
+                : new ResponseEntity(d, HttpStatus.OK);
+    }
+
+    /**
+     * Returns a list of procedure for a specified office visit
+     *
+     * @param id The ID of the office visit to get procedure for
+     * @return List of procedure objects for the given visit
+     */
+    @GetMapping("/procedureforvisit/{id}")
+    public List<Procedure> getProcedureForVisit(@PathVariable("id") final Long id) {
+        // Check if office visit exists
+        if (!officeVisitService.existsById(id)) {
+            return null;
+        }
+
+        final OfficeVisit visit = (OfficeVisit) officeVisitService.findById(id);
+
+        loggerUtil.log(
+                TransactionType.DIAGNOSIS_VIEW_BY_OFFICE_VISIT,
+                LoggerUtil.currentUser(),
+                (visit).getPatient().getUsername(),
+                "Retrieved procedures for office visit with id " + id);
+        return visit.getProcedures();
+    }
+
 }
