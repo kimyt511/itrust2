@@ -2,7 +2,10 @@ package edu.ncsu.csc.itrust2.services;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import edu.ncsu.csc.itrust2.models.OfficeVisit;
+import edu.ncsu.csc.itrust2.repositories.OfficeVisitRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -23,6 +26,9 @@ public class ProcedureService extends Service {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private OfficeVisitRepository officeVisitRepository;
 
     @Override
     protected JpaRepository getRepository () {
@@ -55,6 +61,13 @@ public class ProcedureService extends Service {
         return pr;
     }
 
+    public List<Procedure> findByPatient(final User patient) {
+        return officeVisitRepository.findByPatient(patient).stream()
+                .map(e -> findByVisit(e))
+                .flatMap(e -> e.stream())
+                .collect(Collectors.toList());
+    }
+
     public boolean existsByLabtech ( final User labtech ) {
         return repository.existsByLabtech( labtech );
     }
@@ -65,10 +78,6 @@ public class ProcedureService extends Service {
 
     public boolean existsByPatient ( final User patient){
         return repository.existsByPatient(patient);
-    }
-
-    public List<Procedure> findByPatient( final User patient){
-        return repository.findByPatient(patient);
     }
     public boolean existsByHcp ( final User hcp){
         return repository.existsByHcp(hcp);
@@ -81,4 +90,8 @@ public class ProcedureService extends Service {
     public boolean existsByHcpAndPatient (final User hcp, final User patient){ return repository.existsByHcpAndPatient(hcp, patient);}
 
     public List<Procedure> findByHcpAndPatient(final User hcp, final User patient){ return repository.findByHcpAndPatient(hcp, patient);}
+
+    public List<Procedure> findByVisit(final OfficeVisit visit) {
+        return repository.findByVisit(visit);
+    }
 }

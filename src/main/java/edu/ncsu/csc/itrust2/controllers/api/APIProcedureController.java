@@ -46,6 +46,8 @@ public class APIProcedureController extends APIController {
     @Autowired
     private OfficeVisitService officeVisitService;
 
+    private OfficeVisitService officeVisitService;
+
     /**
      * Adds a new Procedure to the system. Returns an
      * error message if something goes wrong.

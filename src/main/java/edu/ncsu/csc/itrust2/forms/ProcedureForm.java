@@ -3,6 +3,7 @@ package edu.ncsu.csc.itrust2.forms;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
+import edu.ncsu.csc.itrust2.models.OfficeVisit;
 import edu.ncsu.csc.itrust2.models.Procedure;
 import edu.ncsu.csc.itrust2.models.User;
 import edu.ncsu.csc.itrust2.models.enums.Priority;
@@ -30,6 +31,8 @@ public class ProcedureForm {
     private Priority priority;
     private ProcedureStatus procedureStatus;
 
+    private OfficeVisit visit;
+
     /**
      * Empty constructor for filling in fields without a Procedure object.
      */
@@ -46,16 +49,17 @@ public class ProcedureForm {
      * @param Procedure
      *            the Procedure object
      */
-    public ProcedureForm ( final Procedure procedure ) {
-        setId( procedure.getId() );
-        setCode( procedure.getCode() );
-        setName( procedure.getName() );
-        setHcp(procedure.getHcp());
-        setLabtech(procedure.getLabtech());
-        setPatient(procedure.getPatient());
-        setComment(procedure.getComment());
-        setPriority(procedure.getPriority());
-        setProcedureStatus(procedure.getProcedureStatus());
+    public ProcedureForm ( final Procedure Procedure ) {
+        setId( Procedure.getId() );
+        setCode( Procedure.getCode() );
+        setName( Procedure.getName() );
+        setHcp(Procedure.getHcp());
+        setLabtech(Procedure.getLabtech());
+        setPatient(Procedure.getPatient());
+        setComment(Procedure.getComment());
+        setPriority(Procedure.getPriority());
+        setProcedureStatus(Procedure.getProcedureStatus());
+        setVisit(Procedure.getVisit());
     }
 
 
@@ -112,6 +116,13 @@ public class ProcedureForm {
     }
     public void setProcedureStatus(final ProcedureStatus procedureStatus) {
         this.procedureStatus = procedureStatus;
+    }
+
+    public OfficeVisit getVisit() {
+        return visit;
+    }
+    public void setVisit(final OfficeVisit visit) {
+        this.visit = visit;
     }
 
 }
