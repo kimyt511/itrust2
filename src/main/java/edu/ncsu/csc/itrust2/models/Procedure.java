@@ -6,6 +6,9 @@ import edu.ncsu.csc.itrust2.models.enums.Priority;
 import edu.ncsu.csc.itrust2.models.enums.ProcedureStatus;
 import edu.ncsu.csc.itrust2.models.User;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -14,6 +17,8 @@ import javax.validation.constraints.Pattern;
 /**
  * Represents a Procedure.
  */
+
+@Getter
 @Entity
 @Table(name="lab_procedure")
 public class Procedure extends DomainObject {
@@ -27,6 +32,7 @@ public class Procedure extends DomainObject {
      * @param form
      *            the form to base the new Procedure on
      */
+    /*
     public Procedure ( final ProcedureForm form ) {
         setId( form.getId() );
         setCode (form.getCode() );
@@ -38,6 +44,7 @@ public class Procedure extends DomainObject {
         setPriority(form.getPriority());
         setProcedureStatus(form.getProcedureStatus());
     }
+    */
 
     @Id
     @GeneratedValue( strategy = GenerationType.AUTO )

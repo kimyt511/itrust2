@@ -56,7 +56,7 @@ public class APIProcedureController extends APIController {
     @PostMapping ( "/procedure" )
     public ResponseEntity addProcedure ( @RequestBody final ProcedureForm form ) {
         try {
-            final Procedure procedure = new Procedure( form );
+            final Procedure procedure = service.build(form);
             service.save( procedure );
             loggerUtil.log( TransactionType.HCP_CREATE_PROC, LoggerUtil.currentUser(),
                     "Procedure created" );
@@ -90,7 +90,7 @@ public class APIProcedureController extends APIController {
                         HttpStatus.NOT_FOUND );
             }
 
-            final Procedure procedure = new Procedure( form );
+            final Procedure procedure = service.build(form);
 
             service.save( procedure ); /* Overwrite existing Procedure */
             if (self.getRoles().contains(Role.ROLE_HCP)){
@@ -235,7 +235,7 @@ public class APIProcedureController extends APIController {
             final User labtech = userService.findByName( id );
             form.setLabtech( labtech );
 
-            final Procedure procedure = new Procedure( form );
+            final Procedure procedure = service.build(form);
 
             service.save( procedure ); /* Overwrite existing Procedure */
 

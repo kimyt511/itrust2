@@ -32,15 +32,16 @@ public class DiagnosisService extends Service {
     }
 
     public Diagnosis build(final DiagnosisForm form) {
-        var id = form.getId();
-        if (null == id) {
-            return null;
-        }
+
         final Diagnosis diag = new Diagnosis();
-        diag.setVisit(officeVisitRepository.findById(id).orElse(null));
+        // officeVisitRepository does not have findById!!!! DO NOT USE
+        //diag.setVisit(officeVisitRepository.findById(form.getId()).orElse(null));
         diag.setNote(form.getNote());
         diag.setCode(icdCodeService.findByCode(form.getCode()));
-        diag.setId(form.getId());
+
+        if (form.getId() != null) {
+            diag.setId(form.getId());
+        }
 
         return diag;
     }
