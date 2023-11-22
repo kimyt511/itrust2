@@ -16,6 +16,10 @@ public interface ProcedureRepository extends JpaRepository<Procedure, Long> {
     public boolean existsByLabtech ( User labtech );
 
     public List<Procedure> findByLabtech ( User labtech );
+    public boolean existsByPatient ( User patient );
+
+    public List<Procedure> findByPatient ( User patient );
+
     public boolean existsByHcp ( User hcp );
 
     public List<Procedure> findByHcp ( User hcp );
@@ -23,7 +27,5 @@ public interface ProcedureRepository extends JpaRepository<Procedure, Long> {
     public boolean existsByHcpAndPatient (User hcp, User patient);
 
     public List<Procedure> findByHcpAndPatient(User hcp, User patient);
-
-    public List<Procedure> findByVisit(@NotNull OfficeVisit visit);
 
 }
