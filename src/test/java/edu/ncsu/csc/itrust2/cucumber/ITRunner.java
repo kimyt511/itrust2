@@ -14,17 +14,17 @@ import org.junit.runner.RunWith;
  * @author Kai Presler-Marshall
  * @author Sarah Elder
  */
-@RunWith(Cucumber.class)
-@CucumberOptions(features = "src/test/resources/edu/ncsu/csc/itrust/cucumber/")
-public class ITRunner {
+// @RunWith(Cucumber.class)
+// @CucumberOptions(features = "src/test/resources/edu/ncsu/csc/itrust/cucumber/")
+// public class ITRunner {
 
-    @BeforeClass
-    public static void setUp() {
-        CucumberTest.setup();
-    }
+//     @BeforeClass
+//     public static void setUp() {
+//         CucumberTest.setup();
+//     }
 
-    @AfterClass
-    public static void tearDown() {
-        CucumberTest.tearDown();
-    }
-}
+//     @AfterClass
+//     public static void tearDown() {
+//         CucumberTest.tearDown();
+//     }
+// }
