@@ -56,7 +56,11 @@ dependencies {
     testImplementation("io.cucumber:cucumber-spring:7.14.0")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test:5.3.6.RELEASE")
-    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.7.1")
+
+    testCompileOnly("junit:junit:4.13.2")
+    testRuntimeOnly("org.junit.vintage:junit-vintage-engine")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 spotless {
@@ -102,6 +106,7 @@ tasks.jacocoTestReport {
 tasks.jacocoTestCoverageVerification {
   violationRules {
     rule {
+        enabled = true
       element = "CLASS"
 
       limit {

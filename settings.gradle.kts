@@ -1,1 +1,1 @@
-rootProject.name = "iTrust2"
+rootProject.name = "itrust2"
