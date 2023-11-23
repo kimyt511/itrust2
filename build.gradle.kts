@@ -91,7 +91,7 @@ tasks.jacocoTestReport {
     // 원하는 리포트를 켜고 끌 수 있습니다.
     html.required.set(true)
     xml.required.set(false)
-    csv.required.set(false)
+    csv.required.set(true)
 
 //  각 리포트 타입 마다 리포트 저장 경로를 설정할 수 있습니다.
 //  html.destination = file("$buildDir/jacocoHtml")
