@@ -68,7 +68,12 @@ To run the style check and unit tests, use the Gradle wrapper.
   ```bash
   ./gradlew test
   ```
-
+- **Jacoco Report Creation**: This will run and create jacoco report
+   - Note: change `build.gradle.kts` file to change report type or coverage limit
+      - default: `build/reports/tests/test/index.html`
+  ```bash
+  ./gradlew testCoverage
+  ```
 ## Team Operation and Collaboration
 
 - **Iteration Phases**: The project is divided into three iterations - from iteration 1 to 3.
