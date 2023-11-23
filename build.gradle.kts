@@ -1,5 +1,6 @@
 plugins {
     java
+    jacoco
     id("org.springframework.boot") version "2.7.16"
     id("io.spring.dependency-management") version "1.1.3"
 
@@ -79,8 +80,59 @@ spotless {
     }
 }
 
+
+jacoco {
+  // JaCoCo 버전
+  toolVersion = "0.8.7"
+}
+
+tasks.jacocoTestReport {
+  reports {
+    // 원하는 리포트를 켜고 끌 수 있습니다.
+    html.required.set(true)
+    xml.required.set(false)
+    csv.required.set(false)
+
+//  각 리포트 타입 마다 리포트 저장 경로를 설정할 수 있습니다.
+//  html.destination = file("$buildDir/jacocoHtml")
+//  xml.destination = file("$buildDir/jacoco.xml")
+  }
+}
+
+tasks.jacocoTestCoverageVerification {
+  violationRules {
+    rule {
+      element = "CLASS"
+
+      limit {
+        counter = "BRANCH"
+        value = "COVEREDRATIO"
+        minimum = "0.00".toBigDecimal()
+      }
+    }
+  }
+}
+
+tasks.test {
+  extensions.configure(JacocoTaskExtension::class) {
+    destinationFile = file("$buildDir/jacoco/jacoco.exec")
+  }
+}
+
 tasks {
     withType<Test> {
         useJUnitPlatform()
     }
+}
+
+val testCoverage by tasks.registering {
+  group = "verification"
+  description = "Runs the unit tests with coverage"
+
+  dependsOn(":test",
+            ":jacocoTestReport",
+            ":jacocoTestCoverageVerification")
+
+  tasks["jacocoTestReport"].mustRunAfter(tasks["test"])
+  tasks["jacocoTestCoverageVerification"].mustRunAfter(tasks["jacocoTestReport"])
 }
