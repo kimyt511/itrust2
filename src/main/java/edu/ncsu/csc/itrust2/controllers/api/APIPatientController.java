@@ -1,15 +1,14 @@
 package edu.ncsu.csc.itrust2.controllers.api;
 
+import edu.ncsu.csc.itrust2.dto.PatientDto;
 import edu.ncsu.csc.itrust2.forms.PatientForm;
 import edu.ncsu.csc.itrust2.models.Patient;
 import edu.ncsu.csc.itrust2.models.User;
+import edu.ncsu.csc.itrust2.models.enums.Role;
 import edu.ncsu.csc.itrust2.models.enums.TransactionType;
 import edu.ncsu.csc.itrust2.services.PatientService;
 import edu.ncsu.csc.itrust2.services.UserService;
 import edu.ncsu.csc.itrust2.utils.LoggerUtil;
-
-import java.util.List;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,11 +16,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * Controller responsible for providing various REST API endpoints for the Patient model.
@@ -190,5 +187,31 @@ public class APIPatientController extends APIController {
             final String[] zipParts = zip.split("-");
             return new ResponseEntity(zipParts, HttpStatus.OK);
         }
+    }
+
+    @GetMapping ( "/patients/search/{keyword}" )
+    public List<PatientDto> searchUsersByKeyword ( @PathVariable ( "keyword" ) final String keyword ) {
+        return (List<PatientDto>) patientService.findByNameContaining( keyword );
+    }
+
+    @GetMapping ("/patients/searchmid/{keyword}" )
+    public List<PatientDto> searchUsers ( @PathVariable ( "keyword" ) final String keyword ) {
+        return (List<PatientDto>) patientService.findByUsernameContaining( keyword );
+    }
+
+    @GetMapping("/patients/ehr/{username}")
+    public ResponseEntity getEhrDto( @PathVariable ( "username" ) final String username ){
+        final Patient patient = (Patient) patientService.findByName(username);
+        PatientDto p = new PatientDto(patient);
+        final User self = userService.findByName( LoggerUtil.currentUser() );
+        if(self.getRoles().contains( Role.ROLE_HCP )) {
+            loggerUtil.log( TransactionType.HCP_VIEW_ER, self.getUsername(),
+                    username,  self.getUsername() + " viewed a " + username +"'s Emergency Health Records" );
+        }
+        else if(self.getRoles().contains( Role.ROLE_ER )) {
+            loggerUtil.log( TransactionType.ER_VIEW_ER, self.getUsername(),
+                    username,  self.getUsername() + " viewed a " + username +"'s Emergency Health Records" );
+        }
+        return new ResponseEntity(p, HttpStatus.OK);
     }
 }

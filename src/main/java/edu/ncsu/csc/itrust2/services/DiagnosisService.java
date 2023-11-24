@@ -52,4 +52,8 @@ public class DiagnosisService extends Service {
     public List<Diagnosis> findByVisit(final OfficeVisit visit) {
         return repository.findByVisit(visit);
     }
+
+    public List<Long> findByUserName ( final String patientId ) {
+        return repository.findDiagnosisIdsForPatientLast60Days(patientId);
+    }
 }

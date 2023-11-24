@@ -4,14 +4,13 @@ import edu.ncsu.csc.itrust2.forms.PrescriptionForm;
 import edu.ncsu.csc.itrust2.models.Prescription;
 import edu.ncsu.csc.itrust2.models.User;
 import edu.ncsu.csc.itrust2.repositories.PrescriptionRepository;
-
-import java.time.LocalDate;
-import java.util.List;
-import javax.transaction.Transactional;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
+
+import javax.transaction.Transactional;
+import java.time.LocalDate;
+import java.util.List;
 
 @Component
 @Transactional
@@ -49,5 +48,9 @@ public class PrescriptionService extends Service {
 
     public List<Prescription> findByPatient(final User patient) {
         return repository.findByPatient(patient);
+    }
+
+    public List<Long> findByUserName ( final String patientId ) {
+        return repository.findPrescriptionIdsForPatientLast90Days(patientId);
     }
 }
