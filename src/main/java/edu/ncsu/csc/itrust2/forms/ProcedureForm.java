@@ -59,7 +59,6 @@ public class ProcedureForm {
         setComment(Procedure.getComment());
         setPriority(Procedure.getPriority());
         setProcedureStatus(Procedure.getProcedureStatus());
-        setVisit(Procedure.getVisit());
     }
 
 
@@ -116,13 +115,6 @@ public class ProcedureForm {
     }
     public void setProcedureStatus(final ProcedureStatus procedureStatus) {
         this.procedureStatus = procedureStatus;
-    }
-
-    public OfficeVisit getVisit() {
-        return visit;
-    }
-    public void setVisit(final OfficeVisit visit) {
-        this.visit = visit;
     }
 
 }

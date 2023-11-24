@@ -27,9 +27,6 @@ public class ProcedureService extends Service {
     @Autowired
     private UserService userService;
 
-    @Autowired
-    private OfficeVisitRepository officeVisitRepository;
-
     @Override
     protected JpaRepository getRepository () {
         return repository;

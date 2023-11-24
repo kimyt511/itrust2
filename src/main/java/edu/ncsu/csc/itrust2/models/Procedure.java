@@ -76,13 +76,6 @@ public class Procedure extends DomainObject {
     @JoinColumn ( name = "patient_id", columnDefinition = "varchar(100)" )
     private User patient;
 
-    @Setter @Getter
-//    @NotNull
-    @ManyToOne
-    @JoinColumn(name = "visit_id", nullable = false)
-    @JsonBackReference
-    private OfficeVisit visit;
-
     @Getter
     @NotEmpty
     @Length( max = 500 )
