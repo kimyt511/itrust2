@@ -1,5 +1,6 @@
 package edu.ncsu.csc.itrust2.controllers.api;
 
+import edu.ncsu.csc.itrust2.dto.EhrDto;
 import edu.ncsu.csc.itrust2.dto.PatientDto;
 import edu.ncsu.csc.itrust2.forms.PatientForm;
 import edu.ncsu.csc.itrust2.models.Patient;
@@ -202,7 +203,7 @@ public class APIPatientController extends APIController {
     @GetMapping("/patients/ehr/{username}")
     public ResponseEntity getEhrDto( @PathVariable ( "username" ) final String username ){
         final Patient patient = (Patient) patientService.findByName(username);
-        PatientDto p = new PatientDto(patient);
+        EhrDto p = new EhrDto(patient);
         final User self = userService.findByName( LoggerUtil.currentUser() );
         if(self.getRoles().contains( Role.ROLE_HCP )) {
             loggerUtil.log( TransactionType.HCP_VIEW_ER, self.getUsername(),

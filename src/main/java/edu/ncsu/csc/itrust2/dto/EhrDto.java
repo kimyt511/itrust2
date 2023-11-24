@@ -24,5 +24,6 @@ public class EhrDto {
         this.dateOfBirth = p.getDateOfBirth();
         this.bloodType = p.getBloodType();
         this.gender = p.getGender();
+        System.out.println(p.getBloodType());
     }
 }
