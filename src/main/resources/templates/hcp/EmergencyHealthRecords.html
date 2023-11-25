@@ -8,8 +8,6 @@
 	<div th:fragment="content">
 
 		<script th:inline="javascript">
-			/* Otherwise Thymeleaf tries to parse Javascript as XML and breaks itself sometimes.  Sigh */
-			/*<![CDATA[*/
 
 			var app = angular.module('myApp', ['dateTimeServices']);
 			app.controller('EmergencyHealthRecordsCtrl', function($scope, $http, dateTimeService) {
@@ -25,13 +23,14 @@
 					$http.get("/iTrust2/api/v1/patients/ehr/"+patient.username).then(
 						function(response) {
 							$scope.demographics = response.data;
-							var dateOfBirth = new Date($scope.demographics.dateOfBirth);
-							var today = new Date();
+							const dateOfBirth = new Date($scope.demographics.dateOfBirth);
+							const today = new Date();
 							$scope.demographics.age = today.getFullYear() - dateOfBirth.getFullYear();
-							var monthDiff = today.getMonth() - dateOfBirth.getMonth();
-							if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+							const monthDiff = today.getMonth() - dateOfBirth.getMonth();
+							if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dateOfBirth.getDate())) {
 								$scope.demographics.age--;
 							}
+
 							$scope.message = "";
 						}, function(rejection) {
 							$scope.demographics = [];
@@ -55,20 +54,7 @@
 							$scope.prescriptions = [];
 							$scope.message = "Could not display prescriptions";
 					});
-					// $scope.selectedPatient = patient.username;
-					// pf.age = today;
 					
-					// swap out enum id's for names
-					// for (var i in $scope.bloodTypes)
-					// 	if (demographics.bloodType == $scope.bloodTypes[i].id) {
-					// 		pf.bloodType = $scope.bloodTypes[i].name;
-					// 		break;
-					// 	}
-					// for (var i in $scope.genders)
-					// 	if (demographics.gender == $scope.genders[i].id) {
-					// 		pf.gender = $scope.genders[i].name;
-					// 		break;
-					// 	}
 				}
 
 				$scope.searchedMID = "";
@@ -190,8 +176,8 @@
 								<td name="username">{{demographics.username}}</td>
 								<td name="Age", ng-bind="demographics.age"></td>
 								<td name="dateOfBirth", ng-bind="demographics.dateOfBirth"></td>
-								<td name="gender", ng-bind="demographics.gender.name"></td>
-								<td name="bloodType", ng-bind="demographics.bloodType.name"></td>
+								<td name="gender", ng-bind="demographics.gender"></td>
+								<td name="bloodType", ng-bind="demographics.bloodType"></td>
 							</tr>
 						</tbody>
 					</table>
