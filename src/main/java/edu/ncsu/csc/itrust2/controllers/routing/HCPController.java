@@ -51,19 +51,6 @@ public class HCPController {
     public String editPrescriptions() {
         return "/hcp/editPrescriptions";
     }
-
-    /**
-     * Returns the ER for the given model
-     *
-     * @param model model to check
-     * @return role
-     */
-    @RequestMapping(value = "hcp/records")
-    @PreAuthorize("hasRole('ROLE_HCP')")
-    public String emergencyRecords(final Model model) {
-        return "personnel/records";
-    }
-
     /**
      * Method responsible for HCP's Accept/Reject requested appointment functionality. This prepares
      * the page.

@@ -29,19 +29,6 @@ public class ERController {
     public String index(final Model model) {
         return Role.ROLE_ER.getLandingPage();
     }
-
-    /**
-     * Returns the ER for the given model
-     *
-     * @param model model to check
-     * @return role
-     */
-    @RequestMapping(value = "er/records")
-    @PreAuthorize("hasRole('ROLE_ER')")
-    public String emergencyRecords(final Model model) {
-        return "personnel/records";
-    }
-    
     /**
      * Returns the ER for the given model
      *
@@ -51,6 +38,6 @@ public class ERController {
     @GetMapping ( "/er/EmergencyHealthRecords" )
     @PreAuthorize ( "hasRole('ROLE_ER')" )
     public String EmergencyHealthRecords ( final Model model ) {
-        return "/hcp/EmergencyHealthRecords";
+        return "/er/EmergencyHealthRecords";
     }
 }
