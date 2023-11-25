@@ -323,7 +323,8 @@
                                 <div>
                                     <div class="search-section" ng-show="showSearchSection">
                                         <h3>Enter Name or MID:</h3>
-                                        <p style="color: red" ng-model="declareMessage">{{declareMessage}}</p>
+                                        <p ng-style="{'color': declareMessage ===
+                                        'Declaration confirmed successfully' ? 'green' : 'red'}">{{declareMessage}}</p>
                                         <!-- Search Form -->
                                         <form>
                                             <div class="form-row align-items-center" style="display: flex; flex-direction: column;">

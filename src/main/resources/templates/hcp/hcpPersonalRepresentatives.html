@@ -276,7 +276,8 @@
                 <!-- Search Form -->
                 <div style="float: left;">
                     <h3 style="font-size: 2.2rem;">Enter Name or MID:</h3>
-                    <p style="color: red" ng-model="declareMessage">{{declareMessage}}</p>
+                    <p ng-style="{'color': declareMessage ===
+                                        'Declaration confirmed successfully' ? 'green' : 'red'}">{{declareMessage}}</p>
                 </div>
                 <form>
                     <div class="form-row align-items-center">
