@@ -66,7 +66,11 @@ public class APIUserTest {
         Assert.assertEquals(
                 "There should be one user in the system after creating a User", 1, service.count());
 
+        // final User u_tmp = new User(USER_2, PW, Role.ROLE_HCP, 1);
         final UserForm u2 = new UserForm(USER_2, PW, Role.ROLE_HCP, 1);
+        
+        final String USER_3 = "API_USER_3";
+        final UserForm u3 = new UserForm(USER_3, PW, Role.ROLE_HCP, 0);
 
         u2.addRole(Role.ROLE_VIROLOGIST.toString());
         u2.addRole(Role.ROLE_OPH.toString());

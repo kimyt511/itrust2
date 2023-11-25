@@ -2,6 +2,7 @@ package edu.ncsu.csc.itrust2.api;
 
 import edu.ncsu.csc.itrust2.common.TestUtils;
 import edu.ncsu.csc.itrust2.models.Hospital;
+import edu.ncsu.csc.itrust2.forms.HospitalForm;
 import edu.ncsu.csc.itrust2.services.HospitalService;
 
 import javax.transaction.Transactional;
@@ -146,4 +147,20 @@ public class APIHospitalTest {
             // likewise, exception is OK too
         }
     }
+
+    @Test
+    @Transactional
+    @WithMockUser(
+            username = "admin",
+            roles = {"ADMIN"})
+    public void testHospitalForm() throws Exception {
+        final Hospital hospital =
+                new Hospital("iTrust Test Hospital 2", "1 iTrust Test Street", "27607", "NC");
+        boolean flag = false;
+        final HospitalForm hf = new HospitalForm(hospital);
+        flag = true;
+
+        Assert.assertTrue(flag);
+    }
+
 }
