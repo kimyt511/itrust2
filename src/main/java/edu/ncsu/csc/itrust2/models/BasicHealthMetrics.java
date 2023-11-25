@@ -93,6 +93,7 @@ public class BasicHealthMetrics extends DomainObject {
      */
     public void setHeight(final Float height) {
         if (height == null) {
+            this.height = null;
             return;
         }
 
@@ -110,6 +111,7 @@ public class BasicHealthMetrics extends DomainObject {
      */
     public void setWeight(final Float weight) {
         if (weight == null) {
+            this.weight=null;
             return;
         }
         if (!Pattern.matches("^[0-9]{1,3}(\\.[0-9]?)?$", String.valueOf(weight))) {
@@ -126,6 +128,7 @@ public class BasicHealthMetrics extends DomainObject {
      */
     public void setHeadCircumference(final Float headCircumference) {
         if (headCircumference == null) {
+            this.headCircumference = null;
             return;
         }
         if (!Pattern.matches("^[0-9]{1,3}(\\.[0-9]?)?$", String.valueOf(headCircumference))) {
@@ -142,6 +145,7 @@ public class BasicHealthMetrics extends DomainObject {
      */
     public void setDiastolic(final Integer diastolic) {
         if (diastolic == null) {
+            this.diastolic = null;
             return;
         }
         if (diastolic < 0 || diastolic > 999) {
@@ -157,6 +161,7 @@ public class BasicHealthMetrics extends DomainObject {
      */
     public void setSystolic(final Integer systolic) {
         if (systolic == null) {
+            this.systolic = null;
             return;
         }
         if (systolic < 0 || systolic > 999) {
@@ -172,6 +177,7 @@ public class BasicHealthMetrics extends DomainObject {
      */
     public void setHdl(final Integer hdl) {
         if (hdl == null) {
+            this.hdl = null;
             return;
         }
         if (hdl < 0 || hdl > 90) {
@@ -187,6 +193,7 @@ public class BasicHealthMetrics extends DomainObject {
      */
     public void setLdl(final Integer ldl) {
         if (ldl == null) {
+            this.ldl = null;
             return;
         }
         if (ldl < 0 || ldl > 600) {
@@ -202,6 +209,7 @@ public class BasicHealthMetrics extends DomainObject {
      */
     public void setTri(final Integer tri) {
         if (tri == null) {
+            this.tri = null;
             return;
         }
         if (tri < 100 || tri > 600) {

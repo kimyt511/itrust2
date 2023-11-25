@@ -214,6 +214,17 @@ public class APIDiagnosisTest {
         // edit a diagnosis within the editing of office visit and check they
         // work.
         form.setId(id + "");
+        d.setNote(("Edited").repeat(500));
+        form.setDiagnoses(list.stream().map(DiagnosisForm::new).collect(Collectors.toList()));
+        content =
+                mvc.perform(
+                                put("/api/v1/officevisits/" + id)
+                                        .contentType(MediaType.APPLICATION_JSON)
+                                        .content(TestUtils.asJsonString(form)))
+                        .andReturn()
+                        .getResponse()
+                        .getContentAsString();
+
         d.setNote("Edited");
         form.setDiagnoses(list.stream().map(DiagnosisForm::new).collect(Collectors.toList()));
         content =

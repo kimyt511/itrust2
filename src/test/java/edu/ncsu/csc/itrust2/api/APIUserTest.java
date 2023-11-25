@@ -7,6 +7,8 @@ import edu.ncsu.csc.itrust2.models.User;
 import edu.ncsu.csc.itrust2.models.enums.Role;
 import edu.ncsu.csc.itrust2.services.UserService;
 
+import java.util.Set;
+
 import javax.transaction.Transactional;
 
 import org.junit.Assert;
@@ -68,10 +70,8 @@ public class APIUserTest {
 
         // final User u_tmp = new User(USER_2, PW, Role.ROLE_HCP, 1);
         final UserForm u2 = new UserForm(USER_2, PW, Role.ROLE_HCP, 1);
+        final User uu2 = new Personnel(u2);
         
-        final String USER_3 = "API_USER_3";
-        final UserForm u3 = new UserForm(USER_3, PW, Role.ROLE_HCP, 0);
-
         u2.addRole(Role.ROLE_VIROLOGIST.toString());
         u2.addRole(Role.ROLE_OPH.toString());
 
@@ -85,6 +85,60 @@ public class APIUserTest {
                 "It should be possible to create a user with multiple roles", 2, service.count());
 
         final User retrieved = service.findByName(USER_2);
+        Assert.assertEquals(uu2.equals(retrieved), false);
+        Assert.assertEquals(retrieved.equals(u2), false);
+
+        final String USER_3 = "API_USER_3";
+        final User retrieved2 = service.findByName(USER_3);
+        Assert.assertEquals(retrieved.equals(retrieved2), false);
+
+        final UserForm u3 = new UserForm(USER_3, PW, Role.ROLE_HCP, 1);
+        final UserForm u4 = new UserForm(USER_3, PW, Role.ROLE_HCP, 1);
+        final User uu3 = new Personnel(u3);
+        final User uu4 = new Personnel(u4);
+        uu4.setUsername(uu3.getUsername());
+        uu4.setPassword(uu3.getPassword());
+        uu4.setRoles(uu3.getRoles());
+        uu4.setEnabled(uu3.getEnabled());
+
+        Assert.assertEquals(uu4.equals(uu3), true);
+        Assert.assertEquals(uu3.equals(uu2), false);
+
+        uu4.setEnabled(null);
+        int hc = uu4.hashCode();
+        Assert.assertEquals(uu3.equals(uu4), false);
+        Assert.assertEquals(uu4.equals(uu3), false);
+        
+
+        uu4.setEnabled(uu3.getEnabled());
+        uu4.setUsername(null);
+        hc = uu4.hashCode();
+        Assert.assertEquals(uu3.equals(uu4), false);
+        Assert.assertEquals(uu4.equals(uu3), false);
+
+        uu4.setUsername("API_USER_00");
+        hc = uu4.hashCode();
+        Assert.assertEquals(uu3.equals(uu4), false);
+        Assert.assertEquals(uu4.equals(uu3), false);
+
+        uu4.setUsername(uu3.getUsername());
+        uu4.setPassword(null);
+        hc = uu4.hashCode();
+        Assert.assertEquals(uu3.equals(uu4), false);
+        Assert.assertEquals(uu4.equals(uu3), false);
+
+        uu4.setPassword("000000");
+        hc = uu4.hashCode();
+        Assert.assertEquals(uu3.equals(uu4), false);
+        Assert.assertEquals(uu4.equals(uu3), false);
+
+        uu4.setPassword(uu3.getPassword());
+        uu4.setRoles(Set.of(Role.ROLE_ER));
+        hc = uu4.hashCode();
+        Assert.assertEquals(uu3.equals(uu4), false);
+        Assert.assertEquals(uu4.equals(uu3), false);
+
+
 
         Assert.assertNotNull("The created user should be retrievable from the database", retrieved);
 
@@ -128,6 +182,15 @@ public class APIUserTest {
                 "Trying to create an invalid user should not create any User record",
                 0,
                 service.count());
+
+        final String USER_4 = "API_USER_4";
+        final UserForm u4 = new UserForm(USER_4, PW, Role.ROLE_HCP, 1);
+        u4.setPassword2("0");
+        mvc.perform(
+                        MockMvcRequestBuilders.post("/api/v1/users")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(TestUtils.asJsonString(u4)))
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError());
     }
 
     @Test
