@@ -3,6 +3,7 @@
     <title>Patient Food Diary</title>
     <script th:src="@{/js/dateTimeService.js}"
             src="../js/dateTimeService.js"></script>
+
 </head>
 <body th:include="layout :: body" th:with="content=~{::content}">
 <div th:fragment="content">
@@ -42,27 +43,207 @@
                 $scope.selectedPatient = patient;
                 // Update the search filter to display the selected patient's name or MID in the search box
                 $scope.searchFilter = $scope.displayName(patient);
+                $scope.buildCalendar();
 
             };
             ///////////////////////////////Select Patient////////////////////////////////////////////////////////
-            
+            //window.onload = function () { buildCalendar(); }    // 웹 페이지가 로드되면 buildCalendar 실행
 
-            self.updatePageString = function () {
-                self.pageString = "Page: " + self.requestParams.page + " of " + self.numPages;
+            // input값이 한자리 숫자인 경우 앞에 '0' 붙혀주는 함수
+            $scope.leftPad = function(value) {
+                if (value < 10) {
+                    value = "0" + value;
+                    return value;
+                }
+                return value;
             }
-            self.nextPage = function () {
-                if (self.requestParams.page >= self.numPages) return;
-                self.requestParams.page++;
-                self.updateTable();
+
+            // 날짜 선택
+            $scope.choiceDate = function(newDIV) {
+                if (document.getElementsByClassName("choiceDay")[0]) {                              // 기존에 선택한 날짜가 있으면
+                    document.getElementsByClassName("choiceDay")[0].classList.remove("choiceDay");  // 해당 날짜의 "choiceDay" class 제거
+                }
+                newDIV.classList.add("choiceDay");           // 선택된 날짜에 "choiceDay" class 추가
             }
-            self.prevPage = function () {
-                if (self.requestParams.page <= 1) return;
-                self.requestParams.page--;
-                self.updateTable();
+
+            // 이전달 버튼 클릭
+            $scope.prevCalendar = function() {
+                $scope.nowMonth = new Date($scope.nowMonth.getFullYear(), $scope.nowMonth.getMonth() - 1,
+                    $scope.nowMonth.getDate());   // 현재 달을 1 감소
+                $scope.buildCalendar();    // 달력 다시 생성
             }
+            // 다음달 버튼 클릭
+            $scope.nextCalendar = function(){
+                $scope.nowMonth = new Date($scope.nowMonth.getFullYear(), $scope.nowMonth.getMonth() + 1,
+                    $scope.nowMonth.getDate());   // 현재 달을 1 증가
+                $scope.buildCalendar();    // 달력 다시 생성
+            }
+
+            $scope.nowMonth = new Date();  // 현재 달을 페이지를 로드한 날의 달로 초기화
+            $scope.today = new Date();     // 페이지를 로드한 날짜를 저장
+            $scope.today.setHours(0, 0, 0, 0);    // 비교 편의를 위해 today의 시간을 초기화
+
+            // 달력 생성 : 해당 달에 맞춰 테이블을 만들고, 날짜를 채워 넣는다.
+            $scope.buildCalendar = function() {
+                $scope.firstDate = new Date($scope.nowMonth.getFullYear(), $scope.nowMonth.getMonth(), 1);     // 이번달 1일
+                $scope.lastDate = new Date($scope.nowMonth.getFullYear(), $scope.nowMonth.getMonth() + 1, 0);  // 이번달 마지막날
+
+                $scope.tbody_Calendar = document.querySelector(".Calendar > tbody");
+                document.getElementById("calYear").innerText = $scope.nowMonth.getFullYear();             // 연도 숫자 갱신
+                document.getElementById("calMonth").innerText = $scope.leftPad($scope.nowMonth.getMonth() + 1);  // 월 숫자 갱신
+
+                while ($scope.tbody_Calendar.rows.length > 0) {                        // 이전 출력결과가 남아있는 경우 초기화
+                    $scope.tbody_Calendar.deleteRow($scope.tbody_Calendar.rows.length - 1);
+                }
+
+                $scope.nowRow = $scope.tbody_Calendar.insertRow();        // 첫번째 행 추가
+
+                for (let j = 0; j < $scope.firstDate.getDay(); j++) {  // 이번달 1일의 요일만큼
+                    $scope.nowColumn = $scope.nowRow.insertCell();        // 열 추가
+                }
+
+                for ($scope.nowDay = $scope.firstDate; $scope.nowDay <= $scope.lastDate;
+                     $scope.nowDay.setDate($scope.nowDay.getDate() + 1)) {   // day는 날짜를 저장하는 변수, 이번달 마지막날까지 증가시키며 반복
+
+                    $scope.nowColumn = $scope.nowRow.insertCell();        // 새 열을 추가하고
+
+
+                    $scope.newDIV = document.createElement("p");
+                    $scope.newDIV.innerHTML = $scope.leftPad($scope.nowDay.getDate());        // 추가한 열에 날짜 입력
+                    $scope.nowColumn.appendChild($scope.newDIV);
+
+                    if ($scope.nowDay.getDay() == 6) {                 // 토요일인 경우
+                        $scope.nowRow = $scope.tbody_Calendar.insertRow();    // 새로운 행 추가
+                    }
+
+                    if ($scope.nowDay < $scope.today) {                       // 지난날인 경우
+                        $scope.newDIV.className = "pastDay";
+                    }
+                    else if ($scope.nowDay.getFullYear() == $scope.today.getFullYear() &&
+                        $scope.nowDay.getMonth() == $scope.today.getMonth() &&
+                        $scope.nowDay.getDate() == $scope.today.getDate()) { // 오늘인 경우
+                        $scope.newDIV.className = "today";
+                        $scope.newDIV.onclick = function () { choiceDate(this); }
+                    }
+                    else {                                      // 미래인 경우
+                        $scope.newDIV.className = "futureDay";
+                        $scope.newDIV.onclick = function () { choiceDate(this); }
+                    }
+                }
+            }
+            ////////////////////////////////////////////////////////////////////////////////////////////////////
+            ////////////////////////////////////////////////////////////////////////////////////////////////////
+            ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
         });
         /*]]>*/
     </script>
+
+    <!---------------------------------------------Style CSS------------------------------------------------------>
+    <style>
+        @import url('https://fonts.googleapis.com/css?family=Questrial&display=swap');
+
+        .entry-table {
+            grid-column: 2 / 3; /* Set the grid column to take up the right-top cell */
+            grid-row: 1 / 4;   /* Set the grid row to take up the right-top cell */
+            width: 90%;
+            height: 90%;
+            margin-top: 10px;
+        }
+        .food-table1 th, .food-table td {
+            width: 50%; /* Set the width of th and td to 50% for equal column sizes */
+        }
+
+        .day-table {
+            grid-column: 1 / 2; /* Set the grid column to take up the left-bottom cell */
+            grid-row: 2 / 3;   /* Set the grid row to take up the left-bottom cell */
+            width: 85%;
+            height: 90%;
+            margin-top: 20px;
+            margin-left:30px;
+        }
+        .day-table th, .food-table td {
+            width: 50%; /* Set the width of th and td to 50% for equal column sizes */
+        }
+
+        .Calendar {
+            text-align: center;
+            grid-column: 1 / 2;
+            grid-row: 1 / 2;
+            width: 80%; /* Set the width of the calendar within its grid cell */
+            height: 90%;
+            margin: auto;
+        }
+
+        .Calendar>thead>tr:first-child>td {
+            font-family: 'Questrial', sans-serif;
+            font-size: 1.1em;
+            font-weight: bold;
+            height: 50px;
+        }
+
+        .Calendar>thead>tr:last-child>td {
+            font-family: 'Questrial', sans-serif;
+            font-weight: 600;
+        }
+
+        .Calendar>tbody>tr>td>p {
+            font-family: 'Montserrat', sans-serif;
+            height:35px;
+            width: 35px;
+            border-radius: 100px;
+            transition-duration: .2s;
+            line-height: 35px;
+            margin: 5px;
+            display: block;
+            text-align: center;
+        }
+
+        .pastDay {
+            background-color: #FFFFFF;
+            cursor: pointer;
+        }
+        .pastDay:hover {
+            background: #eee;
+        }
+
+        .today {
+            background-color: #F5D042;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .futureDay {
+            background-color: #FFFFFF;
+            cursor: pointer;
+        }
+        .futureDay:hover {
+            background: #eee;
+        }
+
+        .futureDay.choiceDay,
+        .pastDay.choiceDay,
+        .today.choiceDay {
+            background: #0A174E;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 10px; /* Adjust the gap between cells */
+        }
+
+
+    </style>
+    <!---------------------------------------------Style CSS------------------------------------------------------>
+
 
     <div ng-app="myApp" ng-controller="viewPatientFoodDiaryCtrl">
         <div style="float: left; width: 20%; height: 75%; overflow-y: auto">
@@ -90,74 +271,90 @@
             <div style="height: 90%">
                 <h2 id="header0">Food Diary</h2>
                 <div ng-show="selectedPatient">
-                        <h4 style = "padding-left: 2%": >Username: {{displayName(selectedPatient)}}</h4>
-                    <div class="panel-body">
+                    <h4 style = "padding-left: 2%": >Username: {{displayName(selectedPatient)}}</h4>
+                    <hr style="margin: 10px 0;"> <!-- Horizontal line -->
 
-                        <!-- Display All Food Diary -->
-                        <table class="table table-bordered">
+                    <div class="grid-container" >
+                        <!-----------------------------Calendar----------------------------------------->
+                        <table class="Calendar">
+                            <thead>
+                            <tr>
+                                <td ng-click="prevCalendar();" style="cursor:pointer;">&#60;</td>
+                                <td colspan="5">
+                                    <span id="calYear"></span>/
+                                    <span id="calMonth"></span>
+                                </td>
+                                <td ng-click="nextCalendar();" style="cursor:pointer;">&#62;</td>
+                            </tr>
+                            <tr>
+                                <td>Sun</td>
+                                <td>Mon</td>
+                                <td>Tue</td>
+                                <td>Wed</td>
+                                <td>Thu</td>
+                                <td>Fri</td>
+                                <td>Sat</td>
+                            </tr>
+                            </thead>
+
                             <tbody>
-                            <!-- Contents -->
+                            </tbody>
+                        </table>
+                        <!-----------------------------Calendar----------------------------------------->
+                        <!-----------------------------Entry Table----------------------------------------->
+                        <!-- Display All Food Diary -->
+                        <table class="entry-table table-bordered">
+                            <caption>
+                                Dairy Entries:
+                            </caption>
+                            <tbody><tr name="foodDiaryTableRow"
+                                       ng-repeat="f in foodDiary"
+                                       ng-click="">
+                                <td name="entryCell">entry</td>
+
+                            </tr></tbody>
+                        </table>
+                        <!-----------------------------Entry Table----------------------------------------->
+
+                        <!-----------------------------Total Servings Table----------------------------------------->
+                        <table class="day-table table-bordered">
+                            <tbody>
                             <tr>
-                                <th class="col-md-6">Date</th>
+                                <th class="col-md-2"  colspan="2">Statistics/day</th>
+                            </tr>
+                            <tr>
+                                <th class="col-md-2">Calories</th>
                                 <td><!--data--></td>
                             </tr>
                             <tr>
-                                <th class="col-md-6">Type of Meal</th>
+                                <th class="col-md-2">Grams of Fat</th>
                                 <td><!--data--></td>
                             </tr>
                             <tr>
-                                <th class="col-md-6">Name of the Food Item</th>
+                                <th class="col-md-2">Milligrams of Sodium</th>
                                 <td><!--data--></td>
                             </tr>
                             <tr>
-                                <th class="col-md-6">Number of Servings Consumed</th>
+                                <th class="col-md-2">Grams of Carbs</th>
                                 <td><!--data--></td>
                             </tr>
                             <tr>
-                                <th class="col-md-6">Calories per Serving</th>
+                                <th class="col-md-2">Grams of Sugars</th>
                                 <td><!--data--></td>
                             </tr>
                             <tr>
-                                <th class="col-md-6">Grams of Fat per Serving</th>
+                                <th class="col-md-2">Grams of Fiber</th>
                                 <td><!--data--></td>
                             </tr>
                             <tr>
-                                <th class="col-md-6">Milligrams of Sodium per Serving</th>
-                                <td><!--data--></td>
-                            </tr>
-                            <tr>
-                                <th class="col-md-6">Grams of Carbs per Serving</th>
-                                <td><!--data--></td>
-                            </tr>
-                            <tr>
-                                <th class="col-md-6">Grams of Sugars per Serving</th>
-                                <td><!--data--></td>
-                            </tr>
-                            <tr>
-                                <th class="col-md-6">Grams of Fiber per Serving</th>
-                                <td><!--data--></td>
-                            </tr>
-                            <tr>
-                                <th class="col-md-6">Grams of Protein per Serving</th>
+                                <th class="col-md-2">Grams of Protein</th>
                                 <td><!--data--></td>
                             </tr>
                             <!-- To be modified -->
                             </tbody>
-                        </table>
-                    </div>
-                    <!-- Buttons to view all food Diary-->
-                    <div class="row" style="width: 300px; margin: 0 auto;">
-                        <button class="btn btn-primary" style="float: left; font-size:16px; width=100px;"
-                                ng-click="ctrl.prevPage()">Previous
-                        </button>
-                        <button class="btn btn-primary" style="float: right;font-size:16px; width=100px"
-                                ng-click="ctrl.nextPage()">Next
-                        </button>
 
-                        <!-- To be modified -->
-                        <p style="margin: auto; width: 100px; text-align: center; font-size:16px;">
-                            Page: 1</p>
-                        <!-- To be modified -->
+                        </table>
+                        <!-----------------------------Total Servings Table----------------------------------------->
 
                     </div>
                 </div>
