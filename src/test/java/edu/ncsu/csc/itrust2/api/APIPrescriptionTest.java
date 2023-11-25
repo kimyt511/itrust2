@@ -1,37 +1,18 @@
 package edu.ncsu.csc.itrust2.api;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import edu.ncsu.csc.itrust2.common.TestUtils;
-import edu.ncsu.csc.itrust2.forms.PrescriptionForm;
 import edu.ncsu.csc.itrust2.forms.OfficeVisitForm;
+import edu.ncsu.csc.itrust2.forms.PrescriptionForm;
 import edu.ncsu.csc.itrust2.forms.UserForm;
-import edu.ncsu.csc.itrust2.models.Prescription;
-import edu.ncsu.csc.itrust2.models.Hospital;
-import edu.ncsu.csc.itrust2.models.Drug;
-import edu.ncsu.csc.itrust2.models.OfficeVisit;
-import edu.ncsu.csc.itrust2.models.Patient;
-import edu.ncsu.csc.itrust2.models.Personnel;
-import edu.ncsu.csc.itrust2.models.User;
+import edu.ncsu.csc.itrust2.models.*;
 import edu.ncsu.csc.itrust2.models.enums.AppointmentType;
 import edu.ncsu.csc.itrust2.models.enums.HouseholdSmokingStatus;
 import edu.ncsu.csc.itrust2.models.enums.PatientSmokingStatus;
 import edu.ncsu.csc.itrust2.models.enums.Role;
-import edu.ncsu.csc.itrust2.services.PrescriptionService;
-import edu.ncsu.csc.itrust2.services.HospitalService;
-import edu.ncsu.csc.itrust2.services.DrugService;
-import edu.ncsu.csc.itrust2.services.OfficeVisitService;
-import edu.ncsu.csc.itrust2.services.UserService;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.time.LocalDate;
-import javax.transaction.Transactional;
-
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
+import edu.ncsu.csc.itrust2.services.*;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,6 +26,13 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+
+import javax.transaction.Transactional;
+import java.io.Serializable;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -155,7 +143,7 @@ public class APIPrescriptionTest {
         // are there
         content =
                 mvc.perform(
-                                get("/api/v1/prescriptions/search/" + "patient")
+                                get("/api/v1/prescriptions/ehr/search/" + "patient")
                                         .contentType(MediaType.APPLICATION_JSON))
                         .andReturn()
                         .getResponse()
@@ -169,6 +157,33 @@ public class APIPrescriptionTest {
                 p.setId(pp.getId());
             }
                 
+        }
+        assertTrue(flag);
+        flag = false;
+        for (final Prescription pp : plist) {
+            if (pp.getDosage() == p2.getDosage() && pp.getDrug().getCode().equals(p2.getDrug().getCode())) {
+                flag = true;
+                p2.setId(pp.getId());
+            }
+        }
+        assertTrue(flag);
+
+        content =
+                mvc.perform(
+                                get("/api/v1/prescriptions/search/" + "patient")
+                                        .contentType(MediaType.APPLICATION_JSON))
+                        .andReturn()
+                        .getResponse()
+                        .getContentAsString();
+        plist =
+                gson.fromJson(content, new TypeToken<ArrayList<Prescription>>() {}.getType());
+        flag = false;
+        for (final Prescription pp : plist) {
+            if (pp.getDosage() == p.getDosage() && pp.getDrug().getCode().equals(p.getDrug().getCode())) {
+                flag = true;
+                p.setId(pp.getId());
+            }
+
         }
         assertTrue(flag);
         flag = false;

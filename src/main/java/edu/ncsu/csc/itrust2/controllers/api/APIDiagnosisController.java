@@ -114,6 +114,22 @@ public class APIDiagnosisController extends APIController {
         return dto_list;
     }
 
+    @GetMapping ( "/diagnoses/ehr/search/{username}" )
+    public List<DiagnosisDto> getEhrDiagnosisByName (@PathVariable final String username) {
+        final List<Long> diag_list = diagnosisService.findEhrByUserName(username);
+        List<Diagnosis> list = new ArrayList<Diagnosis>();
+        for(Long id:diag_list) {
+            list.add((Diagnosis) diagnosisService.findById(id));
+        }
+        List <DiagnosisDto> dto_list = new ArrayList<DiagnosisDto>();
+        for(Diagnosis d: list) {
+            DiagnosisDto dto = new DiagnosisDto(d);
+            dto_list.add(dto);
+        }
+
+        return dto_list;
+    }
+
     @GetMapping ( "/diagnoses/search/{username}" )
     public List<DiagnosisDto> getDiagnosisByName (@PathVariable final String username) {
         final List<Long> diag_list = diagnosisService.findByUserName(username);

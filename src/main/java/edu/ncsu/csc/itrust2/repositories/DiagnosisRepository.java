@@ -20,4 +20,11 @@ public interface DiagnosisRepository extends JpaRepository<Diagnosis, Long> {
             "ORDER BY v.date DESC", nativeQuery = true)
     List<Long> findDiagnosisIdsForPatientLast60Days(@Param("patientId") String patientId);
 
+    @Query(value = "SELECT d.id FROM diagnosis d " +
+            "JOIN office_visit_diagnoses ovd ON d.id = ovd.diagnoses_id " +
+            "JOIN office_visit v ON ovd.office_visit_id = v.id " +
+            "WHERE v.patient_id = :patientId " +
+            "ORDER BY v.date DESC", nativeQuery = true)
+    List<Long> findDiagnosisIdsForPatient(@Param("patientId") String patientId);
+
 }

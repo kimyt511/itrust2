@@ -50,7 +50,11 @@ public class PrescriptionService extends Service {
         return repository.findByPatient(patient);
     }
 
-    public List<Long> findByUserName ( final String patientId ) {
+    public List<Long> findEhrByUserName ( final String patientId ) {
         return repository.findPrescriptionIdsForPatientLast90Days(patientId);
+    }
+
+    public List<Long> findByUserName ( final String patientId ) {
+        return repository.findPrescriptionIdsForPatient(patientId);
     }
 }

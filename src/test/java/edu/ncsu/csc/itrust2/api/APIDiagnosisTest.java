@@ -1,35 +1,19 @@
 package edu.ncsu.csc.itrust2.api;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import edu.ncsu.csc.itrust2.common.TestUtils;
+import edu.ncsu.csc.itrust2.dto.DiagnosisDto;
 import edu.ncsu.csc.itrust2.forms.DiagnosisForm;
 import edu.ncsu.csc.itrust2.forms.OfficeVisitForm;
 import edu.ncsu.csc.itrust2.forms.UserForm;
-import edu.ncsu.csc.itrust2.models.Diagnosis;
-import edu.ncsu.csc.itrust2.models.Hospital;
-import edu.ncsu.csc.itrust2.models.ICDCode;
-import edu.ncsu.csc.itrust2.models.OfficeVisit;
-import edu.ncsu.csc.itrust2.models.Patient;
-import edu.ncsu.csc.itrust2.models.Personnel;
-import edu.ncsu.csc.itrust2.models.User;
+import edu.ncsu.csc.itrust2.models.*;
 import edu.ncsu.csc.itrust2.models.enums.AppointmentType;
 import edu.ncsu.csc.itrust2.models.enums.HouseholdSmokingStatus;
 import edu.ncsu.csc.itrust2.models.enums.PatientSmokingStatus;
 import edu.ncsu.csc.itrust2.models.enums.Role;
-import edu.ncsu.csc.itrust2.services.DiagnosisService;
-import edu.ncsu.csc.itrust2.services.HospitalService;
-import edu.ncsu.csc.itrust2.services.ICDCodeService;
-import edu.ncsu.csc.itrust2.services.OfficeVisitService;
-import edu.ncsu.csc.itrust2.services.UserService;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-import javax.transaction.Transactional;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
+import edu.ncsu.csc.itrust2.services.*;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -43,6 +27,12 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+
+import javax.transaction.Transactional;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -188,6 +178,38 @@ public class APIDiagnosisTest {
             }
         }
         assertTrue(flag);
+
+        //uc15
+        content =
+                mvc.perform(
+                                get("/api/v1/diagnoses/ehr/search/" + "patient" )
+                                        .contentType(MediaType.APPLICATION_JSON))
+                        .andReturn()
+                        .getResponse()
+                        .getContentAsString();
+        List<DiagnosisDto> dtolist = gson.fromJson(content, new TypeToken<ArrayList<DiagnosisDto>>() {}.getType());
+
+        flag = false;
+        if(!dtolist.isEmpty()){
+            flag = true;
+        }
+        assertTrue(flag);
+
+        content =
+                mvc.perform(
+                                get("/api/v1/diagnoses/search/" + "patient" )
+                                        .contentType(MediaType.APPLICATION_JSON))
+                        .andReturn()
+                        .getResponse()
+                        .getContentAsString();
+        dtolist = gson.fromJson(content, new TypeToken<ArrayList<DiagnosisDto>>() {}.getType());
+
+        flag = false;
+        if(!dtolist.isEmpty()){
+            flag = true;
+        }
+        assertTrue(flag);
+
 
         // edit a diagnosis within the editing of office visit and check they
         // work.

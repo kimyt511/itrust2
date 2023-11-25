@@ -191,6 +191,17 @@ public class APIPrescriptionController extends APIController {
         }
     }
 
+    @GetMapping ( "/prescriptions/ehr/search/{username}" )
+    public List<Prescription> getEhrPrescription ( @PathVariable final String username ) {
+        final List<Long> pre_list = prescriptionService.findEhrByUserName(username);
+        List<Prescription> list = new ArrayList<Prescription>();
+        for(Long id:pre_list) {
+            list.add((Prescription) prescriptionService.findById(id));
+        }
+        return list;
+
+    }
+
     @GetMapping ( "/prescriptions/search/{username}" )
     public List<Prescription> getPrescription ( @PathVariable final String username ) {
         final List<Long> pre_list = prescriptionService.findByUserName(username);

@@ -37,7 +37,7 @@
 							$scope.message = "Unable to display demographics";
 					});
 
-					$http.get("/iTrust2/api/v1/diagnoses/search/"+patient.username).then(
+					$http.get("/iTrust2/api/v1/diagnoses/ehr/search/"+patient.username).then(
 						function(response) {
 							$scope.diagnoses = response.data;
 							$scope.message = "";
@@ -46,7 +46,7 @@
 							$scope.message = "Unable to display diagnoses";
 					});
 
-					$http.get("/iTrust2/api/v1/prescriptions/search/"+patient.username).then(
+					$http.get("/iTrust2/api/v1/prescriptions/ehr/search/"+patient.username).then(
 						function (response) {
 							$scope.prescriptions = response.data;
 							$scope.message = "";

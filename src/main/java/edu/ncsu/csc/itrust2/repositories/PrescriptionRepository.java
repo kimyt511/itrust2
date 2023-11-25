@@ -20,4 +20,10 @@ public interface PrescriptionRepository extends JpaRepository<Prescription, Long
             "ORDER BY v.date DESC", nativeQuery = true)
     List<Long> findPrescriptionIdsForPatientLast90Days(@Param("patientId") String patientId);
 
+    @Query(value = "SELECT p.id FROM prescription p " +
+            "JOIN office_visit_prescriptions ovp ON p.id = ovp.prescriptions_id " +
+            "JOIN office_visit v ON ovp.office_visit_id = v.id " +
+            "WHERE p.patient_id = :patientId " +
+            "ORDER BY v.date DESC", nativeQuery = true)
+    List<Long> findPrescriptionIdsForPatient(@Param("patientId") String patientId);
 }

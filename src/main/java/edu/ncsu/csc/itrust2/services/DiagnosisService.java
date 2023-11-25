@@ -53,7 +53,11 @@ public class DiagnosisService extends Service {
         return repository.findByVisit(visit);
     }
 
-    public List<Long> findByUserName ( final String patientId ) {
+    public List<Long> findEhrByUserName ( final String patientId ) {
         return repository.findDiagnosisIdsForPatientLast60Days(patientId);
+    }
+
+    public List<Long> findByUserName ( final String patientId ) {
+        return repository.findDiagnosisIdsForPatient(patientId);
     }
 }
