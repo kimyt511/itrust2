@@ -31,8 +31,6 @@ public class ProcedureForm {
     private Priority priority;
     private ProcedureStatus procedureStatus;
 
-    private OfficeVisit visit;
-
     /**
      * Empty constructor for filling in fields without a Procedure object.
      */

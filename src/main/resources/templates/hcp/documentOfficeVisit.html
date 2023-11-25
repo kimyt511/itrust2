@@ -93,13 +93,11 @@
 						return;
 					}
 
-					if (!$scope.visit.actualPatient && patient) {
-						$scope.visit.actualPatient = patient;
-						$scope.loadProcedureOfPatient(patient);
+					if (!$scope.visit.patient && patient) {
+						$scope.visit.patient = patient;
 					} else if (!patient) {
-						if ($scope.visit.actualPatient) {
-							patient = $scope.visit.actualPatient;
-							$scope.loadProcedureOfPatient(patient);
+						if ($scope.visit.patient) {
+							patient = $scope.visit.patient;
 						} else {
 							// We don't have enough information to continue
 							return;
@@ -318,7 +316,6 @@
 				$scope.submit = function () {
 					$scope.errorMsg = "";
 					$scope.message = "";
-					$scope.visit.hcp = /*[[${#httpServletRequest.remoteUser}]]*/null; /* Ugly hack; use this to retrieve the name of the HCP who is currently logged in.  This grabs it from Thymeleaf */
 					$scope.visit.status = "PENDING";
 
 					// Error checking
@@ -361,8 +358,10 @@
 								p.patient = $scope.visit.patient;
 							});
 
-							$scope.visit.labProcedures = $scope.procedures;
+							$scope.visit.procedures = $scope.procedures;
+							$scope.visit.hcp = $scope.hcp.username;
 
+							console.log($scope.visit);
 							$http({
 								method: 'POST',
 								url: '/iTrust2/api/v1/officevisits',
@@ -475,14 +474,16 @@
 					var procCopy = {};
 					$scope.errorMsg = "";
 
-					$scope.procedure.patient = $scope.visit.actualPatient;
 					$scope.procedure.procedureStatus = "Assigned";
+					$scope.procedure.hcp = $scope.hcp;
 
 					//Procedure name and code fixed.
 					$scope.procedure.name = $scope.procedure.code.name;
 					$scope.procedure.code = $scope.procedure.code.code;
 
-					angular.copy($scope.procedure, procCopy);
+					$http.get("/iTrust2/api/v1/users/" + $scope.visit.patient).then(
+						function (response) {
+							$scope.procedure.patient = response.data;
 
 					//CheckValidProcedure arguemnt is scope.procedure.
 					var err = checkValidProcedure($scope.procedure);
@@ -490,29 +491,13 @@
 						$scope.errorMsg = err;
 						$scope.message = "";
 					} else {
-						$http.post("/iTrust2/api/v1/procedure", $scope.procedure).then(
-								function (response) {
-									$scope.loadProcedureOfPatient($scope.visit.actualPatient);
-									$scope.procedure = {};
-									$scope.message = "Procedure added successfully";
-								}, function (rejection) {
-									$scope.loadProcedureOfPatient($scope.visit.actualPatient);
-									$scope.errorMsg = "Could not add procedure";
-									$scope.message = "";
-								}
-						);
+						$scope.message = "Procedure added successfully";
+						$scope.errorMsg = "";
+						$scope.procedures.push($scope.procedure);
+						$scope.procedure = {};
 					}
-				}
-
-				$scope.loadProcedureOfPatient = function (patient) {
-					$http.get("/iTrust2/api/v1/procedureForHcp/" + patient.username).then(
-							function (response) {
-								$scope.procedures= response.data;
-								$scope.errorMsg = "";
-							}, function (rejection) {
-								$scope.procedures = [];
-								$scope.errorMsg = "Could not display procedures";
-							}
+						}, function (rejection) {
+						}
 					);
 				}
 
@@ -526,24 +511,9 @@
 					$scope.prescriptions.splice($index, 1);
 				}
 
-				/*
-                     // DEPRECATED
-                     $scope.removeProcedure = function ($index) {
-                         $scope.procedures.splice($index, 1);
-                     }
-                     */
-
-				// Use this version instead
-				$scope.deleteProcedure = function (p) {
-					$http.delete('/iTrust2/api/v1/procedure/' + p.id).then(
-							function (response) {
-								$scope.loadProcedureOfPatient($scope.visit.actualPatient);
-							}, function (rejection) {
-								$scope.loadProcedureOfPatient($scope.visit.actualPatient);
-								$scope.errorMsg = "Could not remove procedure";
-							}
-					);
-				}
+                $scope.deleteProcedure = function ($index) {
+                	$scope.procedures.splice($index, 1);
+                }
 
 				//call initally
 				resetDiagnosisForm();
@@ -552,7 +522,7 @@
 
 				$http.get("/iTrust2/api/v1/users/" + [[${#httpServletRequest.remoteUser}]]).then(
 						function (response) {
-							$scope.procedure.hcp = response.data;
+							$scope.hcp = response.data;
 						}, function (rejection) {
 						}
 				);
@@ -1030,7 +1000,7 @@
 																	<b>Priority:</b> {{p.priority}} <br>
 																	<b>Status:</b> {{p.procedureStatus}} <br>
 																	<b>Comments:</b> {{p.comment}} <br>
-																	<input type="button" value="Delete" class="btn btn-danger" name="deleteProcedure" ng-click="deleteProcedure(p)"/>
+																	<input type="button" value="Delete" class="btn btn-danger" name="deleteProcedure" ng-click="deleteProcedure($index)"/>
 																</div>
 																<br>
 															</div>
