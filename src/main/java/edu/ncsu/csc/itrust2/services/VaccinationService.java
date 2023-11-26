@@ -35,7 +35,7 @@ public class VaccinationService extends Service {
         Vaccine vaccine = vaccineService.getVaccineByCptCode(form.getVaccineCptCode());
         vaccination.setVaccine(vaccine);
 
-        User patient = userService.findByName(form.getPatient());
+        User patient = userService.findByName(form.getPatientUserName());
         vaccination.setPatient(patient);
 
         vaccination.setDateAdministered(form.getDateAdministered());
