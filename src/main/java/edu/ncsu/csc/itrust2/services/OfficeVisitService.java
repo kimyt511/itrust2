@@ -13,6 +13,7 @@ import edu.ncsu.csc.itrust2.repositories.OfficeVisitRepository;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 
@@ -54,6 +55,11 @@ public class OfficeVisitService extends Service {
 
     public List<OfficeVisit> findByHcpAndPatient(final User hcp, final User patient) {
         return officeVisitRepository.findByHcpAndPatient(hcp, patient);
+    }
+
+    public OfficeVisit findById(Long id) {
+        Optional<OfficeVisit> result = officeVisitRepository.findById(id);
+        return result.orElse(null);
     }
 
     public OfficeVisit build(final OfficeVisitForm ovf) {
