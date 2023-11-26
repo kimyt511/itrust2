@@ -99,6 +99,8 @@ public class OfficeVisitForm implements Serializable {
 
     private List<PrescriptionForm> prescriptions;
 
+    private List<VaccinationForm> vaccinations;
+
     /**
      * Creates an OfficeVisitForm from the OfficeVisit provided
      *
@@ -115,6 +117,10 @@ public class OfficeVisitForm implements Serializable {
         setPrescriptions(
                 ov.getPrescriptions().stream()
                         .map(PrescriptionForm::new)
+                        .collect(Collectors.toList()));
+        setVaccinations(
+                ov.getVaccinations().stream()
+                        .map(VaccinationForm::new)
                         .collect(Collectors.toList()));
     }
 }
