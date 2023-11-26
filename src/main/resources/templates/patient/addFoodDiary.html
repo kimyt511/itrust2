@@ -17,35 +17,29 @@
         // API name to need to be adjusted
         app.controller('AddFoodDiaryCtrl', function ($scope, $http) {
 
-
+            //////////////////////////////Initialize form/////////////////////////////////////////
             $scope.foodDiaryForm = { date: "", patient: "", mealType: "" ,foodName:"", servings: 0,
                 calories: 0, fat: 0, sodium: 0, carb: 0, sugar: 0, fiber: 0, protein: 0};
+            //////////////////////////////Initialize form/////////////////////////////////////////
 
+            /////////////////////////////mealType Selection///////////////////////////////////////
             $scope.mealTypes = [
                 { name: 'Breakfast' },
                 { name: 'Lunch' },
                 { name: 'Dinner' },
                 { name: 'Snack' },
-                // Add more meal types as needed
             ];
+            /////////////////////////////mealType Selection///////////////////////////////////////
 
-            /*$scope.formatDate = function (date) {
-                // input date is in the format yyyy-mm-dd
-                const month = date.getMonth() + 1;
-                const day = date.getDate();
-                const year = date.getFullYear();
 
-                return `${month}${day}${year}`;
-            };*/
-
-            //////////////////Need to be adjusted////////////////////
-            ///error messages///
+            ///////////////////////////error messages container////////////////////////////////////
             $scope.err = [];
             for (let i = 0; i < 10; i++) {
                 $scope.err[i] = "";
             }
-            ///error messages///
+            ///////////////////////////error messages container////////////////////////////////////
 
+            //////////////////////////Get current patient////////////////////////////////////////
             $http.get("/iTrust2/api/v1/patient").then(function (response) {
                 $scope.patient = response.data;
                 $scope.foodDiaryForm.date = new Date();
@@ -54,7 +48,9 @@
             }, function (rejection) {
                 console.err("Could not retrieve expected Patient record");
             });
+            //////////////////////////Get current patient////////////////////////////////////////
 
+            ///////////////////////////////Check valid form/////////////////////////////////////
             function checkValidForm(form) {
                 let valid = true;
                 if (form.date > new Date()) {
@@ -119,7 +115,9 @@
                 }
                 return valid;
             }
+            ///////////////////////////////Check valid form/////////////////////////////////////
 
+            ///////////////////////////////Submit///////////////////////////////////////////////
             $scope.submit = function () {
                 const valid = checkValidForm($scope.foodDiaryForm);
 
@@ -140,16 +138,8 @@
                         });
                 }
             }
+            ///////////////////////////////Submit///////////////////////////////////////////////
 
-            function getMT(mealType) {
-                if (mealType == null) {
-                    return "";
-                }
-                const pos = mealType.replace("Pos", "+");
-                const neg = pos.replace("Neg", "-");
-                return neg;
-            }
-            //////////////////Need to be adjusted////////////////////
         });
         /*]]>*/
     </script>
