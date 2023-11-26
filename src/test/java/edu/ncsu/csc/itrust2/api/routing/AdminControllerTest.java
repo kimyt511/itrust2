@@ -1,4 +1,4 @@
-package edu.ncsu.csc.itrust2.api;
+package edu.ncsu.csc.itrust2.api.routing;
 
 import edu.ncsu.csc.itrust2.common.TestUtils;
 import edu.ncsu.csc.itrust2.forms.PrescriptionForm;
