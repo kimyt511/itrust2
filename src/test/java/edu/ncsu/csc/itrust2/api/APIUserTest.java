@@ -58,6 +58,7 @@ public class APIUserTest {
         Assert.assertEquals("There should be no Users in the system", 0, service.count());
 
         final UserForm u = new UserForm(USER_1, PW, Role.ROLE_PATIENT, 1);
+        final UserForm uuuuu = new UserForm(USER_1, PW, Role.ROLE_PATIENT, 0);
 
         mvc.perform(
                         MockMvcRequestBuilders.post("/api/v1/users")

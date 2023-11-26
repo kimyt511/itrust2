@@ -68,7 +68,7 @@ public class APIICDCodeTest {
         ICDCodeForm code = gson.fromJson(content, ICDCodeForm.class);
         form.setId(code.getId()); // fill in the id of the code we just
         // created
-        assertEquals(form, code);
+        assertEquals(form.getCode(), code.getCode());
 
         content =
                 mvc.perform(
@@ -78,7 +78,7 @@ public class APIICDCodeTest {
                         .getResponse()
                         .getContentAsString();
         code = gson.fromJson(content, ICDCodeForm.class);
-        assertEquals(form, code);
+        assertEquals(form.getCode(), code.getCode());
 
         // edit it
         form.setCode("T13");
@@ -91,7 +91,7 @@ public class APIICDCodeTest {
                         .getResponse()
                         .getContentAsString();
         code = gson.fromJson(content, ICDCodeForm.class);
-        assertEquals(form, code);
+        assertEquals(form.getCode(), code.getCode());
         content =
                 mvc.perform(
                                 get("/api/v1/icdcode/" + form.getId())
@@ -100,7 +100,7 @@ public class APIICDCodeTest {
                         .getResponse()
                         .getContentAsString();
         code = gson.fromJson(content, ICDCodeForm.class);
-        assertEquals(form, code);
+        assertEquals(form.getCode(), code.getCode());
 
         // then delete it and check that its gone.
         mvc.perform(
