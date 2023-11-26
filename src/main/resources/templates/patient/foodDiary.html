@@ -12,9 +12,19 @@
         /* Otherwise Thymeleaf tries to parse Javascript as XML and breaks itself sometimes.  Sigh */
         /*<![CDATA[*/
 
+        //Todo
+        //1. food entry 순서
+        //2. add하고 refresh
+
         const app = angular.module('FoodApp', ['dateTimeServices', 'ui.bootstrap']);
 
-
+        ///////////////////////////For reversing food entreis//////////////////////////////////
+        app.filter('reverse', function() {
+            return function(items) {
+                return items.slice().reverse(); // Create a copy of the array and reverse it
+            };
+        });
+        ///////////////////////////For reversing food entreis//////////////////////////////////
 
         app.controller('viewFoodDiaryCtrl', function ($scope, $http,$window,dateTimeService) {
 
@@ -33,14 +43,7 @@
             );
             ///////////////////////get current user(patient)//////////////////////////////////////////
 
-            //////////////////////////////////////Get patients data//////////////////////////////////////
-            $http.get("/iTrust2/api/v1/patients").then(
-                function (response) {
-                    $scope.patients = response.data;
-                }
-            );
-            //////////////////////////////////////Get patients data//////////////////////////////////////
-
+            ///////////////////////////////////Add Entry Pop-up/////////////////////////////////////////////////
             $scope.addEntry = function () {
                 // Specify the URL, window name, and window properties
                 //var url = document.getElementById('editdemographics-patient').getAttribute('href');
@@ -55,9 +58,35 @@
                 var $popup = $window.open(url, windowName, "width=" + width + ",height=" + height + "," +
                     "left=" + left + ",top=" + top);
 
+                //////need to be modified///////////////////
+                $popup.onbeforeunload = function () {
+                    // Refresh the parent window when the popup is closed
+                    $scope.loadTable();
+                };
+                //////need to be modified///////////////////
+
+
                 // Pass data to the new window (optional)
                 $popup.Name = $scope.Name;
             };
+            ///////////////////////////////////Add Entry Pop-up/////////////////////////////////////////////////
+
+            ///////////////////////////////////Load Food Diary Entries/////////////////////////////////////////////////
+            $scope.loadTable = function () {
+                $http.get("/iTrust2/api/v1/diary/mydiary").then(
+                    function (response) {
+                        // console.log(response.data);
+                        $scope.myDiary = response.data;
+                        $scope.message = "";
+                    }, function (rejection) {
+                        $scope.myDiary = [];
+                        $scope.message = "Could not load Diary";
+                    }
+                );
+            };
+            $scope.loadTable();
+
+            ///////////////////////////////////Load Food Diary Entries/////////////////////////////////////////////////
 
 
             ///////////////////////////////Calendar, Source: https://sirius7.tistory.com/35////////////////////////////
@@ -155,14 +184,6 @@
     <style>
         @import url('https://fonts.googleapis.com/css?family=Questrial&display=swap');
 
-        .entry-table {
-            grid-column: 2 / 3; /* Set the grid column to take up the right-top cell */
-            grid-row: 1 / 4;   /* Set the grid row to take up the right-top cell */
-            width: 90%;
-            height: 90%;
-            margin-top: 10px;
-            margin-left:5%;
-        }
         .food-table1 th, .food-table td {
             width: 50%; /* Set the width of th and td to 50% for equal column sizes */
         }
@@ -177,6 +198,33 @@
         }
         .day-table th, .food-table td {
             width: 50%; /* Set the width of th and td to 50% for equal column sizes */
+        }
+
+        .table-container {
+            grid-column: 2 / 3; /* Set the grid column to take up the right-top cell */
+            grid-row: 1 / 4;   /* Set the grid row to take up the right-top cell */
+            width: 90%;
+            height: 90%;
+            margin-top: 10px;
+            margin-left:5%;
+            overflow-y: auto;
+        }
+
+        .entry-table td[name="entryCell"] {
+            height: 30px;
+            width: 500px;
+            padding: 5%;
+            text-align: left;
+            font-size: 1.7rem;
+            font-family: 'Questrial', sans-serif;
+            background-color: #FFFFFF;
+            cursor: pointer;
+        }
+        .entry-table td[name="entryCell"]:hover {
+            background: #eee;
+        }
+        .entry-table tr {
+            height: 30px; /* Adjust the height of each row */
         }
 
         .Calendar {
@@ -296,20 +344,28 @@
                         <!-----------------------------Calendar----------------------------------------->
                         <!-----------------------------Entry Table----------------------------------------->
                         <!-- Display All Food Diary -->
-                        <table class="entry-table table-bordered">
+                        <div class="table-container" >
                             <caption>
-                                Dairy Entries:
-                                <button ng-click="addEntry()" style="float: right;">
-                                    Add Entry
-                                </button>
+                                <div style="font-size: 20px; margin-bottom: 5%;">
+                                    Dairy Entries:
+                                    <button ng-click="addEntry()" style="float: right" class="btn btn-info">
+                                        Add Entry
+                                    </button>
+                                </div>
                             </caption>
-                            <tbody><tr name="foodDiaryTableRow"
-                                       ng-repeat="f in foodDiary"
-                                       ng-click="">
-                                <td name="entryCell">entry</td>
-
-                            </tr></tbody>
-                        </table>
+                            <div>
+                                <table class="entry-table table-bordered">
+                                    <tbody>
+                                    <tr name="foodDiaryTableRow"
+                                        ng-repeat="f in myDiary | reverse"
+                                        ng-click="" style="cursor:pointer;">
+                                        <td name="entryCell"><strong >{{f.foodName}}</strong>
+                                            &nbsp;({{f.date}})</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                         <!-----------------------------Entry Table----------------------------------------->
 
                         <!-----------------------------Total Servings Table----------------------------------------->
