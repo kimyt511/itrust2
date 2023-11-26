@@ -40,10 +40,4 @@ public class Vaccine extends DomainObject {
     @NotEmpty
     @Pattern(regexp = "90\\d{3}")
     private String cptCode;
-
-    @Setter
-    @Size(max = 500)
-    private String comments;
-
-    // Additional methods and logic as required
 }

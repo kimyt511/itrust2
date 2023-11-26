@@ -36,6 +36,8 @@ public class VaccinationForm implements Serializable {
     @NotNull
     private LocalDate dateAdministered; // Date when the vaccine was administered
 
+    private String comments; // Comments about the vaccination
+
     /**
      * Constructs a new form with information from the given vaccination.
      *
@@ -48,6 +50,7 @@ public class VaccinationForm implements Serializable {
             this.officeVisitId = vaccination.getOfficeVisit().getId();
             this.patientUsername = vaccination.getPatient().getUsername();
             this.dateAdministered = vaccination.getDateAdministered();
+            this.comments = vaccination.getComments();
         }
     }
 }

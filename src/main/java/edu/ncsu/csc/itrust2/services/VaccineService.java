@@ -1,7 +1,5 @@
 package edu.ncsu.csc.itrust2.services;
 
-import edu.ncsu.csc.itrust2.models.OfficeVisit;
-import edu.ncsu.csc.itrust2.models.Vaccination;
 import edu.ncsu.csc.itrust2.models.Vaccine;
 import edu.ncsu.csc.itrust2.repositories.VaccineRepository;
 import javax.transaction.Transactional;
@@ -9,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
-import java.util.Optional;
 
 @Component
 @Transactional

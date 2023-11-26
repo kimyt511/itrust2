@@ -31,8 +31,8 @@ public class VaccinationService extends Service {
         return repository;
     }
 
-    public Vaccination build(VaccinationForm form) {
-        Vaccination vaccination = new Vaccination();
+    public Vaccination build(final VaccinationForm form) {
+        final Vaccination vaccination = new Vaccination();
 
         Vaccine vaccine = vaccineService.getVaccineByCptCode(form.getVaccineCptCode());
         vaccination.setVaccine(vaccine);
@@ -44,6 +44,12 @@ public class VaccinationService extends Service {
         vaccination.setPatient(patient);
 
         vaccination.setDateAdministered(form.getDateAdministered());
+
+        String Comments = form.getComments();
+        if (Comments == null) {
+            Comments = "";
+        }
+        vaccination.setComments(Comments);
 
         return vaccination;
     }
