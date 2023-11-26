@@ -4,7 +4,6 @@
     <title>Food Diary</title>
 </head>
 
-<body th:include="layout :: body" th:with="content=~{::content}">
 <div th:fragment="content">
 
     <!-- To be completed ----------->
@@ -13,183 +12,129 @@
         /*<![CDATA[*/
 
         //Need to be adjusted
-        const app = angular.module("FoodDiaryApp", []);
-
+        const app = angular.module("AddFoodDiaryApp", []);
 
         // API name to need to be adjusted
-        app.controller('FoodDiaryCtrl', ['$scope', '$location', '$http', function ($scope, $location, $http) {
+        app.controller('AddFoodDiaryCtrl', function ($scope, $http) {
 
-            //$scope.representatives = [];
-            //$scope.searchResults = []; // Added this line
 
             //////////////////Need to be adjusted////////////////////
-            $scope.loadTable = function () {
-                // API endpoint connection
-                $http.get("/iTrust2/api/v1/pr/foodDiary").then(
-                    function (response) {
-                        console.log(response.data);
-                        $scope.representatives = response.data;
-                        $scope.message = "";
-                    }, function (rejection) {
-                        $scope.representatives = [];
-                        $scope.message = "Could not display representatives";
-                    }
-                );
-            }
+
             //////////////////Need to be adjusted////////////////////
-
-            self.submit = function () {
-
-            }
-
-
-
-
-            $scope.loadTable();
         });
         /*]]>*/
     </script>
 
     <!-- Contents -->
-    <div ng-app="FoodDiaryApp" ng-controller="FoodDiaryCtrl">
+    <div ng-app="AddFoodDiaryApp" ng-controller="AddFoodDiaryCtrl">
         <div class="container">
             <div class="row">
                 <div class="col-md-12">
                     <div class="panel panel-primary">
                         <div class="panel-heading">
-                            <h3><a href="/iTrust2/patient/foodDiary" id="foodDiary"
-                                   style="color: white;">Food Diary</a></h3>
+                            <h3>Food Diary</h3>
                         </div>
                         <div class="panel-body">
-
-                            <!-- Display All Food Diary -->
-                            <table class="table table-bordered">
-                                <caption>
-                                    Food Diary:
-                                </caption>
-                                <tbody>
-                                <!-- Contents -->
+                            <!------------------------------table------------------------------------------------>
+                            <table>
                                 <tr>
-                                    <th class="col-md-6">Date</th>
-                                    <td><input type="text" name="date" id="date"
-                                               value="{{FoodDiaryForm.date}}"
-                                               ng-model="patientForm.date" style="width: 400px;"/></td>
-                                    <!-- To be modified -->
+                                    <td style="text-align: left; padding: 5px; height: 30px;"><b>Date</b></td>
+                                    <!-- to be adjusted-->
+                                    <td style="padding-left: 5%;"><input type="date" name="dateOfBirth" id="dateOfBirth"
+                                               ng-model="patientForm.dateOfBirth"/></td>
+                                    <td style="color: red;" ng-show="err[11]">{{err[11]}}</td>
+                                    <!-- to be adjusted-->
+                                </tr>
+                                <tr>
+                                    <td style="text-align: left; padding: 5px; height: 30px;"><b>Type of Meal:</b></td>
+                                    <!-- to be adjusted-->
+                                    <td style="padding-left: 5%;"><select name="bloodType" id="bloodType"
+                                                ng-model="patientForm.bloodType">
+                                        <option ng-repeat="bt in bloodTypes">{{bt.name}}</option>
+                                    </select></td>
+                                    <!-- to be adjusted-->
+                                </tr>
+                                <tr>
+                                    <td style="text-align: left; padding: 5px; height: 30px;"><b>Food Name:</b></td>
+                                    <!-- to be adjusted-->
+                                    <td style="padding-left: 5%;"><input type="text" name="firstName" id="firstName"
+                                               value="{{patientForm.firstName}}"
+                                               ng-model="patientForm.firstName"/></td>
                                     <td style="color: red;" ng-show="err[0]">{{err[0]}}</td>
-                                    <!-- To be modified -->
-                                </tr>
-                                    <th class="col-md-6">Type of Meal</th>
-
-                                    <!-- To be modified -->
-                                    <td><input type="text" name="typeMeal" id="typeMeal"
-                                               value="{{FoodDiaryForm.typeMeal}}"
-                                               ng-model="patientForm.typeMeal" style="width: 400px;"/></td>
-                                    <td style="color: red;" ng-show="err[1]">{{err[0]}}</td>
-                                    <!-- To be modified -->
-
+                                    <!-- to be adjusted-->
                                 </tr>
                                 <tr>
-                                    <th class="col-md-6">Name of the Food Item</th>
-
-                                    <!-- To be modified -->
-                                    <td><input type="text" name="nameFood" id="nameFood"
-                                               value="{{FoodDiaryForm.foodname}}"
-                                               ng-model="patientForm.foodname" style="width: 400px;"/></td>
-                                    <td style="color: red;" ng-show="err[2]">{{err[0]}}</td>
-                                    <!-- To be modified -->
-
+                                    <td style="text-align: left; padding: 5px; height: 30px;"><b>Number of Servings:</b></td>
+                                    <!-- to be adjusted-->
+                                    <td style="padding-left: 5%;"><input type="text" name="lastName" id="lastName"
+                                               ng-model="patientForm.lastName"/></td>
+                                    <td style="color: red;" ng-show="err[1]">{{err[1]}}</td>
+                                    <!-- to be adjusted-->
+                                </tr>
+                                <!-- Separater-->
+                                <tr>
+                                    <th class="col-md-2"  colspan="2" style="text-align: left;
+                                     color: blue;padding: 5px">Statistics/Serving</th>
+                                </tr>
+                                <!-- Separater-->
+                                <tr>
+                                    <td style="text-align: left; padding: 5px; height: 30px;"><b>Calories</b></td>
+                                    <!-- to be adjusted-->
+                                    <td style="padding-left: 5%;"><input type="text" name="preferredName"
+                                               id="preferredName" ng-model="patientForm.preferredName"/></td>
+                                    <td style="color: red;" ng-show="err[2]">{{err[2]}}</td>
+                                    <!-- to be adjusted-->
                                 </tr>
                                 <tr>
-                                    <th class="col-md-6">Number of Servings Consumed</th>
-
-                                    <!-- To be modified -->
-                                    <td><input type="text" name="numServings" id="numServings"
-                                               value="{{FoodDiaryForm.numServings}}"
-                                               ng-model="patientForm.numServings" style="width: 400px;"/></td>
-                                    <td style="color: red;" ng-show="err[3]">{{err[0]}}</td>
-                                    <!-- To be modified -->
-
+                                    <td style="text-align: left; padding: 5px; height: 30px;"><b>Grams of Fat</b></td>
+                                    <!-- to be adjusted-->
+                                    <td style="padding-left: 5%;"><input type="text" name="preferredName"
+                                               id="preferredName" ng-model="patientForm.preferredName"/></td>
+                                    <td style="color: red;" ng-show="err[2]">{{err[2]}}</td>
+                                    <!-- to be adjusted-->
                                 </tr>
                                 <tr>
-                                    <th class="col-md-6">Calories per Serving</th>
-
-                                    <!-- To be modified -->
-                                    <td><input type="text" name="calServing" id="calServing"
-                                               value="{{FoodDiaryForm.calServing}}"
-                                               ng-model="patientForm.calServing" style="width: 400px;"/></td>
-                                    <td style="color: red;" ng-show="err[4]">{{err[0]}}</td>
-                                    <!-- To be modified -->
-
+                                    <td style="text-align: left; padding: 5px; height: 30px;"><b>Milligrams of Sodium</b></td>
+                                    <!-- to be adjusted-->
+                                    <td style="padding-left: 5%;"><input type="text" name="preferredName"
+                                               id="preferredName" ng-model="patientForm.preferredName"/></td>
+                                    <td style="color: red;" ng-show="err[2]">{{err[2]}}</td>
+                                    <!-- to be adjusted-->
                                 </tr>
                                 <tr>
-                                    <th class="col-md-6">Grams of Fat per Serving</th>
-
-                                    <!-- To be modified -->
-                                    <td><input type="text" name="gramFat" id="gramFat"
-                                               value="{{FoodDiaryForm.gramFat}}"
-                                               ng-model="patientForm.gramFat" style="width: 400px;"/></td>
-                                    <td style="color: red;" ng-show="err[5]">{{err[0]}}</td>
-                                    <!-- To be modified -->
-
+                                    <td style="text-align: left; padding: 5px; height: 30px;"><b>Grams of Carbs</b></td>
+                                    <!-- to be adjusted-->
+                                    <td style="padding-left: 5%;"><input type="text" name="preferredName"
+                                               id="preferredName" ng-model="patientForm.preferredName"/></td>
+                                    <td style="color: red;" ng-show="err[2]">{{err[2]}}</td>
+                                    <!-- to be adjusted-->
                                 </tr>
                                 <tr>
-                                    <th class="col-md-6">Milligrams of Sodium per Serving</th>
-
-                                    <!-- To be modified -->
-                                    <td><input type="text" name="millSodium" id="millSodium"
-                                               value="{{FoodDiaryForm.millSodium}}"
-                                               ng-model="patientForm.millSodium" style="width: 400px;"/></td>
-                                    <td style="color: red;" ng-show="err[6]">{{err[0]}}</td>
-                                    <!-- To be modified -->
-
+                                    <td style="text-align: left; padding: 5px; height: 30px;"><b>Grams of Sugars</b></td>
+                                    <!-- to be adjusted-->
+                                    <td style="padding-left: 5%;"><input type="text" name="preferredName"
+                                               id="preferredName" ng-model="patientForm.preferredName"/></td>
+                                    <td style="color: red;" ng-show="err[2]">{{err[2]}}</td>
+                                    <!-- to be adjusted-->
                                 </tr>
                                 <tr>
-                                    <th class="col-md-6">Grams of Carbs per Serving</th>
-
-                                    <!-- To be modified -->
-                                    <td><input type="text" name="gramCarbs" id="gramCarbs"
-                                               value="{{FoodDiaryForm.gramCarbs}}"
-                                               ng-model="patientForm.gramCarbs" style="width: 400px;"/></td>
-                                    <td style="color: red;" ng-show="err[7]">{{err[0]}}</td>
-                                    <!-- To be modified -->
-
+                                    <td style="text-align: left; padding: 5px; height: 30px;"><b>Grams of Fiber</b></td>
+                                    <!-- to be adjusted-->
+                                    <td style="padding-left: 5%;"><input type="text" name="preferredName"
+                                               id="preferredName" ng-model="patientForm.preferredName"/></td>
+                                    <td style="color: red;" ng-show="err[2]">{{err[2]}}</td>
+                                    <!-- to be adjusted-->
                                 </tr>
                                 <tr>
-                                    <th class="col-md-6">Grams of Sugars per Serving</th>
-
-                                    <!-- To be modified -->
-                                    <td><input type="text" name="gramSugars" id="gramSugars"
-                                               value="{{FoodDiaryForm.gramSugars}}"
-                                               ng-model="patientForm.gramSugars" style="width: 400px;"/></td>
-                                    <td style="color: red;" ng-show="err[8]">{{err[0]}}</td>
-                                    <!-- To be modified -->
-
+                                    <td style="text-align: left; padding: 5px; height: 30px;"><b>Grams of Protein</b></td>
+                                    <!-- to be adjusted-->
+                                    <td style="padding-left: 5%;"><input type="text" name="preferredName"
+                                               id="preferredName" ng-model="patientForm.preferredName"/></td>
+                                    <td style="color: red;" ng-show="err[2]">{{err[2]}}</td>
+                                    <!-- to be adjusted-->
                                 </tr>
-                                <tr>
-                                    <th class="col-md-6">Grams of Fiber per Serving</th>
-
-                                    <!-- To be modified -->
-                                    <td><input type="text" name="gramFiber" id="gramFiber"
-                                               value="{{FoodDiaryForm.gramFiber}}"
-                                               ng-model="patientForm.gramFiber" style="width: 400px;"/></td>
-                                    <td style="color: red;" ng-show="err[9]">{{err[0]}}</td>
-                                    <!-- To be modified -->
-
-                                </tr>
-                                <tr>
-                                    <th class="col-md-6">Grams of Protein per Serving</th>
-
-                                    <!-- To be modified -->
-                                    <td><input type="text" name="gramProtein" id="gramProtein"
-                                               value="{{FoodDiaryForm.gramProtein}}"
-                                               ng-model="patientForm.gramProtein" style="width: 400px;"/></td>
-                                    <td style="color: red;" ng-show="err[10]">{{err[0]}}</td>
-                                    <!-- To be modified -->
-
-                                </tr>
-                                <!-- To be modified -->
-                                </tbody>
                             </table>
+                            <!------------------------------table------------------------------------------------>
                         </div>
                     </div>
 

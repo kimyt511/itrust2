@@ -1,8 +1,8 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:include="layout :: head(title=~{::title},links=~{::script})">
     <title>Food Diary</title>
-    <script th:src="@{/js/dateTimeService.js}"
-            src="../js/dateTimeService.js"></script>
+    <script th:src="@{/js/dateTimeService.js}" src="../js/dateTimeService.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.5.0/ui-bootstrap-tpls.min.js"></script>
 
 </head>
 <body th:include="layout :: body" th:with="content=~{::content}">
@@ -12,8 +12,11 @@
         /* Otherwise Thymeleaf tries to parse Javascript as XML and breaks itself sometimes.  Sigh */
         /*<![CDATA[*/
 
-        const app = angular.module('myApp', ['dateTimeServices']);
-        app.controller('viewFoodDiaryCtrl', function ($scope, $http, dateTimeService) {
+        const app = angular.module('FoodApp', ['dateTimeServices', 'ui.bootstrap']);
+
+
+
+        app.controller('viewFoodDiaryCtrl', function ($scope, $http,$window,dateTimeService) {
 
             ////////////////////////Function to Display patient name////////////////////////
             $scope.displayName = function (p) {
@@ -38,6 +41,26 @@
             );
             //////////////////////////////////////Get patients data//////////////////////////////////////
 
+            $scope.addEntry = function () {
+                // Specify the URL, window name, and window properties
+                //var url = document.getElementById('editdemographics-patient').getAttribute('href');
+                var url = document.querySelector('a[href="/iTrust2/patient/addFoodDiary"]').getAttribute('href');
+                var windowName = "popup";
+                var width = 600;
+                var height = 700;
+                var left = 400;
+                var top = 150;
+
+                // Open a new window for the form
+                var $popup = $window.open(url, windowName, "width=" + width + ",height=" + height + "," +
+                    "left=" + left + ",top=" + top);
+
+                // Pass data to the new window (optional)
+                $popup.Name = $scope.Name;
+            };
+
+
+            ///////////////////////////////Calendar, Source: https://sirius7.tistory.com/35////////////////////////////
             // input값이 한자리 숫자인 경우 앞에 '0' 붙혀주는 함수
             $scope.leftPad = function(value) {
                 if (value < 10) {
@@ -121,13 +144,9 @@
                 }
             }
 
-
-            ////////////////////////////////////////////////////////////////////////////////////////////////////
-            ////////////////////////////////////////////////////////////////////////////////////////////////////
-            ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
+            //Initialize Calendar
             $scope.buildCalendar();
+            ///////////////////////////////Calendar, Source: https://sirius7.tistory.com/35////////////////////////////
         });
         /*]]>*/
     </script>
@@ -238,7 +257,8 @@
     <!---------------------------------------------Style CSS------------------------------------------------------>
 
 
-    <div ng-app="myApp" ng-controller="viewFoodDiaryCtrl">
+
+    <div ng-app="FoodApp" ng-controller="viewFoodDiaryCtrl">
         <!-- information on vertical rule found here: https://stackoverflow.com/questions/571900/is-there-a-vr-vertical-rule-in-html  -->
         <div style="margin: 0 auto; width: 75%; height: 100%; overflow-y: auto;">
             <div style="height: 90%">
