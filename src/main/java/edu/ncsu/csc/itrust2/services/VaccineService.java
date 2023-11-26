@@ -39,11 +39,6 @@ public class VaccineService extends Service {
         return repository.findByCptCode(cptCode);
     }
 
-    public Vaccine findById(Long id) {
-        Optional<Vaccine> result = VaccineRepository.findById(id);
-        return result.orElse(null);
-    }
-
     public List<Vaccine> getAllVaccines() {
         return repository.findAll();
     }

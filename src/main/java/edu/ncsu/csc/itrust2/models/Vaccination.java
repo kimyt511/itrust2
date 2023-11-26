@@ -58,6 +58,4 @@ public class Vaccination extends DomainObject {
     @Convert(converter = LocalDateConverter.class)
     @JsonAdapter(LocalDateAdapter.class)
     private LocalDate dateAdministered;
-
-    // Additional methods and logic as required
 }

@@ -34,7 +34,7 @@ public class VaccinationService extends Service {
     public Vaccination build(VaccinationForm form) {
         Vaccination vaccination = new Vaccination();
 
-        Vaccine vaccine = vaccineService.findById(form.getVaccineId());
+        Vaccine vaccine = vaccineService.getVaccineByCptCode(form.getVaccineCptCode());
         vaccination.setVaccine(vaccine);
 
         OfficeVisit officeVisit = officeVisitService.findById(form.getOfficeVisitId());

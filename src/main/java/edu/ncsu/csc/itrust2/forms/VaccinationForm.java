@@ -25,7 +25,7 @@ public class VaccinationForm implements Serializable {
     private Long id; // Vaccination ID
 
     @NotNull
-    private Long vaccineId; // ID of the vaccine used
+    private String vaccineCptCode; // ID of the vaccine used
 
     @NotNull
     private Long officeVisitId; // ID of the office visit during which the vaccine was administered
@@ -44,7 +44,7 @@ public class VaccinationForm implements Serializable {
     public VaccinationForm(final Vaccination vaccination) {
         if (vaccination != null) {
             this.id = vaccination.getId();
-            this.vaccineId = vaccination.getVaccine().getId();
+            this.vaccineCptCode = vaccination.getVaccine().getCptCode();
             this.officeVisitId = vaccination.getOfficeVisit().getId();
             this.patientUsername = vaccination.getPatient().getUsername();
             this.dateAdministered = vaccination.getDateAdministered();
