@@ -53,7 +53,6 @@ public class VaccinationForm implements Serializable {
             this.vaccineCptCode = vaccination.getVaccine().getCptCode();
             this.patientUserName = vaccination.getPatient().getUsername();
             this.dateAdministered = vaccination.getDateAdministered();
-            this.comments = vaccination.getComments();
         }
     }
 }

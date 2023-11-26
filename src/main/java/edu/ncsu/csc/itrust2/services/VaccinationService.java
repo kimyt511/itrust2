@@ -44,7 +44,6 @@ public class VaccinationService extends Service {
         if (Comments == null) {
             Comments = "";
         }
-        vaccination.setComments(Comments);
 
         return vaccination;
     }

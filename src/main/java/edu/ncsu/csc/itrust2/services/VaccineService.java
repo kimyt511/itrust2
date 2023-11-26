@@ -26,7 +26,11 @@ public class VaccineService extends Service {
         vaccine.setName(form.getName());
         vaccine.setCptCode(form.getCptCode());
         vaccine.setAbbreviation(form.getAbbreviation());
-        vaccine.setComments(form.getComments());
+        String Comments = form.getComments();
+        if (Comments == null) {
+            Comments = "";
+        }
+        vaccine.setComments(Comments);
         return vaccine;
     }
 
