@@ -88,4 +88,17 @@ public class HCPController {
     public String EmergencyHealthRecords ( final Model model ) {
         return "/hcp/EmergencyHealthRecords";
     }
+
+    /**
+     * Returns the page of EHR
+     *
+     * @param model
+     *            The data for the front end
+     * @return Page to display to the user
+     */
+    @GetMapping ( "/hcp/viewVaccinations" )
+    @PreAuthorize ( "hasRole('ROLE_HCP')" )
+    public String viewVaccinations ( final Model model ) {
+        return "/hcp/viewVaccinations";
+    }
 }
