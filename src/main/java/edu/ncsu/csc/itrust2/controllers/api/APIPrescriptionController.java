@@ -7,20 +7,14 @@ import edu.ncsu.csc.itrust2.models.enums.TransactionType;
 import edu.ncsu.csc.itrust2.services.PrescriptionService;
 import edu.ncsu.csc.itrust2.services.UserService;
 import edu.ncsu.csc.itrust2.utils.LoggerUtil;
-
-import java.util.List;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Provides REST endpoints that deal with prescriptions. Exposes functionality to add, edit, fetch,
@@ -195,5 +189,27 @@ public class APIPrescriptionController extends APIController {
                     "Viewed prescription  " + id);
             return new ResponseEntity(p, HttpStatus.OK);
         }
+    }
+
+    @GetMapping ( "/prescriptions/ehr/search/{username}" )
+    public List<Prescription> getEhrPrescription ( @PathVariable final String username ) {
+        final List<Long> pre_list = prescriptionService.findEhrByUserName(username);
+        List<Prescription> list = new ArrayList<Prescription>();
+        for(Long id:pre_list) {
+            list.add((Prescription) prescriptionService.findById(id));
+        }
+        return list;
+
+    }
+
+    @GetMapping ( "/prescriptions/search/{username}" )
+    public List<Prescription> getPrescription ( @PathVariable final String username ) {
+        final List<Long> pre_list = prescriptionService.findByUserName(username);
+        List<Prescription> list = new ArrayList<Prescription>();
+        for(Long id:pre_list) {
+            list.add((Prescription) prescriptionService.findById(id));
+        }
+        return list;
+
     }
 }

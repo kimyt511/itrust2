@@ -1,12 +1,16 @@
 package edu.ncsu.csc.itrust2.services;
 
+import edu.ncsu.csc.itrust2.models.DomainObject;
+import edu.ncsu.csc.itrust2.models.Drug;
 import edu.ncsu.csc.itrust2.models.Vaccine;
+import edu.ncsu.csc.itrust2.repositories.DrugRepository;
+import edu.ncsu.csc.itrust2.repositories.PrescriptionRepository;
 import edu.ncsu.csc.itrust2.repositories.VaccineRepository;
-import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
 import org.springframework.data.jpa.repository.JpaRepository;
-import java.util.List;
+import org.springframework.stereotype.Component;
+
+import javax.transaction.Transactional;
 
 @Component
 @Transactional
@@ -20,23 +24,11 @@ public class VaccineService extends Service {
         return repository;
     }
 
-    public Vaccine saveVaccine(Vaccine vaccine) {
-        return repository.save(vaccine);
+    public boolean existsByName(final String name) {
+        return repository.existsByName(name);
     }
 
-    public Vaccine getVaccineByName(String name) {
+    public Vaccine findByName(final String name) {
         return repository.findByName(name);
-    }
-
-    public Vaccine getVaccineByAbbreviation(String abbreviation) {
-        return repository.findByAbbreviation(abbreviation);
-    }
-
-    public Vaccine getVaccineByCptCode(String cptCode) {
-        return repository.findByCptCode(cptCode);
-    }
-
-    public List<Vaccine> getAllVaccines() {
-        return repository.findAll();
     }
 }

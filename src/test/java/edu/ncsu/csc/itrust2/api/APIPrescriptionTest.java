@@ -4,9 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import edu.ncsu.csc.itrust2.common.TestUtils;
-import edu.ncsu.csc.itrust2.dto.DiagnosisDto;
-import edu.ncsu.csc.itrust2.forms.DiagnosisForm;
 import edu.ncsu.csc.itrust2.forms.OfficeVisitForm;
+import edu.ncsu.csc.itrust2.forms.PrescriptionForm;
 import edu.ncsu.csc.itrust2.forms.UserForm;
 import edu.ncsu.csc.itrust2.models.*;
 import edu.ncsu.csc.itrust2.models.enums.AppointmentType;
@@ -30,6 +29,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import javax.transaction.Transactional;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -41,7 +41,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-public class APIDiagnosisTest {
+public class APIPrescriptionTest {
     private MockMvc mvc;
 
     @Autowired private WebApplicationContext context;
@@ -50,9 +50,9 @@ public class APIDiagnosisTest {
 
     @Autowired private HospitalService hospitalService;
 
-    @Autowired private DiagnosisService diagnosisService;
+    @Autowired private PrescriptionService prescriptionService;
 
-    @Autowired private ICDCodeService icdCodeService;
+    @Autowired private DrugService drugService;
 
     @Autowired private OfficeVisitService officeVisitService;
 
@@ -79,18 +79,17 @@ public class APIDiagnosisTest {
     @WithMockUser(
             username = "hcp",
             roles = {"HCP"})
-    public void testDiagnoses() throws Exception {
+    public void testPrescriptions() throws Exception {
 
         final Gson gson = new GsonBuilder().create();
         String content;
 
-        // create 2 ICDCode to use
-        final ICDCode code = new ICDCode("T10", "Test 10");
+        // create 2 drugs to use
+        final Drug drug1 = new Drug("0000-0000-01", "TEST1", "Desc1");
 
-        // create an ICDCode to use
-        final ICDCode code2 = new ICDCode("T11", "Test 11");
+        final Drug drug2 = new Drug("0000-0000-02", "TEST2", "Desc2");
 
-        icdCodeService.saveAll(List.of(code, code2));
+        drugService.saveAll(List.of(drug1, drug2));
 
         // Create an office visit with two diagnoses
         final OfficeVisitForm form = new OfficeVisitForm();
@@ -110,17 +109,27 @@ public class APIDiagnosisTest {
         form.setHouseSmokingStatus(HouseholdSmokingStatus.NONSMOKING);
         form.setPatientSmokingStatus(PatientSmokingStatus.FORMER);
 
-        final List<Diagnosis> list = new ArrayList<>();
-        final Diagnosis d = new Diagnosis();
-        d.setCode(code);
-        d.setNote("Test diagnosis");
-        list.add(d);
-        final Diagnosis d2 = new Diagnosis();
-        d2.setCode(code2);
-        d2.setNote("Second Diagnosis");
-        list.add(d2);
+        final User patient = userService.findByName("patient");
 
-        form.setDiagnoses(list.stream().map(DiagnosisForm::new).collect(Collectors.toList()));
+        final List<Prescription> list = new ArrayList<>();
+        final Prescription p = new Prescription();
+        p.setDrug(drug1);
+        p.setDosage(10);
+        p.setStartDate(LocalDate.of(2023,06,15));
+        p.setEndDate(LocalDate.of(2023,06,23));
+        p.setRenewals(1);
+        p.setPatient(patient);
+        list.add(p);
+        final Prescription p2 = new Prescription();
+        p2.setDrug(drug2);
+        p2.setDosage(10);
+        p2.setStartDate(LocalDate.of(2023,06,16));
+        p2.setEndDate(LocalDate.of(2023,06,24));
+        p2.setRenewals(2);
+        p2.setPatient(patient);
+        list.add(p2);
+
+        form.setPrescriptions(list.stream().map(PrescriptionForm::new).collect(Collectors.toList()));
 
         final OfficeVisit visit = officeVisitService.build(form);
 
@@ -130,103 +139,86 @@ public class APIDiagnosisTest {
 
         final Serializable id = retrieved.getId();
 
-        d.setVisit(retrieved);
-
         // get the list of diagnoses for this office visit and make sure both
         // are there
         content =
                 mvc.perform(
-                                get("/api/v1/diagnosesforvisit/" + id)
+                                get("/api/v1/prescriptions/ehr/search/" + "patient")
                                         .contentType(MediaType.APPLICATION_JSON))
                         .andReturn()
                         .getResponse()
                         .getContentAsString();
-        List<Diagnosis> dlist =
-                gson.fromJson(content, new TypeToken<ArrayList<Diagnosis>>() {}.getType());
+        List<Prescription> plist =
+                gson.fromJson(content, new TypeToken<ArrayList<Prescription>>() {}.getType());
         boolean flag = false;
-        for (final Diagnosis dd : dlist) {
-            if (dd.getCode().equals(d.getCode()) && dd.getNote().equals(d.getNote())) {
+        for (final Prescription pp : plist) {
+            if (pp.getDosage() == p.getDosage() && pp.getDrug().getCode().equals(p.getDrug().getCode())) {
                 flag = true;
-                d.setId(dd.getId());
+                p.setId(pp.getId());
             }
+                
         }
         assertTrue(flag);
         flag = false;
-        for (final Diagnosis dd : dlist) {
-            if (dd.getCode().equals(d2.getCode()) && dd.getNote().equals(d2.getNote())) {
+        for (final Prescription pp : plist) {
+            if (pp.getDosage() == p2.getDosage() && pp.getDrug().getCode().equals(p2.getDrug().getCode())) {
                 flag = true;
-                d2.setId(dd.getId());
+                p2.setId(pp.getId());
+            }
+        }
+        assertTrue(flag);
+
+        content =
+                mvc.perform(
+                                get("/api/v1/prescriptions/search/" + "patient")
+                                        .contentType(MediaType.APPLICATION_JSON))
+                        .andReturn()
+                        .getResponse()
+                        .getContentAsString();
+        plist =
+                gson.fromJson(content, new TypeToken<ArrayList<Prescription>>() {}.getType());
+        flag = false;
+        for (final Prescription pp : plist) {
+            if (pp.getDosage() == p.getDosage() && pp.getDrug().getCode().equals(p.getDrug().getCode())) {
+                flag = true;
+                p.setId(pp.getId());
+            }
+
+        }
+        assertTrue(flag);
+        flag = false;
+        for (final Prescription pp : plist) {
+            if (pp.getDosage() == p2.getDosage() && pp.getDrug().getCode().equals(p2.getDrug().getCode())) {
+                flag = true;
+                p2.setId(pp.getId());
             }
         }
         assertTrue(flag);
 
         // get the list of diagnoses for this patient and make sure both are
         // there
-        final List<Diagnosis> forPatient =
-                diagnosisService.findByPatient(userService.findByName("patient"));
+        final List<Prescription> forPatient =
+                prescriptionService.findByPatient(userService.findByName("patient"));
         flag = false;
-        for (final Diagnosis dd : forPatient) {
-            if (dd.getCode().equals(d.getCode()) && dd.getNote().equals(d.getNote())) {
+        for (final Prescription pp : forPatient) {
+            if (pp.getDosage() == p.getDosage() && pp.getDrug().getCode().equals(p.getDrug().getCode())) {
                 flag = true;
             }
         }
         assertTrue(flag);
         flag = false;
-        for (final Diagnosis dd : forPatient) {
-            if (dd.getCode().equals(d2.getCode()) && dd.getNote().equals(d2.getNote())) {
+        for (final Prescription pp : forPatient) {
+            if (pp.getDosage() == p2.getDosage() && pp.getDrug().getCode().equals(p2.getDrug().getCode())) {
                 flag = true;
             }
         }
         assertTrue(flag);
-
-        //uc15
-        content =
-                mvc.perform(
-                                get("/api/v1/diagnoses/ehr/search/" + "patient" )
-                                        .contentType(MediaType.APPLICATION_JSON))
-                        .andReturn()
-                        .getResponse()
-                        .getContentAsString();
-        List<DiagnosisDto> dtolist = gson.fromJson(content, new TypeToken<ArrayList<DiagnosisDto>>() {}.getType());
-
-        flag = false;
-        if(!dtolist.isEmpty()){
-            flag = true;
-        }
-        assertTrue(flag);
-
-        content =
-                mvc.perform(
-                                get("/api/v1/diagnoses/search/" + "patient" )
-                                        .contentType(MediaType.APPLICATION_JSON))
-                        .andReturn()
-                        .getResponse()
-                        .getContentAsString();
-        dtolist = gson.fromJson(content, new TypeToken<ArrayList<DiagnosisDto>>() {}.getType());
-
-        flag = false;
-        if(!dtolist.isEmpty()){
-            flag = true;
-        }
-        assertTrue(flag);
-
 
         // edit a diagnosis within the editing of office visit and check they
         // work.
         form.setId(id + "");
-        d.setNote(("Edited").repeat(500));
-        form.setDiagnoses(list.stream().map(DiagnosisForm::new).collect(Collectors.toList()));
-        content =
-                mvc.perform(
-                                put("/api/v1/officevisits/" + id)
-                                        .contentType(MediaType.APPLICATION_JSON)
-                                        .content(TestUtils.asJsonString(form)))
-                        .andReturn()
-                        .getResponse()
-                        .getContentAsString();
-
-        d.setNote("Edited");
-        form.setDiagnoses(list.stream().map(DiagnosisForm::new).collect(Collectors.toList()));
+        p.setEndDate(LocalDate.of(2023,06,26));
+        form.setPrescriptions(list.stream().map(PrescriptionForm::new).collect(Collectors.toList()));
         content =
                 mvc.perform(
                                 put("/api/v1/officevisits/" + id)
@@ -237,21 +229,24 @@ public class APIDiagnosisTest {
                         .getContentAsString();
 
         content =
-                mvc.perform(get("/api/v1/diagnosesforvisit/" + id))
+                mvc.perform(
+                                get("/api/v1/prescriptions/search/" + "patient")
+                                        .contentType(MediaType.APPLICATION_JSON))
                         .andReturn()
                         .getResponse()
                         .getContentAsString();
-        dlist = gson.fromJson(content, new TypeToken<ArrayList<Diagnosis>>() {}.getType());
+        plist =
+                gson.fromJson(content, new TypeToken<ArrayList<Prescription>>() {}.getType());
         flag = false;
-        for (final Diagnosis dd : dlist) {
-            if (dd.getCode().equals(d.getCode()) && dd.getNote().equals(d.getNote())) {
+        for (final Prescription pp : plist) {
+            if (pp.getDosage() == p.getDosage() && pp.getDrug().getCode().equals(p.getDrug().getCode())) {
                 flag = true;
             }
         }
         assertTrue(flag);
         flag = false;
-        for (final Diagnosis dd : dlist) {
-            if (dd.getCode().equals(d2.getCode()) && dd.getNote().equals(d2.getNote())) {
+        for (final Prescription pp : plist) {
+            if (pp.getDosage() == p2.getDosage() && pp.getDrug().getCode().equals(p2.getDrug().getCode())) {
                 flag = true;
             }
         }
@@ -259,8 +254,8 @@ public class APIDiagnosisTest {
 
         // edit the office visit and remove a diagnosis
 
-        list.remove(d);
-        form.setDiagnoses(list.stream().map(DiagnosisForm::new).collect(Collectors.toList()));
+        list.remove(p);
+        form.setPrescriptions(list.stream().map(PrescriptionForm::new).collect(Collectors.toList()));
         content =
                 mvc.perform(
                                 put("/api/v1/officevisits/" + id)
@@ -272,25 +267,28 @@ public class APIDiagnosisTest {
 
         // check that the removed one is gone
         content =
-                mvc.perform(get("/api/v1/diagnosesforvisit/" + id))
+                mvc.perform(
+                                get("/api/v1/prescriptions/search/" + "patient")
+                                        .contentType(MediaType.APPLICATION_JSON))
                         .andReturn()
                         .getResponse()
                         .getContentAsString();
-        dlist = gson.fromJson(content, new TypeToken<ArrayList<Diagnosis>>() {}.getType());
-        for (final Diagnosis dd : dlist) {
-            if (dd.getCode().equals(d.getCode()) && dd.getNote().equals(d.getNote())) {
+        plist =
+                gson.fromJson(content, new TypeToken<ArrayList<Prescription>>() {}.getType());
+        for (final Prescription pp : plist) {
+            if (pp.getDosage() == p.getDosage() && pp.getDrug().getCode().equals(p.getDrug().getCode())) {
                 Assert.fail("Was not deleted!");
             }
         }
         flag = false;
-        for (final Diagnosis dd : dlist) {
-            if (dd.getCode().equals(d2.getCode()) && dd.getNote().equals(d2.getNote())) {
+        for (final Prescription pp : plist) {
+            if (pp.getDosage() == p2.getDosage() && pp.getDrug().getCode().equals(p2.getDrug().getCode())) {
                 flag = true;
             }
         }
         assertTrue(flag);
 
         /* Make sure all the editing didn't create any duplicates */
-        Assert.assertEquals(2, diagnosisService.count());
+        Assert.assertEquals(2, prescriptionService.count());
     }
 }

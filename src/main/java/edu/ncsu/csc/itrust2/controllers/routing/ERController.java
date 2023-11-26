@@ -7,6 +7,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 
 /**
  * Controller to manage basic abilities for ER roles
@@ -28,16 +29,15 @@ public class ERController {
     public String index(final Model model) {
         return Role.ROLE_ER.getLandingPage();
     }
-
     /**
      * Returns the ER for the given model
      *
      * @param model model to check
      * @return role
      */
-    @RequestMapping(value = "er/records")
-    @PreAuthorize("hasRole('ROLE_ER')")
-    public String emergencyRecords(final Model model) {
-        return "personnel/records";
+    @GetMapping ( "/er/EmergencyHealthRecords" )
+    @PreAuthorize ( "hasRole('ROLE_ER')" )
+    public String EmergencyHealthRecords ( final Model model ) {
+        return "/er/EmergencyHealthRecords";
     }
 }

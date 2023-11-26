@@ -1,0 +1,76 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:include="layout :: head(title=~{::title},links=~{})">
+<title>View Vaccinations</title>
+</head>
+
+<body th:include="layout :: body" th:with="content=~{::content}">
+	<div th:fragment="content">
+
+
+		<script th:inline="javascript">
+      /* Otherwise Thymeleaf tries to parse Javascript as XML and breaks itself sometimes.  Sigh */
+      /*<![CDATA[*/
+      var app = angular.module("vaccinationsApp", []);
+
+      app.controller('vaccinationsCtrl', function ($scope, $http) {
+        $scope.vaccinations = [];
+        $scope.pattern = /^90\d{3}$/;
+        $scope.loadTable = function () {
+          $http.get("/iTrust2/api/v1/vaccinations").then(
+            function (response) {
+              $scope.vaccinations = response.data;
+              $scope.message = "";
+            }, function (rejection) {
+              $scope.vaccinations = [];
+              $scope.message = "Could not display vaccinations";
+            });
+        }
+        $scope.loadTable();
+      });
+			/*]]>*/
+    </script>
+
+		<div ng-app="vaccinationsApp" ng-controller="vaccinationsCtrl">
+			<div class="container">
+				<div class="row">
+					<div class="col-md-12">
+						<div class="panel panel-primary">
+							<div class="panel-heading">
+								<h3>Patient View Vaccinations</h3>
+							</div>
+							<div class="panel-body">
+								<table class="table table-bordered">
+									<caption>My Vaccinations:</caption>
+									<thead>
+										<tr>
+											<th>Vaccine</th>
+											<th>Abbreviation</th>
+											<th>CPT Code</th>
+											<th>Comments</th>
+											<th>Vaccinated Date</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr name="prescriptionTableRow"
+											ng-repeat="v in vaccinations | orderBy: 'vaccination'"
+											prescriptionId={{v.id}}>
+											<td name="drugCell">{{v.vaccine.name}}</td>
+											<td name="abbreCell">{{v.vaccine.abbreviation}}</td>
+											<td name="CptCell">{{v.vaccine.cptcode}}</td>
+											<td name="CommentsCell">{{v.vaccine.comments}}</td>
+											<td name="dateCell">{{v.vaccinationDay | date :
+												'MM/dd/yyyy'}}</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+
+</html>

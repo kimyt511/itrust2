@@ -76,4 +76,18 @@ public class AdminController {
     public String addCode(final Model model) {
         return "/admin/manageICDCodes";
     }
+
+    /**
+     * Retrieves the form for the Vaccine action
+     *
+     * @param model
+     *            Data for front end
+     * @return The page to display
+     */
+    @RequestMapping ( value = "admin/vaccines" )
+    @PreAuthorize ( "hasRole('ROLE_ADMIN')" )
+    public String vaccines ( final Model model ) {
+        return "admin/vaccines";
+    }
+
 }

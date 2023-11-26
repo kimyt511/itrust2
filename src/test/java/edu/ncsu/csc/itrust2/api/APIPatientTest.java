@@ -104,6 +104,12 @@ public class APIPatientTest {
         // Creating a User should create the Patient record automatically
         mvc.perform(get("/api/v1/patients/antti")).andExpect(status().isOk());
 
+        // get all patients
+        mvc.perform(get("/api/v1/patients")).andExpect(status().isOk());
+
+        // get wrong patients
+        mvc.perform(get("/api/v1/patients/bees")).andExpect(status().isNotFound());
+
         // Should also now be able to edit existing record with new information
         mvc.perform(
                         put("/api/v1/patients/antti")

@@ -184,9 +184,31 @@
 
 **Date**: 2023.11.5
 
+What we did:
 - UC15 & UC18 Frontend - 김태헌
 - UC18 Backend - 최원재
 - UC15 Backend - 한철원
+- Implement frontend very naively to visualize how each functionality works
+
+**Date**: 2023.11.14
+
+What we did:
+- Discuss about a bug about viewing diagnoses in the original code
+- Decide to create DTO to fix the bug
+
+**Date**: 2023.11.16
+
+What we did:
+- Fix the bug and complete the functionalities of UC15
+ToDo: Implement logging functionality
+ToDo: Implement UC15 into gradle version of iTrust2
+
+**Date**: 2023.11.21
+
+What we did:
+- Discuss about a bug about documenting diagnoses in the gradle version of iTrust2
+ToDo: Implement UC15 into gradle version of iTrust2
+ToDo: Create test code and then merge to develop branch
 
 ---
 

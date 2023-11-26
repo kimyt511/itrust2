@@ -66,10 +66,8 @@ public class APIDrugTest {
         form1.setName("TEST1");
         form1.setDescription("DESC1");
 
-        final DrugForm form2 = new DrugForm();
-        form2.setCode("0000-0000-01");
-        form2.setName("TEST2");
-        form2.setDescription("Desc2");
+        final Drug drug_tmp = new Drug("0000-0000-01", "TEST2", "Desc2");
+        final DrugForm form2 = new DrugForm(drug_tmp);
 
         // Add drug1 to system
         final String content1 =
