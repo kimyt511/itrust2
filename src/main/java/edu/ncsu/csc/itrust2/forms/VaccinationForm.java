@@ -39,9 +39,6 @@ public class VaccinationForm implements Serializable {
     @NotEmpty
     private LocalDate dateAdministered; // Date when the vaccine was administered
 
-    @Length(max = 500)
-    private String comments; // Comments about the vaccination
-
     /**
      * Constructs a new form with information from the given vaccination.
      *

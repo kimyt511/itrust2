@@ -23,14 +23,19 @@ public class VaccineService extends Service {
 
     public Vaccine build(final VaccineForm form) {
         final Vaccine vaccine = new Vaccine();
+        
         vaccine.setName(form.getName());
+
         vaccine.setCptCode(form.getCptCode());
+
         vaccine.setAbbreviation(form.getAbbreviation());
+
         String Comments = form.getComments();
         if (Comments == null) {
             Comments = "";
         }
         vaccine.setComments(Comments);
+
         return vaccine;
     }
 
