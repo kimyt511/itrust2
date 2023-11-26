@@ -11,7 +11,7 @@
         /* Otherwise Thymeleaf tries to parse Javascript as XML and breaks itself sometimes.  Sigh */
         /*<![CDATA[*/
 
-        const app = angular.module('myApp', ['dateTimeServices']);
+        const app = angular.module('hcpviewVaccinationsApp', ['dateTimeServices']);
         app.controller(
                 'viewPatientVaccinationsCtrl',
                 function ($scope, $http, dateTimeService) {
@@ -34,7 +34,7 @@
 
                     $scope.vaccinations = [];
                     $scope.loadTable = function (patient) {
-                        $http.get("/iTrust2/api/v1/vaccinations/search"+patient.username).then(
+                        $http.get("/iTrust2/api/v1/vaccinations/patient/"+patient.username).then(
                             function (response) {
                                 $scope.vaccinations = response.data;
                                 $scope.message = "";
@@ -59,7 +59,7 @@
     </script>
 
 
-    <div ng-app="myApp" ng-controller="viewPatientVaccinationsCtrl">
+    <div ng-app="hcpviewVaccinationsApp" ng-controller="viewPatientVaccinationsCtrl">
         <div style="float: left; width: 30%; height: 75%; overflow-y: auto">
             <h2>Patients:</h2>
             <!-- info on filtering taken from here: https://www.w3schools.com/angular/angular_filters.asp
@@ -102,9 +102,9 @@
                             prescriptionId={{v.id}}>
                             <td name="drugCell">{{v.vaccine.name}}</td>
                             <td name="abbreCell">{{v.vaccine.abbreviation}}</td>
-                            <td name="CptCell">{{v.vaccine.cptcode}}</td>
+                            <td name="CptCell">{{v.vaccine.cptCode}}</td>
                             <td name="CommentsCell">{{v.vaccine.comments}}</td>
-                            <td name="dateCell">{{v.vaccinationDay | date :
+                            <td name="dateCell">{{v.dateAdministered | date :
                                 'MM/dd/yyyy'}}</td>
                         </tr>
                     </tbody>
