@@ -2,14 +2,11 @@ package edu.ncsu.csc.itrust2.controllers.api;
 
 import edu.ncsu.csc.itrust2.forms.VaccinationForm;
 import edu.ncsu.csc.itrust2.models.Vaccination;
-import edu.ncsu.csc.itrust2.models.OfficeVisit;
 import edu.ncsu.csc.itrust2.models.User;
 import edu.ncsu.csc.itrust2.services.VaccinationService;
-import edu.ncsu.csc.itrust2.services.OfficeVisitService;
 import edu.ncsu.csc.itrust2.services.UserService;
 import edu.ncsu.csc.itrust2.utils.LoggerUtil;
 import edu.ncsu.csc.itrust2.models.enums.TransactionType;
-import edu.ncsu.csc.itrust2.models.enums.Role;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +14,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Collection;
 
 @RestController
 @RequestMapping(APIController.BASE_PATH)
@@ -25,9 +21,6 @@ public class APIVaccinationController extends APIController {
 
     @Autowired
     private VaccinationService vaccinationService;
-
-    @Autowired
-    private OfficeVisitService officeVisitService;
 
     @Autowired
     private UserService userService;
@@ -120,42 +113,42 @@ public class APIVaccinationController extends APIController {
         }
     }
 
-    @GetMapping("/vaccinations/officevisit/{visitId}")
-    @PreAuthorize("hasAnyRole('ROLE_HCP', 'ROLE_PATIENT')")
-    public ResponseEntity<?> getVaccinationsForOfficeVisit(@PathVariable final Long visitId) {
-        final User user = userService.findByName(LoggerUtil.currentUser());
-        final Collection<Role> roles = user.getRoles();
+    // @GetMapping("/vaccinations/officevisit/{visitId}")
+    // @PreAuthorize("hasAnyRole('ROLE_HCP', 'ROLE_PATIENT')")
+    // public ResponseEntity<?> getVaccinationsForOfficeVisit(@PathVariable final Long visitId) {
+    //     final User user = userService.findByName(LoggerUtil.currentUser());
+    //     final Collection<Role> roles = user.getRoles();
 
-        try {
-            OfficeVisit officeVisit = officeVisitService.findById(visitId);
-            if (officeVisit == null) {
-                logViewVaccinationFailure(roles, LoggerUtil.currentUser(), visitId, "Office visit not found");
-                return ResponseEntity.notFound().build();
-            }
-            List<Vaccination> vaccinations = vaccinationService.getVaccinationsByOfficeVisit(officeVisit);
+    //     try {
+    //         OfficeVisit officeVisit = officeVisitService.findById(visitId);
+    //         if (officeVisit == null) {
+    //             logViewVaccinationFailure(roles, LoggerUtil.currentUser(), visitId, "Office visit not found");
+    //             return ResponseEntity.notFound().build();
+    //         }
+    //         List<Vaccination> vaccinations = vaccinationService.getVaccinationsByOfficeVisit(officeVisit);
 
-            logViewVaccinationSuccess(roles, LoggerUtil.currentUser(), visitId);
+    //         logViewVaccinationSuccess(roles, LoggerUtil.currentUser(), visitId);
 
-            return ResponseEntity.ok(vaccinations);
-        } catch (final Exception e) {
-            logViewVaccinationFailure(roles, LoggerUtil.currentUser(), visitId, e.getMessage());
-            return ResponseEntity.badRequest().body(errorResponse("Failed to retrieve vaccinations for office visit: " + e.getMessage()));
-        }
-    }
+    //         return ResponseEntity.ok(vaccinations);
+    //     } catch (final Exception e) {
+    //         logViewVaccinationFailure(roles, LoggerUtil.currentUser(), visitId, e.getMessage());
+    //         return ResponseEntity.badRequest().body(errorResponse("Failed to retrieve vaccinations for office visit: " + e.getMessage()));
+    //     }
+    // }
 
-    private void logViewVaccinationSuccess(Collection<Role> roles, String currentUser, Long visitId) {
-        if (roles.contains(Role.ROLE_HCP)) {
-            loggerUtil.log(TransactionType.HCP_VIEW_PATIENT_VACCINATIONS, currentUser, "HCP viewing vaccinations for office visit ID: " + visitId);
-        } else if (roles.contains(Role.ROLE_PATIENT)) {
-            loggerUtil.log(TransactionType.PATIENT_VIEW_VACCINATIONS, currentUser, "Patient viewing vaccinations for office visit ID: " + visitId);
-        }
-    }
+    // private void logViewVaccinationSuccess(Collection<Role> roles, String currentUser, Long visitId) {
+    //     if (roles.contains(Role.ROLE_HCP)) {
+    //         loggerUtil.log(TransactionType.HCP_VIEW_PATIENT_VACCINATIONS, currentUser, "HCP viewing vaccinations for office visit ID: " + visitId);
+    //     } else if (roles.contains(Role.ROLE_PATIENT)) {
+    //         loggerUtil.log(TransactionType.PATIENT_VIEW_VACCINATIONS, currentUser, "Patient viewing vaccinations for office visit ID: " + visitId);
+    //     }
+    // }
 
-    private void logViewVaccinationFailure(Collection<Role> roles, String currentUser, Long visitId, String errorMessage) {
-        if (roles.contains(Role.ROLE_HCP)) {
-            loggerUtil.log(TransactionType.HCP_VIEW_PATIENT_VACCINATIONS, currentUser, "Failed to retrieve vaccinations for office visit ID: " + visitId + "; Error: " + errorMessage);
-        } else if (roles.contains(Role.ROLE_PATIENT)) {
-            loggerUtil.log(TransactionType.PATIENT_VIEW_VACCINATIONS, currentUser, "Failed to retrieve vaccinations for office visit ID: " + visitId + "; Error: " + errorMessage);
-        }
-    }
+    // private void logViewVaccinationFailure(Collection<Role> roles, String currentUser, Long visitId, String errorMessage) {
+    //     if (roles.contains(Role.ROLE_HCP)) {
+    //         loggerUtil.log(TransactionType.HCP_VIEW_PATIENT_VACCINATIONS, currentUser, "Failed to retrieve vaccinations for office visit ID: " + visitId + "; Error: " + errorMessage);
+    //     } else if (roles.contains(Role.ROLE_PATIENT)) {
+    //         loggerUtil.log(TransactionType.PATIENT_VIEW_VACCINATIONS, currentUser, "Failed to retrieve vaccinations for office visit ID: " + visitId + "; Error: " + errorMessage);
+    //     }
+    // }
 }

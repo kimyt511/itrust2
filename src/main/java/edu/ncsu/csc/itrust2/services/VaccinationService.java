@@ -3,7 +3,6 @@ package edu.ncsu.csc.itrust2.services;
 import edu.ncsu.csc.itrust2.forms.VaccinationForm;
 import edu.ncsu.csc.itrust2.models.Vaccination;
 import edu.ncsu.csc.itrust2.models.Vaccine;
-import edu.ncsu.csc.itrust2.models.OfficeVisit;
 import edu.ncsu.csc.itrust2.models.User;
 import edu.ncsu.csc.itrust2.repositories.VaccinationRepository;
 import javax.transaction.Transactional;
@@ -61,9 +60,5 @@ public class VaccinationService extends Service {
 
     public List<Vaccination> getVaccinationsByPatient(User patient) {
         return repository.findByPatient(patient);
-    }
-
-    public List<Vaccination> getVaccinationsByOfficeVisit(OfficeVisit officeVisit) {
-        return repository.findByOfficeVisit(officeVisit);
     }
 }

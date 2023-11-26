@@ -37,19 +37,13 @@ public class Vaccination extends DomainObject {
     private Long id;
 
     @Setter
-    @NotNull
+    // @NotNull
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "vaccine_id")
     private Vaccine vaccine;
 
     @Setter
-    @NotNull
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "office_visit_id")
-    private OfficeVisit officeVisit;
-
-    @Setter
-    @NotNull
+    // @NotNull
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "patient_id", columnDefinition = "varchar(100)")
     private User patient;
