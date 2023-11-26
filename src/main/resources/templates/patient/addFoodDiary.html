@@ -21,6 +21,14 @@
             $scope.foodDiaryForm = { date: "", patient: "", mealType: "" ,foodName:"", servings: 0,
                 calories: 0, fat: 0, sodium: 0, carb: 0, sugar: 0, fiber: 0, protein: 0};
 
+            $scope.mealTypes = [
+                { name: 'Breakfast' },
+                { name: 'Lunch' },
+                { name: 'Dinner' },
+                { name: 'Snack' },
+                // Add more meal types as needed
+            ];
+
             /*$scope.formatDate = function (date) {
                 // input date is in the format yyyy-mm-dd
                 const month = date.getMonth() + 1;
@@ -114,6 +122,8 @@
 
             $scope.submit = function () {
                 const valid = checkValidForm($scope.foodDiaryForm);
+
+                $scope.foodDiaryForm.mealType = $scope.foodDiaryForm.mealType.toUpperCase();
                 if (!valid) {
                     //$scope.message = "";
                     alert("Not Valid");
@@ -170,7 +180,7 @@
                                     <!-- to be adjusted-->
                                     <td style="padding-left: 5%;"><select name="mealType" id="mealType"
                                                 ng-model="foodDiaryForm.mealType">
-                                        <option ng-repeat="mt in MealType">{{mt.name}}</option>
+                                        <option ng-repeat="mt in mealTypes">{{mt.name}}</option>
                                     </select></td>
                                     <!-- to be adjusted-->
                                 </tr>
