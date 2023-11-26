@@ -80,6 +80,7 @@ public class APIVaccineController extends APIController {
 
             service.save(v); /* Overwrite existing drug */
 
+
             loggerUtil.log(
                     TransactionType.ADMIN_EDIT_VACCINE,
                     LoggerUtil.currentUser(), LoggerUtil.currentUser() + " edits " + v.getName() +".");

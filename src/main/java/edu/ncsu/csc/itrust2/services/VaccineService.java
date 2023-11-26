@@ -23,6 +23,10 @@ public class VaccineService extends Service {
 
     public Vaccine build(final VaccineForm form) {
         final Vaccine vaccine = new Vaccine();
+
+        if(form.getId() != null){
+            vaccine.setId(form.getId());
+        }
         
         vaccine.setName(form.getName());
 
