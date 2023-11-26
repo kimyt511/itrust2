@@ -146,6 +146,9 @@ public class APIAppointmentRequestTest {
         List<AppointmentRequest> forPatient = (List<AppointmentRequest>) arService.findAll();
         Assert.assertEquals(1, forPatient.size());
 
+        final AppointmentRequestForm af1 = new AppointmentRequestForm(forPatient.get(0));
+        Assert.assertEquals(af1.getComments(), appointmentForm.getComments());
+
         /*
          * We need the ID of the appointment request that actually got _saved_
          * when calling the API above. This will get it
