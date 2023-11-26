@@ -10,6 +10,8 @@ import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
+
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,7 +40,7 @@ public class VaccinationService extends Service {
         User patient = userService.findByName(form.getPatientUserName());
         vaccination.setPatient(patient);
 
-        vaccination.setDateAdministered(form.getDateAdministered());
+        vaccination.setDateAdministered(LocalDate.parse(form.getDateAdministered()));
 
         return vaccination;
     }
