@@ -16,7 +16,7 @@ public class VaccineForm {
     private Long id;
     private String name;
     private String abbreviation;
-    private String cptcode;
+    private String cptCode;
     private String comments;
 
     /**
@@ -30,7 +30,7 @@ public class VaccineForm {
         }
         this.name = v.getName();
         this.abbreviation = v.getAbbreviation();
-        this.cptcode = v.getCptCode();
+        this.cptCode = v.getCptCode();
         this.comments = v.getComments();
     }
 }

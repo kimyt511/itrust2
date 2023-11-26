@@ -23,10 +23,9 @@ public class APIVaccineController extends APIController {
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/vaccine")
-
     public ResponseEntity addVaccine(@RequestBody final VaccineForm form) {
         try {
-            final Vaccine v = new Vaccine(form);
+            final Vaccine v = service.build(form);
 
             // Make sure code does not conflict with existing drugs
             if (service.existsByName(v.getName())) {
@@ -37,7 +36,7 @@ public class APIVaccineController extends APIController {
 
             service.save(v);
             loggerUtil.log(
-                    TransactionType.VACCINE_CREATE,
+                    TransactionType.ADMIN_ADD_VACCINE,
                     LoggerUtil.currentUser(), LoggerUtil.currentUser() + " adds " + v.getName() + ".");
             return new ResponseEntity(v, HttpStatus.OK);
         } catch (final Exception e) {
@@ -58,7 +57,7 @@ public class APIVaccineController extends APIController {
                         HttpStatus.NOT_FOUND);
             }
 
-            final Vaccine v = new Vaccine(form);
+            final Vaccine v = service.build(form);
 
             // If the code was changed, make sure it is unique
             final Vaccine sameName = service.findByName(v.getName());
@@ -71,7 +70,7 @@ public class APIVaccineController extends APIController {
             service.save(v); /* Overwrite existing drug */
 
             loggerUtil.log(
-                    TransactionType.VACCINE_EDIT,
+                    TransactionType.ADMIN_EDIT_VACCINE,
                     LoggerUtil.currentUser(), LoggerUtil.currentUser() + " edits " + v.getName() +".");
             return new ResponseEntity(v, HttpStatus.OK);
         } catch (final Exception e) {
@@ -93,7 +92,7 @@ public class APIVaccineController extends APIController {
             }
             service.delete(v);
             loggerUtil.log(
-                    TransactionType.VACCINE_DELETE,
+                    TransactionType.ADMIN_DELETE_VACCINE,
                     LoggerUtil.currentUser(), LoggerUtil.currentUser() + " deletes " + v.getName());
             return new ResponseEntity(id, HttpStatus.OK);
         } catch (final Exception e) {

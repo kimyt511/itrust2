@@ -1,10 +1,7 @@
 package edu.ncsu.csc.itrust2.services;
 
-import edu.ncsu.csc.itrust2.models.DomainObject;
-import edu.ncsu.csc.itrust2.models.Drug;
+import edu.ncsu.csc.itrust2.forms.VaccineForm;
 import edu.ncsu.csc.itrust2.models.Vaccine;
-import edu.ncsu.csc.itrust2.repositories.DrugRepository;
-import edu.ncsu.csc.itrust2.repositories.PrescriptionRepository;
 import edu.ncsu.csc.itrust2.repositories.VaccineRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -22,6 +19,15 @@ public class VaccineService extends Service {
     @Override
     protected JpaRepository getRepository() {
         return repository;
+    }
+
+    public Vaccine build(final VaccineForm form) {
+        final Vaccine vaccine = new Vaccine();
+        vaccine.setName(form.getName());
+        vaccine.setCptCode(form.getCptCode());
+        vaccine.setAbbreviation(form.getAbbreviation());
+        vaccine.setComments(form.getComments());
+        return vaccine;
     }
 
     public boolean existsByName(final String name) {
