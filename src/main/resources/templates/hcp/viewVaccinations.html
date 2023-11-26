@@ -1,6 +1,6 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:include="layout :: head(title=~{::title},links=~{::script})">
-    <title>Document Office Visit</title>
+    <title>View Patient Vaccinations</title>
     <script th:src="@{/js/dateTimeService.js}"
             src="../js/dateTimeService.js"></script>
 </head>
@@ -46,7 +46,7 @@
                         
                     $scope.selectPatient = function (patient, override) {
                         $scope.loadTable(patient);
-                        $scope.selectedPatient = pf.username;
+                        $scope.selectedPatient = patient.username;
                     }
 
                     $http.get("/iTrust2/api/v1/patients").then(
