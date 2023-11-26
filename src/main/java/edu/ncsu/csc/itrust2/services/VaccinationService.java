@@ -40,11 +40,6 @@ public class VaccinationService extends Service {
 
         vaccination.setDateAdministered(form.getDateAdministered());
 
-        String Comments = form.getComments();
-        if (Comments == null) {
-            Comments = "";
-        }
-
         return vaccination;
     }
 
