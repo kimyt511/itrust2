@@ -9,17 +9,136 @@
     <!-- To be completed ----------->
     <script th:inline="javascript">
         /* Otherwise Thymeleaf tries to parse Javascript as XML and breaks itself sometimes.  Sigh */
-        /*<![CDATA[*/
+        /*![CDATA[*/
 
         //Need to be adjusted
-        const app = angular.module("AddFoodDiaryApp", []);
+        const app = angular.module("AddFoodDiaryApp",[]);
 
         // API name to need to be adjusted
         app.controller('AddFoodDiaryCtrl', function ($scope, $http) {
 
 
-            //////////////////Need to be adjusted////////////////////
+            $scope.foodDiaryForm = { date: "", patient: "", mealType: "" ,foodName:"", servings: 0,
+                calories: 0, fat: 0, sodium: 0, carb: 0, sugar: 0, fiber: 0, protein: 0};
 
+            /*$scope.formatDate = function (date) {
+                // input date is in the format yyyy-mm-dd
+                const month = date.getMonth() + 1;
+                const day = date.getDate();
+                const year = date.getFullYear();
+
+                return `${month}${day}${year}`;
+            };*/
+
+            //////////////////Need to be adjusted////////////////////
+            ///error messages///
+            $scope.err = [];
+            for (let i = 0; i < 10; i++) {
+                $scope.err[i] = "";
+            }
+            ///error messages///
+
+            $http.get("/iTrust2/api/v1/patient").then(function (response) {
+                $scope.patient = response.data;
+                $scope.foodDiaryForm.date = new Date();
+                $scope.foodDiaryForm.patient = $scope.patient.username;
+
+            }, function (rejection) {
+                console.err("Could not retrieve expected Patient record");
+            });
+
+            function checkValidForm(form) {
+                let valid = true;
+                if (form.date > new Date()) {
+                    $scope.err[0] = ("date cannot be future dates");
+                    valid = false;
+                } else {
+                    $scope.err[0] = "";
+                }
+                if (!form.foodName) {
+                    $scope.err[1] = ("cannot be null or empty");
+                    valid = false;
+                } else {
+                    $scope.err[1] = "";
+                }
+                if (form.servings < 0) {
+                    $scope.err[2] = ("numbers must be positive");
+                    valid = false;
+                } else {
+                    $scope.err[2] = "";
+                }
+                if (form.calories <= 0) {
+                    $scope.err[3] = ("numbers cannot be negative");
+                    valid = false;
+                } else {
+                    $scope.err[3] = "";
+                }
+                if (form.fat <= 0) {
+                    $scope.err[4] = ("numbers cannot be negative");
+                    valid = false;
+                } else {
+                    $scope.err[4] = "";
+                }
+                if (form.sodium <= 0) {
+                    $scope.err[5] = ("numbers cannot be negative");
+                    valid = false;
+                } else {
+                    $scope.err[5] = "";
+                }
+                if (form.carb <= 0) {
+                    $scope.err[6] = ("numbers cannot be negative");
+                    valid = false;
+                } else {
+                    $scope.err[6] = "";
+                }
+                if (form.sugar <= 0) {
+                    $scope.err[7] = ("numbers cannot be negative");
+                    valid = false;
+                } else {
+                    $scope.err[7] = "";
+                }
+                if (form.fiber <= 0) {
+                    $scope.err[8] = ("numbers cannot be negative");
+                    valid = false;
+                } else {
+                    $scope.err[8] = "";
+                }
+                if (form.protein <= 0) {
+                    $scope.err[9] = ("numbers cannot be negative");
+                    valid = false;
+                } else {
+                    $scope.err[9] = "";
+                }
+                return valid;
+            }
+
+            $scope.submit = function () {
+                const valid = checkValidForm($scope.foodDiaryForm);
+                if (!valid) {
+                    //$scope.message = "";
+                    alert("Not Valid");
+                } else {
+                    //$scope.foodDiaryForm.date = $scope.formatDate($scope.foodDiaryForm.date);
+                    $http.post("/iTrust2/api/v1/diary/creatediary", $scope.foodDiaryForm).then(
+                        function (response) {
+                            //$scope.message = "Food diary added successfully."
+                            alert("Food diary added successfully.");
+                        }, function (rejection) {
+                            //$scope.message = "Failed to add food diary."
+                            console.error("Failed to add food diary:", rejection);
+                            alert("Failed to add food diary.");
+                        });
+                }
+            }
+
+            function getMT(mealType) {
+                if (mealType == null) {
+                    return "";
+                }
+                const pos = mealType.replace("Pos", "+");
+                const neg = pos.replace("Neg", "-");
+                return neg;
+            }
             //////////////////Need to be adjusted////////////////////
         });
         /*]]>*/
@@ -40,97 +159,109 @@
                                 <tr>
                                     <td style="text-align: left; padding: 5px; height: 30px;"><b>Date</b></td>
                                     <!-- to be adjusted-->
-                                    <td style="padding-left: 5%;"><input type="date" name="dateOfBirth" id="dateOfBirth"
-                                               ng-model="patientForm.dateOfBirth"/></td>
-                                    <td style="color: red;" ng-show="err[11]">{{err[11]}}</td>
+                                    <td style="padding-left: 5%;"><input type="date" name="date" id="date"
+                                               ng-model="foodDiaryForm.date"/></td>
+                                    <td style="color: red; padding-left: 5%;font-size: 15px; white-space: nowrap;"
+                                        ng-show="err[0]">{{err[0]}}</td>
                                     <!-- to be adjusted-->
                                 </tr>
                                 <tr>
                                     <td style="text-align: left; padding: 5px; height: 30px;"><b>Type of Meal:</b></td>
                                     <!-- to be adjusted-->
-                                    <td style="padding-left: 5%;"><select name="bloodType" id="bloodType"
-                                                ng-model="patientForm.bloodType">
-                                        <option ng-repeat="bt in bloodTypes">{{bt.name}}</option>
+                                    <td style="padding-left: 5%;"><select name="mealType" id="mealType"
+                                                ng-model="foodDiaryForm.mealType">
+                                        <option ng-repeat="mt in MealType">{{mt.name}}</option>
                                     </select></td>
                                     <!-- to be adjusted-->
                                 </tr>
                                 <tr>
                                     <td style="text-align: left; padding: 5px; height: 30px;"><b>Food Name:</b></td>
                                     <!-- to be adjusted-->
-                                    <td style="padding-left: 5%;"><input type="text" name="firstName" id="firstName"
-                                               value="{{patientForm.firstName}}"
-                                               ng-model="patientForm.firstName"/></td>
-                                    <td style="color: red;" ng-show="err[0]">{{err[0]}}</td>
+                                    <td style="padding-left: 5%;"><input type="text" name="foodName" id="foodName"
+                                               value="{{foodDiaryForm.foodName}}"
+                                               ng-model="foodDiaryForm.foodName"/></td>
+                                    <td style="color: red; padding-left: 5%;font-size: 15px; white-space: nowrap;"
+                                        ng-show="err[1]">{{err[1]}}</td>
                                     <!-- to be adjusted-->
                                 </tr>
                                 <tr>
                                     <td style="text-align: left; padding: 5px; height: 30px;"><b>Number of Servings:</b></td>
                                     <!-- to be adjusted-->
-                                    <td style="padding-left: 5%;"><input type="text" name="lastName" id="lastName"
-                                               ng-model="patientForm.lastName"/></td>
-                                    <td style="color: red;" ng-show="err[1]">{{err[1]}}</td>
+                                    <td style="padding-left: 5%;"><input type="number" name="servings" id="servings"
+                                               ng-model="foodDiaryForm.servings"/></td>
+                                    <td style="color: red; padding-left: 5%;font-size: 15px; white-space: nowrap;"
+                                        ng-show="err[2]">{{err[2]}}</td>
                                     <!-- to be adjusted-->
                                 </tr>
                                 <!-- Separater-->
                                 <tr>
-                                    <th class="col-md-2"  colspan="2" style="text-align: left;
-                                     color: blue;padding: 5px">Statistics/Serving</th>
+                                    <td style="text-align: left;
+                                     color: blue;padding: 5px">Statistics/Serving</td>
+                                    <td style="padding-left: 5%;"></td>
+                                    <td style="padding-left: 5%;"></td>
                                 </tr>
                                 <!-- Separater-->
                                 <tr>
                                     <td style="text-align: left; padding: 5px; height: 30px;"><b>Calories</b></td>
                                     <!-- to be adjusted-->
-                                    <td style="padding-left: 5%;"><input type="text" name="preferredName"
-                                               id="preferredName" ng-model="patientForm.preferredName"/></td>
-                                    <td style="color: red;" ng-show="err[2]">{{err[2]}}</td>
+                                    <td style="padding-left: 5%;"><input type="number" name="calories"
+                                               id="calories" ng-model="foodDiaryForm.calories"/></td>
+                                    <td style="color: red; padding-left: 5%;font-size: 15px; white-space: nowrap;"
+                                        ng-show="err[3]">{{err[3]}}</td>
                                     <!-- to be adjusted-->
                                 </tr>
                                 <tr>
                                     <td style="text-align: left; padding: 5px; height: 30px;"><b>Grams of Fat</b></td>
                                     <!-- to be adjusted-->
-                                    <td style="padding-left: 5%;"><input type="text" name="preferredName"
-                                               id="preferredName" ng-model="patientForm.preferredName"/></td>
-                                    <td style="color: red;" ng-show="err[2]">{{err[2]}}</td>
+                                    <td style="padding-left: 5%;"><input type="number" name="fat"
+                                               id="fat" ng-model="foodDiaryForm.fat"/></td>
+                                    <td style="color: red; padding-left: 5%;font-size: 15px; white-space: nowrap;"
+                                        ng-show="err[4]">{{err[4]}}</td>
                                     <!-- to be adjusted-->
                                 </tr>
                                 <tr>
                                     <td style="text-align: left; padding: 5px; height: 30px;"><b>Milligrams of Sodium</b></td>
                                     <!-- to be adjusted-->
-                                    <td style="padding-left: 5%;"><input type="text" name="preferredName"
-                                               id="preferredName" ng-model="patientForm.preferredName"/></td>
-                                    <td style="color: red;" ng-show="err[2]">{{err[2]}}</td>
+                                    <td style="padding-left: 5%;"><input type="number" name="sodium"
+                                               id="sodium" ng-model="foodDiaryForm.sodium"/></td>
+                                    <td style="color: red; padding-left: 5%;font-size: 15px; white-space: nowrap;"
+                                        ng-show="err[5]">{{err[5]}}</td>
                                     <!-- to be adjusted-->
                                 </tr>
                                 <tr>
                                     <td style="text-align: left; padding: 5px; height: 30px;"><b>Grams of Carbs</b></td>
                                     <!-- to be adjusted-->
-                                    <td style="padding-left: 5%;"><input type="text" name="preferredName"
-                                               id="preferredName" ng-model="patientForm.preferredName"/></td>
-                                    <td style="color: red;" ng-show="err[2]">{{err[2]}}</td>
+                                    <td style="padding-left: 5%;"><input type="number" name="carb"
+                                               id="carb" ng-model="foodDiaryForm.carb"/></td>
+                                    <td style="color: red; padding-left: 5%;font-size: 15px; white-space: nowrap;"
+                                        ng-show="err[6]">{{err[6]}}</td>
                                     <!-- to be adjusted-->
                                 </tr>
                                 <tr>
                                     <td style="text-align: left; padding: 5px; height: 30px;"><b>Grams of Sugars</b></td>
                                     <!-- to be adjusted-->
-                                    <td style="padding-left: 5%;"><input type="text" name="preferredName"
-                                               id="preferredName" ng-model="patientForm.preferredName"/></td>
-                                    <td style="color: red;" ng-show="err[2]">{{err[2]}}</td>
+                                    <td style="padding-left: 5%;"><input type="number" name="sugar"
+                                               id="sugar" ng-model="foodDiaryForm.sugar"/></td>
+                                    <td style="color: red; padding-left: 5%;font-size: 15px; white-space: nowrap;"
+                                         ng-show="err[7]">{{err[7]}}</td>
                                     <!-- to be adjusted-->
                                 </tr>
                                 <tr>
                                     <td style="text-align: left; padding: 5px; height: 30px;"><b>Grams of Fiber</b></td>
                                     <!-- to be adjusted-->
-                                    <td style="padding-left: 5%;"><input type="text" name="preferredName"
-                                               id="preferredName" ng-model="patientForm.preferredName"/></td>
-                                    <td style="color: red;" ng-show="err[2]">{{err[2]}}</td>
+                                    <td style="padding-left: 5%;"><input type="number" name="fiber"
+                                               id="fiber" ng-model="foodDiaryForm.fiber"/></td>
+                                    <td style="color: red; padding-left: 5%;font-size: 15px; white-space: nowrap;"
+                                        ng-show="err[8]">{{err[8]}}</td>
                                     <!-- to be adjusted-->
                                 </tr>
                                 <tr>
                                     <td style="text-align: left; padding: 5px; height: 30px;"><b>Grams of Protein</b></td>
                                     <!-- to be adjusted-->
-                                    <td style="padding-left: 5%;"><input type="text" name="preferredName"
-                                               id="preferredName" ng-model="patientForm.preferredName"/></td>
-                                    <td style="color: red;" ng-show="err[2]">{{err[2]}}</td>
+                                    <td style="padding-left: 5%;"><input type="number" name="protein"
+                                               id="protein" ng-model="foodDiaryForm.protein"/></td>
+                                    <td style="color: red; padding-left: 5%;font-size: 15px; white-space: nowrap;"
+                                        ng-show="err[9]">{{err[9]}}</td>
                                     <!-- to be adjusted-->
                                 </tr>
                             </table>
