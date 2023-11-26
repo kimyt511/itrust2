@@ -23,6 +23,10 @@ public class VaccineService extends Service {
 
     public Vaccine build(final VaccineForm form) {
         final Vaccine vaccine = new Vaccine();
+
+        if(form.getId() != null){
+            vaccine.setId(form.getId());
+        }
         
         vaccine.setName(form.getName());
 
@@ -50,4 +54,9 @@ public class VaccineService extends Service {
     public Vaccine getVaccineByCptCode(final String cptCode) {
         return repository.findByCptCode(cptCode);
     }
+
+    public boolean existsByCptCode(String cptCode) {
+        return repository.existsByCptCode(cptCode);
+    }
+
 }

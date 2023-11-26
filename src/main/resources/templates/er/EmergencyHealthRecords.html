@@ -1,6 +1,6 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:include="layout :: head(title=~{::title},links=~{::script})">
-<title>Document Office Visit</title>
+<title>ER Emergency Health Records</title>
 <script th:src="@{/js/dateTimeService.js}"
 		src="../js/dateTimeService.js"></script>
 </head>
@@ -9,8 +9,8 @@
 
 		<script th:inline="javascript">
 
-			var app = angular.module('myApp', ['dateTimeServices']);
-			app.controller('EmergencyHealthRecordsCtrl', function($scope, $http, dateTimeService) {
+			var app = angular.module('erEHRApp', ['dateTimeServices']);
+			app.controller('EREmergencyHealthRecordsCtrl', function($scope, $http, dateTimeService) {
 				$scope.displayName = function(p) {
 					return p.firstName + " " + p.lastName + " (" + p.username + ")";
 				}
@@ -118,7 +118,7 @@
 			/*]]>*/
 		</script>
 
-		<div ng-app="myApp" ng-controller="EmergencyHealthRecordsCtrl">
+		<div ng-app="erEHRApp" ng-controller="EREmergencyHealthRecordsCtrl">
 			<div style="float: left; width: 30%; height: 75%; overflow-y: auto">
 				<h2>Patients:</h2>
 				<!-- info on filtering taken from here: https://www.w3schools.com/angular/angular_filters.asp

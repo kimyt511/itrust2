@@ -37,7 +37,7 @@ public class VaccinationForm implements Serializable {
     private String patientUserName; // Username of the patient
 
     @NotEmpty
-    private LocalDate dateAdministered; // Date when the vaccine was administered
+    private String dateAdministered; // Date when the vaccine was administered
 
     /**
      * Constructs a new form with information from the given vaccination.
@@ -49,7 +49,7 @@ public class VaccinationForm implements Serializable {
             this.id = vaccination.getId();
             this.vaccineCptCode = vaccination.getVaccine().getCptCode();
             this.patientUserName = vaccination.getPatient().getUsername();
-            this.dateAdministered = vaccination.getDateAdministered();
+            this.dateAdministered = vaccination.getDateAdministered().toString();
         }
     }
 }
