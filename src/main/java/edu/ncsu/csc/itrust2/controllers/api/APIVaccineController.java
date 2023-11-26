@@ -33,6 +33,11 @@ public class APIVaccineController extends APIController {
                         errorResponse("Vaccine with name " + v.getName() + " already exists"),
                         HttpStatus.CONFLICT);
             }
+            if (service.existsByCptCode(v.getCptCode())) {
+                return new ResponseEntity(
+                        errorResponse("Vaccine with Cpt Code " + v.getCptCode() + " already exists"),
+                        HttpStatus.CONFLICT);
+            }
 
             service.save(v);
             loggerUtil.log(
@@ -61,7 +66,13 @@ public class APIVaccineController extends APIController {
 
             // If the code was changed, make sure it is unique
             final Vaccine sameName = service.findByName(v.getName());
+            final Vaccine sameCptCode = service.getVaccineByCptCode(v.getCptCode());
             if (sameName != null && !sameName.getId().equals(savedVaccine.getId())) {
+                return new ResponseEntity(
+                        errorResponse("Vaccine with name " + v.getName() + " already exists"),
+                        HttpStatus.CONFLICT);
+            }
+            if (sameCptCode != null && !sameCptCode.getId().equals(savedVaccine.getId())) {
                 return new ResponseEntity(
                         errorResponse("Vaccine with name " + v.getName() + " already exists"),
                         HttpStatus.CONFLICT);

@@ -50,4 +50,9 @@ public class VaccineService extends Service {
     public Vaccine getVaccineByCptCode(final String cptCode) {
         return repository.findByCptCode(cptCode);
     }
+
+    public boolean existsByCptCode(String cptCode) {
+        return repository.existsByCptCode(cptCode);
+    }
+
 }
