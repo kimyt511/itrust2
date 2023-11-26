@@ -370,7 +370,7 @@
                             $scope.visit.vaccinations = $scope.vaccinations;
                             $scope.visit.vaccinations.forEach(function (v) {
                                 v.patient = $scope.visit.patient;
-                                v.vaccinationDay = dateTimeService.toDateString($scope.visitInputDate);
+                                v.dateAdministered = dateTimeService.toDateString($scope.visitInputDate);
                             });
                             $scope.visit.prescriptions = $scope.prescriptions;
                             $scope.visit.prescriptions.forEach(function (p) {
@@ -936,7 +936,7 @@
                             <div ng-show="visit.type == 'GENERAL_CHECKUP'" class="col-md-4">
                                 <div class="panel panel-info">
                                     <div class="panel-heading">
-                                        <h4>Vaccination</h4>
+                                        <h4>Vaccinations</h4>
                                     </div>
                                     <div class="panel-body">
                                         <div class="form-group row">
@@ -948,8 +948,8 @@
                                                     <ul style="list-style: none;">
                                                         <li ng-repeat="v in vaccines"><label> <input
                                                             type="radio" ng-model="$parent.vaccineEntry"
-                                                            name="{{v.abbreviation}}" value="{{v.cptcode}}" required="true" />
-                                                            {{v.abbreviation}} - {{v.cptcode}}
+                                                            name="{{v.abbreviation}}" value="{{v.cptCode}}" required="true" />
+                                                            {{v.abbreviation}}({{v.cptCode}})
                                                         </label></li>
                                                     </ul>
                                                 </div>

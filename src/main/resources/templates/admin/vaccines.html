@@ -27,7 +27,7 @@
     		if (vaccine.name.length > 250) {
     			err.push("Name exceeds the character limit of 250");
     		}
-            if (!/^90\d{3}$/.test(vaccine.cptcode)) {
+            if (!/^90\d{3}$/.test(vaccine.cptCode)) {
                     err.push("CPT Code must be in the format 90XXX");
                 }
             if (vaccine.abbreviation.length > 10) {
@@ -66,7 +66,7 @@
                 $scope.loadTable();
                 $scope.vaccine.name = "";
                 $scope.vaccine.abbreviation = "";
-                $scope.vaccine.cptcode = "";
+                $scope.vaccine.cptCode = "";
                 $scope.vaccine.comments = "";
                 $scope.errorAdding = "";
               }, function (rejection) {
@@ -153,7 +153,7 @@
 								<script type="text/ng-template" id="view">
                                     <td name="nameCell">{{v.name}}</td>
                                     <td name="abbreCell">{{v.abbreviation}}</td>
-                                    <td name="cptCell">{{v.cptcode}}</td>
+                                    <td name="cptCell">{{v.cptCode}}</td>
                                     <td name="commentsCell">{{v.comments}}</td>
                                 <td>
                                     <div class="row text-center">
@@ -176,7 +176,7 @@
                     <input type="text" class="form-control" ng-model="selectedVaccine.abbreviation" />
                   </td>
                   <td name="editCptCell">
-                    <input type="text" class="form-control" ng-model="selectedVaccine.cptcode" />
+                    <input type="text" class="form-control" ng-model="selectedVaccine.cptCode" />
                   </td>
                   <td name="editCommentsCell">
                     <input type="text" class="form-control" ng-model="selectedVaccine.comments" />
@@ -216,7 +216,7 @@
 														<div class="col-md-4">
 															<label>CPT Code</label> <input type="text"
 																class="form-control" placeholder="90xxx"
-																name="cpt" ng-model="vaccine.cptcode" required />
+																name="cpt" ng-model="vaccine.cptCode" required />
 														</div>
 														<div class="col-md-4">
 															<label>Comments</label>
