@@ -30,7 +30,7 @@ public class VaccineForm {
         }
         this.name = v.getName();
         this.abbreviation = v.getAbbreviation();
-        this.cptcode = v.getCptcode();
+        this.cptcode = v.getCptCode();
         this.comments = v.getComments();
     }
 }

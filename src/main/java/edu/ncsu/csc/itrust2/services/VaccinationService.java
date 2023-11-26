@@ -24,8 +24,6 @@ public class VaccinationService extends Service {
 
     private final VaccineService vaccineService;
 
-    private final OfficeVisitService officeVisitService;
-
     @Override
     protected JpaRepository getRepository() {
         return repository;
@@ -37,10 +35,7 @@ public class VaccinationService extends Service {
         Vaccine vaccine = vaccineService.getVaccineByCptCode(form.getVaccineCptCode());
         vaccination.setVaccine(vaccine);
 
-        OfficeVisit officeVisit = officeVisitService.findById(form.getOfficeVisitId());
-        vaccination.setOfficeVisit(officeVisit);
-
-        User patient = userService.findByName(form.getPatientUsername());
+        User patient = userService.findByName(form.getPatient());
         vaccination.setPatient(patient);
 
         vaccination.setDateAdministered(form.getDateAdministered());

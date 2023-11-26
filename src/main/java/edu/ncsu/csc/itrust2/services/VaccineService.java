@@ -31,4 +31,8 @@ public class VaccineService extends Service {
     public Vaccine findByName(final String name) {
         return repository.findByName(name);
     }
+
+    public Vaccine getVaccineByCptCode(final String cptCode) {
+        return repository.findByCptCode(cptCode);
+    }
 }

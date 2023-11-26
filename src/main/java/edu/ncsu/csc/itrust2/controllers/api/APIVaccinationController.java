@@ -39,14 +39,9 @@ public class APIVaccinationController extends APIController {
     @PreAuthorize("hasRole('ROLE_HCP')")
     public ResponseEntity<?> createVaccination(@RequestBody final VaccinationForm vaccinationForm) {
         try {
-            OfficeVisit officeVisit = officeVisitService.findById(vaccinationForm.getOfficeVisitId());
-            if (officeVisit == null) {
-                return ResponseEntity.badRequest().body(errorResponse("Office visit not found"));
-            }
             Vaccination vaccination = vaccinationService.build(vaccinationForm);
-            vaccination.setOfficeVisit(officeVisit);
             vaccinationService.saveVaccination(vaccination);
-            loggerUtil.log(TransactionType.HCP_ADD_VACCINATION_TO_PATIENT, LoggerUtil.currentUser(), "Vaccination added to office visit ID: " + officeVisit.getId());
+            loggerUtil.log(TransactionType.HCP_ADD_VACCINATION_TO_PATIENT, LoggerUtil.currentUser(), "Vaccination created with id " + vaccination.getId());
             return ResponseEntity.ok(vaccination);
         } catch (final Exception e) {
             loggerUtil.log(TransactionType.HCP_ADD_VACCINATION_TO_PATIENT, LoggerUtil.currentUser());
