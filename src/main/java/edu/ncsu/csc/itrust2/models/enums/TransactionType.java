@@ -192,6 +192,20 @@ public enum TransactionType {
     HCP_VIEW_PROCS(1710, "HCP Views Procedures", false),
     /** Patient views lab procedures. */
     PATIENT_VIEW_PROCS(1711, "Patient Views Procedures", false),
+
+    VACCINE_CREATE(1801, "Admin adds vaccine", true),
+    /** Admin edited an existing drug */
+    VACCINE_EDIT(1802, "Admin edited vaccine", true),
+    /** Admin deleted an existing drug */
+    VACCINE_DELETE(1803, "Admin deletes vaccine", true),
+    /** Admin views all drugs in the system */
+    HCP_CREATE_VACCINATION(1804, "HCP adds vaccinations to patient record", true),
+
+    PATIENT_VIEW_VACCINATION(1805, "Patient view vaccinations", true),
+
+    HCP_VIEW_VACCINATION(1806, "HCP views patient's vaccinations", true),
+
+
     /** Food Diary Entry is created */
     CREATE_FOOD_DIARY_ENTRY(1901, "Create a Food Diary Entry", true),
     /** Patient views a food diary entry */

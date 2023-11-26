@@ -2,6 +2,7 @@ package edu.ncsu.csc.itrust2.controllers.api;
 
 import edu.ncsu.csc.itrust2.forms.VaccineForm;
 import edu.ncsu.csc.itrust2.models.Vaccine;
+import edu.ncsu.csc.itrust2.models.enums.TransactionType;
 import edu.ncsu.csc.itrust2.services.VaccineService;
 import edu.ncsu.csc.itrust2.utils.LoggerUtil;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +36,9 @@ public class APIVaccineController extends APIController {
             }
 
             service.save(v);
+            loggerUtil.log(
+                    TransactionType.VACCINE_CREATE,
+                    LoggerUtil.currentUser(), LoggerUtil.currentUser() + " adds " + v.getName() + ".");
             return new ResponseEntity(v, HttpStatus.OK);
         } catch (final Exception e) {
             return new ResponseEntity(
@@ -66,6 +70,9 @@ public class APIVaccineController extends APIController {
 
             service.save(v); /* Overwrite existing drug */
 
+            loggerUtil.log(
+                    TransactionType.VACCINE_EDIT,
+                    LoggerUtil.currentUser(), LoggerUtil.currentUser() + " edits " + v.getName() +".");
             return new ResponseEntity(v, HttpStatus.OK);
         } catch (final Exception e) {
 
@@ -81,22 +88,15 @@ public class APIVaccineController extends APIController {
         try {
             final Vaccine v = (Vaccine) service.findById(Long.parseLong(id));
             if (v == null) {
-//                loggerUtil.log(
-//                        TransactionType.DRUG_DELETE,
-//                        LoggerUtil.currentUser(),
-//                        "Could not find drug with id " + id);
                 return new ResponseEntity(
                         errorResponse("No vaccine found with id " + id), HttpStatus.NOT_FOUND);
             }
             service.delete(v);
-//            loggerUtil.log(
-//                    TransactionType.DRUG_DELETE,
-//                    LoggerUtil.currentUser(),
-//                    "Deleted drug with id " + drug.getId());
+            loggerUtil.log(
+                    TransactionType.VACCINE_DELETE,
+                    LoggerUtil.currentUser(), LoggerUtil.currentUser() + " deletes " + v.getName());
             return new ResponseEntity(id, HttpStatus.OK);
         } catch (final Exception e) {
-//            loggerUtil.log(
-//                    TransactionType.DRUG_DELETE, LoggerUtil.currentUser(), "Failed to delete drug");
             return new ResponseEntity(
                     errorResponse("Could not delete vaccine: " + e.getMessage()),
                     HttpStatus.BAD_REQUEST);
@@ -105,8 +105,6 @@ public class APIVaccineController extends APIController {
 
     @GetMapping("/vaccine")
     public List<Vaccine> getVaccines() {
-//        loggerUtil.log(
-//                TransactionType.DRUG_VIEW, LoggerUtil.currentUser(), "Fetched list of drugs");
         return (List<Vaccine>) service.findAll();
     }
 
