@@ -65,49 +65,49 @@
                 } else {
                     $scope.err[1] = "";
                 }
-                if (form.servings < 0) {
+                if (form.servings <= 0) {
                     $scope.err[2] = ("numbers must be positive");
                     valid = false;
                 } else {
                     $scope.err[2] = "";
                 }
-                if (form.calories <= 0) {
+                if (form.calories < 0) {
                     $scope.err[3] = ("numbers cannot be negative");
                     valid = false;
                 } else {
                     $scope.err[3] = "";
                 }
-                if (form.fat <= 0) {
+                if (form.fat < 0) {
                     $scope.err[4] = ("numbers cannot be negative");
                     valid = false;
                 } else {
                     $scope.err[4] = "";
                 }
-                if (form.sodium <= 0) {
+                if (form.sodium < 0) {
                     $scope.err[5] = ("numbers cannot be negative");
                     valid = false;
                 } else {
                     $scope.err[5] = "";
                 }
-                if (form.carb <= 0) {
+                if (form.carb < 0) {
                     $scope.err[6] = ("numbers cannot be negative");
                     valid = false;
                 } else {
                     $scope.err[6] = "";
                 }
-                if (form.sugar <= 0) {
+                if (form.sugar < 0) {
                     $scope.err[7] = ("numbers cannot be negative");
                     valid = false;
                 } else {
                     $scope.err[7] = "";
                 }
-                if (form.fiber <= 0) {
+                if (form.fiber < 0) {
                     $scope.err[8] = ("numbers cannot be negative");
                     valid = false;
                 } else {
                     $scope.err[8] = "";
                 }
-                if (form.protein <= 0) {
+                if (form.protein < 0) {
                     $scope.err[9] = ("numbers cannot be negative");
                     valid = false;
                 } else {
