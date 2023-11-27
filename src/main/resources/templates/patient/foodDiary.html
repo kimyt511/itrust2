@@ -59,11 +59,11 @@
                 var $popup = $window.open(url, windowName, "width=" + width + ",height=" + height + "," +
                     "left=" + left + ",top=" + top);
 
-                //////need to be modified///////////////////
-                $popup.onbeforeunload = function () {
+                //////refresh after closing the window///////////////////
+                $popup.addEventListener('unload', function () {
                     // Refresh the parent window when the popup is closed
                     $scope.loadTable();
-                };
+                });
                 //////need to be modified///////////////////
 
             };
