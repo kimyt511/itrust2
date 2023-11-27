@@ -425,6 +425,12 @@
                                 </div>
                             </caption>
                             <div>
+                                <!--Display message if there is no entry-->
+                                <div ng-if="myDiary.length === 0">
+                                    <p>No entries available.</p>
+                                </div>
+                                <!--Display message if there is no entry-->
+                                
                                 <table class="entry-table table-bordered">
                                     <tbody>
                                     <tr name="foodDiaryTableRow"
