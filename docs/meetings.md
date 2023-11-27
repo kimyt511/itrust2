@@ -139,6 +139,20 @@
   - Focus on unit testing
   - Features will be merged to `develop` branch after test coverage of 80% or above.
 
+### Meeting 9
+
+**Date**: 2023-11-27
+
+#### Discussion:
+
+- Allocate leader roles for Iteration 3.
+- Discuss the progress of each team
+  - Team 1: UC19 WIP
+  - Team 2: Almost done with UCs, planning to merge.
+  - Team 3: Troubleshooting for UC17, UC23 WIP
+- Share difficulties for each team.
+  - solution for problem in UC17 shared.
+
 ---
 
 ## Team 1 Meetings
