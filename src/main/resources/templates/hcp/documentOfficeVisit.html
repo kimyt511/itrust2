@@ -369,7 +369,7 @@
                             $scope.visit.diagnoses = $scope.diagnoses;
                             $scope.visit.vaccinations = $scope.vaccinations;
                             $scope.visit.vaccinations.forEach(function (v) {
-                                v.patientUserName = $scope.visit.patient.username;
+                                v.patientUserName = $scope.visit.patient;
                                 v.dateAdministered = dateTimeService.toDateString(date);
                             });
                             $scope.visit.prescriptions = $scope.prescriptions;
