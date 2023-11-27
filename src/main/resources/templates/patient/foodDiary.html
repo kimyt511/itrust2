@@ -20,13 +20,20 @@
 
         const app = angular.module('FoodApp', ['dateTimeServices', 'ui.bootstrap','ng']);
 
-        ///////////////////////////For reversing food entreis//////////////////////////////////
-        app.filter('reverse', function() {
+        ///////////////////////////For sorting food entreis by date//////////////////////////////////
+        app.filter('sortByDate', function() {
             return function(items) {
-                return items.slice().reverse(); // Create a copy of the array and reverse it
+                return items.slice().sort(function(a, b) {
+                    // Assuming a and b are objects with a 'date' property
+                    var dateA = new Date(a.date);
+                    var dateB = new Date(b.date);
+
+                    // Compare the date values in descending order
+                    return dateB - dateA;
+                });
             };
         });
-        ///////////////////////////For reversing food entreis//////////////////////////////////
+        ///////////////////////////For sorting food entreis by date//////////////////////////////////
 
         app.controller('viewFoodDiaryCtrl', function ($scope, $http,$window,$filter,dateTimeService) {
 
@@ -64,7 +71,7 @@
                     // Refresh the parent window when the popup is closed
                     $scope.loadTable();
                 });
-                //////need to be modified///////////////////
+                //////refresh after closing the window///////////////////
 
             };
             ///////////////////////////////////Add Entry Pop-up/////////////////////////////////////////////////
@@ -110,7 +117,7 @@
             ///////////////////////////////////Load selected entry /////////////////////////////////////////////////
 
             ///////////////////////////////////Load day table /////////////////////////////////////////////////
-            // Function to retrieve entries with the same date
+            //////////////// Function to retrieve entries with the same date///////////////
             $scope.getDayEntries = function(selectedEntry) {
                 // Extract the date part from the selected entry
                 var selectedDate = $filter('date')(selectedEntry.date, 'yyyy-MM-dd');
@@ -129,8 +136,8 @@
                 }
             };
 
+            /////////////////////////Calculate total of the day ///////////////////////////
             $scope.calculateDayEntries = function(){
-                // Assuming $scope.dayEntries is properly populated
                  $scope.totalCalories = 0;
                  $scope.totalFat = 0;
                  $scope.totalSodium = 0;
@@ -150,6 +157,7 @@
                     $scope.totalProtein += entry.protein;
                 });
             }
+            /////////////////////////Calculate total of the day ///////////////////////////
             ///////////////////////////////////Load day table /////////////////////////////////////////////////
 
             ///////////////////////////////Calendar, Source: https://sirius7.tistory.com/35////////////////////////////
@@ -420,7 +428,7 @@
                                 <table class="entry-table table-bordered">
                                     <tbody>
                                     <tr name="foodDiaryTableRow"
-                                        ng-repeat="f in myDiary | reverse"
+                                        ng-repeat="f in myDiary | sortByDate"
                                         ng-click="loadEntry(f); getDayEntries(f); calculateDayEntries()" style="cursor:pointer;">
                                         <td name="entryCell"><strong >{{f.foodName}}</strong>
                                             &nbsp;({{f.date}})</td>
