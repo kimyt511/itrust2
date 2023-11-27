@@ -71,43 +71,43 @@
                 } else {
                     $scope.err[2] = "";
                 }
-                if (form.calories <= 0) {
+                if (form.calories < 0) {
                     $scope.err[3] = ("numbers cannot be negative");
                     valid = false;
                 } else {
                     $scope.err[3] = "";
                 }
-                if (form.fat <= 0) {
+                if (form.fat < 0) {
                     $scope.err[4] = ("numbers cannot be negative");
                     valid = false;
                 } else {
                     $scope.err[4] = "";
                 }
-                if (form.sodium <= 0) {
+                if (form.sodium < 0) {
                     $scope.err[5] = ("numbers cannot be negative");
                     valid = false;
                 } else {
                     $scope.err[5] = "";
                 }
-                if (form.carb <= 0) {
+                if (form.carb < 0) {
                     $scope.err[6] = ("numbers cannot be negative");
                     valid = false;
                 } else {
                     $scope.err[6] = "";
                 }
-                if (form.sugar <= 0) {
+                if (form.sugar < 0) {
                     $scope.err[7] = ("numbers cannot be negative");
                     valid = false;
                 } else {
                     $scope.err[7] = "";
                 }
-                if (form.fiber <= 0) {
+                if (form.fiber < 0) {
                     $scope.err[8] = ("numbers cannot be negative");
                     valid = false;
                 } else {
                     $scope.err[8] = "";
                 }
-                if (form.protein <= 0) {
+                if (form.protein < 0) {
                     $scope.err[9] = ("numbers cannot be negative");
                     valid = false;
                 } else {
@@ -196,7 +196,7 @@
                                     <td style="text-align: left; padding: 5px; height: 30px;"><b>Number of Servings:</b></td>
                                     <!-- to be adjusted-->
                                     <td style="padding-left: 5%;"><input type="number" name="servings" id="servings"
-                                               ng-model="foodDiaryForm.servings"/></td>
+                                               ng-model="foodDiaryForm.servings" ng-focus="foodDiaryForm.servings = ''"/></td>
                                     <td style="color: red; padding-left: 5%;font-size: 15px; white-space: nowrap;"
                                         ng-show="err[2]">{{err[2]}}</td>
                                     <!-- to be adjusted-->
@@ -213,7 +213,7 @@
                                     <td style="text-align: left; padding: 5px; height: 30px;"><b>Calories</b></td>
                                     <!-- to be adjusted-->
                                     <td style="padding-left: 5%;"><input type="number" name="calories"
-                                               id="calories" ng-model="foodDiaryForm.calories"/></td>
+                                               id="calories" ng-model="foodDiaryForm.calories" ng-focus="foodDiaryForm.calories = ''"/></td>
                                     <td style="color: red; padding-left: 5%;font-size: 15px; white-space: nowrap;"
                                         ng-show="err[3]">{{err[3]}}</td>
                                     <!-- to be adjusted-->
@@ -222,7 +222,7 @@
                                     <td style="text-align: left; padding: 5px; height: 30px;"><b>Grams of Fat</b></td>
                                     <!-- to be adjusted-->
                                     <td style="padding-left: 5%;"><input type="number" name="fat"
-                                               id="fat" ng-model="foodDiaryForm.fat"/></td>
+                                               id="fat" ng-model="foodDiaryForm.fat" ng-focus="foodDiaryForm.fat = ''"/></td>
                                     <td style="color: red; padding-left: 5%;font-size: 15px; white-space: nowrap;"
                                         ng-show="err[4]">{{err[4]}}</td>
                                     <!-- to be adjusted-->
@@ -231,7 +231,7 @@
                                     <td style="text-align: left; padding: 5px; height: 30px;"><b>Milligrams of Sodium</b></td>
                                     <!-- to be adjusted-->
                                     <td style="padding-left: 5%;"><input type="number" name="sodium"
-                                               id="sodium" ng-model="foodDiaryForm.sodium"/></td>
+                                               id="sodium" ng-model="foodDiaryForm.sodium" ng-focus="foodDiaryForm.sodium = ''"/></td>
                                     <td style="color: red; padding-left: 5%;font-size: 15px; white-space: nowrap;"
                                         ng-show="err[5]">{{err[5]}}</td>
                                     <!-- to be adjusted-->
@@ -240,7 +240,7 @@
                                     <td style="text-align: left; padding: 5px; height: 30px;"><b>Grams of Carbs</b></td>
                                     <!-- to be adjusted-->
                                     <td style="padding-left: 5%;"><input type="number" name="carb"
-                                               id="carb" ng-model="foodDiaryForm.carb"/></td>
+                                               id="carb" ng-model="foodDiaryForm.carb" ng-focus="foodDiaryForm.carb = ''"/></td>
                                     <td style="color: red; padding-left: 5%;font-size: 15px; white-space: nowrap;"
                                         ng-show="err[6]">{{err[6]}}</td>
                                     <!-- to be adjusted-->
@@ -249,7 +249,7 @@
                                     <td style="text-align: left; padding: 5px; height: 30px;"><b>Grams of Sugars</b></td>
                                     <!-- to be adjusted-->
                                     <td style="padding-left: 5%;"><input type="number" name="sugar"
-                                               id="sugar" ng-model="foodDiaryForm.sugar"/></td>
+                                               id="sugar" ng-model="foodDiaryForm.sugar" ng-focus="foodDiaryForm.sugar = ''"/></td>
                                     <td style="color: red; padding-left: 5%;font-size: 15px; white-space: nowrap;"
                                          ng-show="err[7]">{{err[7]}}</td>
                                     <!-- to be adjusted-->
@@ -258,7 +258,7 @@
                                     <td style="text-align: left; padding: 5px; height: 30px;"><b>Grams of Fiber</b></td>
                                     <!-- to be adjusted-->
                                     <td style="padding-left: 5%;"><input type="number" name="fiber"
-                                               id="fiber" ng-model="foodDiaryForm.fiber"/></td>
+                                               id="fiber" ng-model="foodDiaryForm.fiber" ng-focus="foodDiaryForm.fiber = ''"/></td>
                                     <td style="color: red; padding-left: 5%;font-size: 15px; white-space: nowrap;"
                                         ng-show="err[8]">{{err[8]}}</td>
                                     <!-- to be adjusted-->
@@ -267,7 +267,7 @@
                                     <td style="text-align: left; padding: 5px; height: 30px;"><b>Grams of Protein</b></td>
                                     <!-- to be adjusted-->
                                     <td style="padding-left: 5%;"><input type="number" name="protein"
-                                               id="protein" ng-model="foodDiaryForm.protein"/></td>
+                                               id="protein" ng-model="foodDiaryForm.protein" ng-focus="foodDiaryForm.protein = ''"/></td>
                                     <td style="color: red; padding-left: 5%;font-size: 15px; white-space: nowrap;"
                                         ng-show="err[9]">{{err[9]}}</td>
                                     <!-- to be adjusted-->
