@@ -115,15 +115,14 @@ public class PatientController {
     }
 
     /**
-     * Create a page for the patient to view all food diary
+     * Create a page for the patient to view selected food diary
      *
      * @param model data for front end
-     * @return The page for the patient to view all food diary
+     * @return The page for the patient to view selected food diary
      */
-    @GetMapping(value = "patient/viewAllFoodDiary")
+    @GetMapping(value = "patient/viewDiaryEntry")
     @PreAuthorize("hasRole('ROLE_PATIENT')")
-    public String viewAllFoodDiary(final Model model) {
-        return "/patient/viewAllFoodDiary";
+    public String viewDiaryEntry(final Model model) {
+        return "/patient/viewDiaryEntry";
     }
-
 }

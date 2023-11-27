@@ -85,9 +85,32 @@
                 );
             };
             $scope.loadTable();
-
             ///////////////////////////////////Load Food Diary Entries/////////////////////////////////////////////////
 
+            ///////////////////////////////////Load selected entry /////////////////////////////////////////////////
+            $scope.loadEntry = function (diaryentry) {
+                var url = document.querySelector('a[href="/iTrust2/patient/viewDiaryEntry"]').getAttribute('href');
+                var windowName = "Entrypopup";
+                var width = 700;
+                var height = 700;
+                var left = 400;
+                var top = 150;
+
+                // Convert the diaryentry object to a JSON string
+                var diaryentryJson = JSON.stringify(diaryentry);
+
+                // Construct the URL with the JSON string as a query parameter
+                var urlWithParams = url + "?data=" + encodeURIComponent(diaryentryJson);
+
+                // Open a new window for the form
+                var $popup = $window.open(urlWithParams, windowName, "width=" + width + ",height=" + height + "," +
+                    "left=" + left + ",top=" + top);
+
+                // Pass data to the new window (optional)
+                $popup.Name = $scope.Name;
+
+            };
+            ///////////////////////////////////Load selected entry /////////////////////////////////////////////////
 
             ///////////////////////////////Calendar, Source: https://sirius7.tistory.com/35////////////////////////////
             // input값이 한자리 숫자인 경우 앞에 '0' 붙혀주는 함수
@@ -358,7 +381,7 @@
                                     <tbody>
                                     <tr name="foodDiaryTableRow"
                                         ng-repeat="f in myDiary | reverse"
-                                        ng-click="" style="cursor:pointer;">
+                                        ng-click="loadEntry(f)" style="cursor:pointer;">
                                         <td name="entryCell"><strong >{{f.foodName}}</strong>
                                             &nbsp;({{f.date}})</td>
                                     </tr>
