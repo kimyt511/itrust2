@@ -65,7 +65,7 @@
                 /*Method for checking added vaccinations for validity*/
                 const checkValidVaccination = function (v) {
                     const err = [];
-                    if (!v.vaccine) {
+                    if (!v.vaccineCptCode) {
                         err.push("Vaccination must be associated with a vaccine");
                     }
                     return err.join(". ");
@@ -369,8 +369,8 @@
                             $scope.visit.diagnoses = $scope.diagnoses;
                             $scope.visit.vaccinations = $scope.vaccinations;
                             $scope.visit.vaccinations.forEach(function (v) {
-                                v.patient = $scope.visit.patient;
-                                v.dateAdministered = dateTimeService.toDateString($scope.visitInputDate);
+                                v.patientUserName = $scope.visit.patient.username;
+                                v.dateAdministered = dateTimeService.toDateString(date);
                             });
                             $scope.visit.prescriptions = $scope.prescriptions;
                             $scope.visit.prescriptions.forEach(function (p) {
@@ -492,7 +492,7 @@
                 $scope.fillVaccination = function () {
                     $scope.errorMsg = "";
                     const v = {
-                        vaccine: $scope.vaccineEntry
+                        vaccineCptCode: $scope.vaccineEntry
                     }
                     
                     const err = checkValidVaccination(v);
@@ -948,7 +948,7 @@
                                                     <ul style="list-style: none;">
                                                         <li ng-repeat="v in vaccines"><label> <input
                                                             type="radio" ng-model="$parent.vaccineEntry"
-                                                            name="{{v.abbreviation}}" value="{{v.cptCode}}" required="true" />
+                                                            name="{{v.cptCode}}" value="{{v.cptCode}}" required="true" />
                                                             {{v.abbreviation}}({{v.cptCode}})
                                                         </label></li>
                                                     </ul>
@@ -968,7 +968,7 @@
                                                     <div class="panel-heading">Added Vaccinations</div>
                                                     <div class="panel-body">
                                                         <div class="row" ng-repeat="v in vaccinations">
-                                                            <div class="col-md-3">{{v.vaccine}}</div>
+                                                            <div class="col-md-3">{{v.vaccineCptCode}}</div>
                                                             <br>
                                                             <div class="col-md-1"></div>
                                                             <div class="col-md-1">
