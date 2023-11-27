@@ -1,0 +1,76 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:include="layout :: head(title=~{::title},links=~{})">
+  <title>Review HCP and Hospital</title>
+</head>
+
+<body th:include="layout :: body" th:with="content=~{::content}">
+<div th:fragment="content">
+
+
+  <script th:inline="javascript">
+    /* Otherwise Thymeleaf triess to parse Javascript as XML and breaks itself sometimes.  Sigh */
+    /*<![CDATA[*/
+    var app = angular.module("reviewsApp", []);
+
+    app.controller('reviewsCtrl', function ($scope, $http) {
+      $scope.reviews = [];
+      $scope.pattern = /^\d{4}-\d{4}-\d{2}$/;
+      $scope.loadTable = function () {
+
+        $http.get("/iTrust2/api/v1/reviews/hcp").then(
+                function (response) {
+                  $scope.reviews = response.data;
+                  $scope.message = "";
+                }, function (rejection) {
+                  $scope.reviews = [];
+                  $scope.message = "Could not display reviews";
+                });
+      }
+      $scope.loadTable();
+    });
+    /*]]>*/
+  </script>
+
+  <div ng-app="reviewsApp" ng-controller="reviewsCtrl">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="panel panel-primary">
+            <div class="panel-heading">
+              <h3>Review HCP and Hospital</h3>
+            </div>
+            <div class="panel-body">
+              <table class="table table-bordered table-hover">
+                <caption>My Reviews:</caption>
+                <thead class="thead-dark">
+                <tr>
+                  <th>HCP</th>
+                  <th>Rating (1~5)</th>
+                  <th>Hospital</th>
+                  <th>Rating (1~5)</th>
+
+                </tr>
+                </thead>
+                <tbody>
+                <tr name="reviewTable"
+                    ng-repeat="r in reviews"
+                    reviewId={{r.id}}>
+                  <td name="HCPCell">{{r.hcp.name}}</td>
+                  <td name="HCPRatingCell">{{r.hcp.rating}}</td>
+
+                  <td name="HospitalCell">{{r.hospital.name}}</td>
+                  <td name="HospitalRatingCell">{{r.hospital.rating}}</td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+
+</html>

@@ -130,7 +130,7 @@ public class APIReviewController {
      * @return the edited review or an error message
      */
     @PreAuthorize("hasRole('ROLE_PATIENT')")
-    @PutMapping("/reivews/hospital")
+    @PutMapping("/reviews/hospital")
     public ResponseEntity editHospitalReview(@RequestBody final ReviewForm form){
         try {
             // Check for existing review in database
