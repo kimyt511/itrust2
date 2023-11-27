@@ -13,11 +13,6 @@
         /* Otherwise Thymeleaf tries to parse Javascript as XML and breaks itself sometimes.  Sigh */
         /*<![CDATA[*/
 
-        //Todo
-        //1. food entry 순서
-        //2. add하고 refresh
-        //3. tatal stats on the day
-
         const app = angular.module('FoodApp', ['dateTimeServices', 'ui.bootstrap','ng']);
 
         ///////////////////////////For sorting food entreis by date//////////////////////////////////
@@ -371,7 +366,6 @@
             width: 100%;
         }
 
-
     </style>
     <!---------------------------------------------Style CSS------------------------------------------------------>
 
@@ -430,7 +424,7 @@
                                     <p>No entries available.</p>
                                 </div>
                                 <!--Display message if there is no entry-->
-                                
+
                                 <table class="entry-table table-bordered">
                                     <tbody>
                                     <tr name="foodDiaryTableRow"

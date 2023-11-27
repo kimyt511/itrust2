@@ -3,6 +3,8 @@
     <title>Patient Food Diary</title>
     <script th:src="@{/js/dateTimeService.js}"
             src="../js/dateTimeService.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.5.0/ui-bootstrap-tpls.min.js"></script>
 
 </head>
 <body th:include="layout :: body" th:with="content=~{::content}">
@@ -12,8 +14,24 @@
         /* Otherwise Thymeleaf tries to parse Javascript as XML and breaks itself sometimes.  Sigh */
         /*<![CDATA[*/
 
-        const app = angular.module('myApp', ['dateTimeServices']);
-        app.controller('viewPatientFoodDiaryCtrl', function ($scope, $http, dateTimeService) {
+        const app = angular.module('myApp', ['dateTimeServices', 'ui.bootstrap','ng']);
+
+        ///////////////////////////For sorting food entreis by date//////////////////////////////////
+        app.filter('sortByDate', function() {
+            return function(items) {
+                return items.slice().sort(function(a, b) {
+                    // Assuming a and b are objects with a 'date' property
+                    var dateA = new Date(a.date);
+                    var dateB = new Date(b.date);
+
+                    // Compare the date values in descending order
+                    return dateB - dateA;
+                });
+            };
+        });
+        ///////////////////////////For sorting food entreis by date//////////////////////////////////
+
+        app.controller('viewPatientFoodDiaryCtrl', function ($scope, $http,$window,$filter,dateTimeService) {
 
             ////////////////////////Function to Display patient name////////////////////////
             $scope.displayName = function (p) {
@@ -45,10 +63,96 @@
                 $scope.searchFilter = $scope.displayName(patient);
                 $scope.buildCalendar();
 
+                $scope.loadTable();
+
             };
             ///////////////////////////////Select Patient////////////////////////////////////////////////////////
-            //window.onload = function () { buildCalendar(); }    // 웹 페이지가 로드되면 buildCalendar 실행
 
+            ///////////////////////////////////Load Food Diary Entries/////////////////////////////////////////////////
+            $scope.loadTable = function () {
+                $http.get("/iTrust2/api/v1/diary/"+ $scope.selectedPatient.username).then(
+                    function (response) {
+                        // console.log(response.data);
+                        $scope.myDiary = response.data;
+                        $scope.message = "";
+                    }, function (rejection) {
+                        $scope.myDiary = [];
+                        $scope.message = "Could not load Diary";
+                    }
+                );
+            };
+            ///////////////////////////////////Load Food Diary Entries/////////////////////////////////////////////////
+
+            ///////////////////////////////////Load selected entry /////////////////////////////////////////////////
+            $scope.selectedEntry = "";
+            $scope.loadEntry = function (diaryentry) {
+                $scope.selectedEntry = diaryentry;
+
+                var url = document.querySelector('a[href="/iTrust2/hcp/viewDiaryEntryHCP"]').getAttribute('href');
+                var windowName = "Entrypopup";
+                var width = 700;
+                var height = 500;
+                var left = 400;
+                var top = 100;
+
+                // Convert the diaryentry object to a JSON string
+                var diaryentryJson = JSON.stringify(diaryentry);
+
+                // Construct the URL with the JSON string as a query parameter
+                var urlWithParams = url + "?data=" + encodeURIComponent(diaryentryJson);
+
+                // Open a new window for the form
+                var $popup = $window.open(urlWithParams, windowName, "width=" + width + ",height=" + height + "," +
+                    "left=" + left + ",top=" + top);
+            };
+            ///////////////////////////////////Load selected entry /////////////////////////////////////////////////
+
+            ///////////////////////////////////Load day table /////////////////////////////////////////////////
+            //////////////// Function to retrieve entries with the same date///////////////
+            $scope.getDayEntries = function(selectedEntry) {
+                // Extract the date part from the selected entry
+                var selectedDate = $filter('date')(selectedEntry.date, 'yyyy-MM-dd');
+
+                // Filter entries with the same date
+                $scope.dayEntries = $scope.myDiary.filter(function(entry) {
+                    var entryDate = $filter('date')(entry.date, 'yyyy-MM-dd');
+                    return entryDate === selectedDate;
+                });
+
+                if ($scope.dayEntries.length === 0) {
+                    console.log('No entries found for the selected date.');
+                }
+                else {
+                    console.log('entries found.');
+                }
+            };
+
+            /////////////////////////Calculate total of the day ///////////////////////////
+            $scope.calculateDayEntries = function(){
+                $scope.totalCalories = 0;
+                $scope.totalFat = 0;
+                $scope.totalSodium = 0;
+                $scope.totalCarb = 0;
+                $scope.totalSugar = 0;
+                $scope.totalFiber = 0;
+                $scope.totalProtein = 0;
+
+                // Iterate through dayEntries and sum up the calories
+                angular.forEach($scope.dayEntries, function(entry) {
+                    $scope.totalCalories += entry.calories;
+                    $scope.totalFat += entry.fat;
+                    $scope.totalSodium += entry.sodium;
+                    $scope.totalCarb += entry.carb;
+                    $scope.totalSugar += entry.sugar;
+                    $scope.totalFiber += entry.fiber;
+                    $scope.totalProtein += entry.protein;
+                });
+            }
+            /////////////////////////Calculate total of the day ///////////////////////////
+            ///////////////////////////////////Load day table /////////////////////////////////////////////////
+
+
+            ///////////////////////////////Calendar, Source: https://sirius7.tistory.com/35////////////////////////////
             // input값이 한자리 숫자인 경우 앞에 '0' 붙혀주는 함수
             $scope.leftPad = function(value) {
                 if (value < 10) {
@@ -131,12 +235,7 @@
                     }
                 }
             }
-            ////////////////////////////////////////////////////////////////////////////////////////////////////
-            ////////////////////////////////////////////////////////////////////////////////////////////////////
-            ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
+            ///////////////////////////////Calendar, Source: https://sirius7.tistory.com/35////////////////////////////
         });
         /*]]>*/
     </script>
@@ -145,13 +244,6 @@
     <style>
         @import url('https://fonts.googleapis.com/css?family=Questrial&display=swap');
 
-        .entry-table {
-            grid-column: 2 / 3; /* Set the grid column to take up the right-top cell */
-            grid-row: 1 / 4;   /* Set the grid row to take up the right-top cell */
-            width: 90%;
-            height: 90%;
-            margin-top: 10px;
-        }
         .food-table1 th, .food-table td {
             width: 50%; /* Set the width of th and td to 50% for equal column sizes */
         }
@@ -166,6 +258,33 @@
         }
         .day-table th, .food-table td {
             width: 50%; /* Set the width of th and td to 50% for equal column sizes */
+        }
+
+        .table-container {
+            grid-column: 2 / 3; /* Set the grid column to take up the right-top cell */
+            grid-row: 1 / 4;   /* Set the grid row to take up the right-top cell */
+            width: 90%;
+            height: 90%;
+            margin-top: 10px;
+            margin-left:5%;
+            overflow-y: auto;
+        }
+
+        .entry-table td[name="entryCell"] {
+            height: 30px;
+            width: 500px;
+            padding: 5%;
+            text-align: left;
+            font-size: 1.7rem;
+            font-family: 'Questrial', sans-serif;
+            background-color: #FFFFFF;
+            cursor: pointer;
+        }
+        .entry-table td[name="entryCell"]:hover {
+            background: #eee;
+        }
+        .entry-table tr {
+            height: 30px; /* Adjust the height of each row */
         }
 
         .Calendar {
@@ -238,8 +357,8 @@
             grid-template-columns: repeat(2, 1fr);
             grid-template-rows: repeat(2, 1fr);
             gap: 10px; /* Adjust the gap between cells */
+            width: 100%;
         }
-
 
     </style>
     <!---------------------------------------------Style CSS------------------------------------------------------>
@@ -303,17 +422,32 @@
                         <!-----------------------------Calendar----------------------------------------->
                         <!-----------------------------Entry Table----------------------------------------->
                         <!-- Display All Food Diary -->
-                        <table class="entry-table table-bordered">
+                        <div class="table-container" >
                             <caption>
-                                Dairy Entries:
+                                <div style="font-size: 20px; margin-bottom: 5%;">
+                                    Dairy Entries:
+                                </div>
                             </caption>
-                            <tbody><tr name="foodDiaryTableRow"
-                                       ng-repeat="f in foodDiary"
-                                       ng-click="">
-                                <td name="entryCell">entry</td>
+                            <div>
+                                <!--Display message if there is no entry-->
+                                <div ng-if="myDiary.length === 0">
+                                    <p>No entries available.</p>
+                                </div>
+                                <!--Display message if there is no entry-->
 
-                            </tr></tbody>
-                        </table>
+                                <table class="entry-table table-bordered">
+                                    <tbody>
+                                    <tr name="foodDiaryTableRow"
+                                        ng-repeat="f in myDiary | sortByDate"
+                                        ng-click="loadEntry(f); getDayEntries(f); calculateDayEntries()" style="cursor:pointer;">
+                                        <td name="entryCell"><strong >{{f.foodName}}</strong>
+                                            &nbsp;({{f.date}})</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <!-----------------------------Entry Table----------------------------------------->
                         <!-----------------------------Entry Table----------------------------------------->
 
                         <!-----------------------------Total Servings Table----------------------------------------->
@@ -324,31 +458,31 @@
                             </tr>
                             <tr>
                                 <th class="col-md-2">Calories</th>
-                                <td><!--data--></td>
+                                <td style="text-align: right;">{{totalCalories}}</td>
                             </tr>
                             <tr>
                                 <th class="col-md-2">Grams of Fat</th>
-                                <td><!--data--></td>
+                                <td style="text-align: right;">{{totalFat}}</td>
                             </tr>
                             <tr>
                                 <th class="col-md-2">Milligrams of Sodium</th>
-                                <td><!--data--></td>
+                                <td style="text-align: right;">{{totalSodium}}</td>
                             </tr>
                             <tr>
                                 <th class="col-md-2">Grams of Carbs</th>
-                                <td><!--data--></td>
+                                <td style="text-align: right;">{{totalCarb}}</td>
                             </tr>
                             <tr>
                                 <th class="col-md-2">Grams of Sugars</th>
-                                <td><!--data--></td>
+                                <td style="text-align: right;">{{totalSugar}}</td>
                             </tr>
                             <tr>
                                 <th class="col-md-2">Grams of Fiber</th>
-                                <td><!--data--></td>
+                                <td style="text-align: right;">{{totalFiber}}</td>
                             </tr>
                             <tr>
                                 <th class="col-md-2">Grams of Protein</th>
-                                <td><!--data--></td>
+                                <td style="text-align: right;">{{totalProtein}}</td>
                             </tr>
                             <!-- To be modified -->
                             </tbody>
