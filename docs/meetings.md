@@ -252,3 +252,11 @@ Todo:
 **Date**: 2023-11-17
 - Organizing progress
 - Overall planning for UC23
+
+### Meeting 4
+**Date**: 2023-11-27
+- Discuss about current progress and TODO.
+TODO: Create test code for UC17
+TODO: Finalize UC17 frontend (patient view office visit page)
+TODO: Finalize UC23 backend API
+TODO: UC23 frontend
