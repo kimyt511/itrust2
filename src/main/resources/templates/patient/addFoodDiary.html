@@ -65,7 +65,7 @@
                 } else {
                     $scope.err[1] = "";
                 }
-                if (form.servings < 0) {
+                if (form.servings <= 0) {
                     $scope.err[2] = ("numbers must be positive");
                     valid = false;
                 } else {
