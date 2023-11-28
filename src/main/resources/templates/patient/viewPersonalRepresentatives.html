@@ -16,7 +16,7 @@
         const app = angular.module("PersonalRepresentativesApp", []);
 
         // define Angular Js controller
-        app.controller('PersonalRepresentativesCtrl', function ($scope, $http) {
+        app.controller('PersonalRepresentativesCtrl', function ($scope, $http, $window) {
 
             ///////////////////////get current user(patient)//////////////////////////////////////////
             $http.get("/iTrust2/api/v1/patient").then(function (response) {
@@ -231,6 +231,30 @@
 
 		    ///////////////////////////Initially Load Table/////////////////////////
 			$scope.loadTable();
+            ///////////////////////////Initially Load Table/////////////////////////
+
+            ///////////////////////////Access Diagnoses Page/////////////////////////
+            $scope.accessDiagnoses = function() {
+
+                var url = document.querySelector('a[href="/iTrust2/patient/viewPatientDiagnoses"]').getAttribute('href');
+                var windowName = "Diagnoses popup";
+                var width = (window.screen.width * 90) / 100;
+                var height = (window.screen.height * 70) / 100;
+                var left = 100;
+                var top = 100;
+
+                // Convert the diaryentry object to a JSON string
+                var Json = JSON.stringify($scope.viewRepresentative);
+
+                // Construct the URL with the JSON string as a query parameter
+                var urlWithParams = url + "?data=" + encodeURIComponent(Json);
+
+                // Open a new window for the form
+                var $popup = $window.open(urlWithParams, windowName, "width=" + width + ",height=" + height + "," +
+                    "left=" + left + ",top=" + top);
+            }
+            ///////////////////////////Initially Load Table/////////////////////////
+
 
         });
         /*]]>*/
@@ -247,7 +271,7 @@
                             <h3>Personal Representatives</h3>
                         </div>
                         <div class="panel-body" style="display: flex; flex-direction: row;">
-                            <!-- Dislay Section -->
+                            <!-- Display Section -->
                             <div style="width: 70%; padding: 1%;">
                                 <table class="table table-hover table-bordered">
                                     <caption>
@@ -384,7 +408,16 @@
                                             <td style="padding-left: 10px; height: 35px;">{{viewRepresentative.email}}</td>
                                         </tr>
                                     </table>
-                                    <button class="btn btn-primary" style="float: right;" onclick="location.href = '/iTrust2/hcp/'">See More</button>
+                                    <div style="display: flex; flex-wrap: wrap; justify-content: space-between;">
+                                        <button class="btn btn-primary" style="width: 44%; margin-bottom: 10px;"
+                                            onclick="location.href = '/iTrust2/hcp/'">Access Log</button>
+                                        <button class="btn btn-primary" style="width: 44%; margin-bottom: 10px;"
+                                            onclick="location.href = '/iTrust2/hcp/'">Medical Records</button>
+                                        <button class="btn btn-primary" style="width: 44%; margin-bottom: 10px;"
+                                            ng-click = "accessDiagnoses()" >Diagnoses</button>
+                                        <button class="btn btn-primary" style="width: 44%; margin-bottom: 10px;"
+                                            onclick="location.href = '/iTrust2/hcp/'">Appointment</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>

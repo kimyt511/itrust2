@@ -102,4 +102,16 @@ public class PatientController {
         return "/patient/viewPersonalRepresentatives";
     }
 
+    /**
+     * Create a page for the patient to view Diagnoses of a patient in PR page
+     *
+     * @param model data for front end
+     * @return The page for the patient to view Diagnoses of a patient in PR page
+     */
+    @GetMapping(value = "patient/viewPatientDiagnoses")
+    @PreAuthorize("hasRole('ROLE_PATIENT')")
+    public String viewPatientDiagnoses(final Model model) {
+        return "/patient/viewPatientDiagnoses";
+    }
+
 }
