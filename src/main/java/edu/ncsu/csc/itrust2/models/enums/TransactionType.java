@@ -253,6 +253,12 @@ public enum TransactionType {
     RATE_EDIT(2304, "Patient edits a review", true),
     /** Patient deletes a review */
     RATE_DELETE(2305, "Patient deletes a review", true),
+    /** Patient views a review */
+    PATIENT_VIEW_RATE(2306, "Patient views a review", true),
+    /** Hcp views a review */
+    HCP_VIEW_RATE(2307, "Hcp views a review", true),
+    /** Hospital views a review */
+    HOSPITAL_VIEW_RATE(2308, "Hospital views a review", true),
 
     /** ophthalmology surgery is deleted */
     OPHTHALMOLOGY_SURGERY_DELETE(2211, "ophthalmology surgery deleted", true),

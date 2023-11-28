@@ -1,8 +1,11 @@
 package edu.ncsu.csc.itrust2.controllers.api;
 
 import edu.ncsu.csc.itrust2.forms.ReviewForm;
+import edu.ncsu.csc.itrust2.models.Hospital;
 import edu.ncsu.csc.itrust2.models.Review;
+import edu.ncsu.csc.itrust2.models.User;
 import edu.ncsu.csc.itrust2.models.enums.TransactionType;
+import edu.ncsu.csc.itrust2.services.HospitalService;
 import edu.ncsu.csc.itrust2.services.ReviewService;
 import edu.ncsu.csc.itrust2.services.UserService;
 import edu.ncsu.csc.itrust2.utils.LoggerUtil;
@@ -19,6 +22,8 @@ import static edu.ncsu.csc.itrust2.controllers.api.APIController.errorResponse;
 public class APIReviewController {
 
     private final ReviewService service;
+    private final UserService userService;
+    private final HospitalService hospitalService;
     private final LoggerUtil loggerUtil;
 
     /**
@@ -226,6 +231,99 @@ public class APIReviewController {
             return new ResponseEntity(
                     errorResponse("Could not delete review: " + e.getMessage()),
                     HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    /**
+     * Get review associated by paitent with the id matching the given id.
+     *
+     * @param id the id of the paitent
+     * @return List of reviews associated with patient
+     */
+    @GetMapping("/reviews/patient/{id}")
+    public ResponseEntity getPatientReviews(@PathVariable final String id){
+        try{
+            final User patient = userService.findByName(id);
+            if (patient == null) {
+                loggerUtil.log(
+                        TransactionType.PATIENT_VIEW_RATE,
+                        LoggerUtil.currentUser(),
+                        "Could not find patient with id " + id);
+                return new ResponseEntity(
+                        errorResponse("No patient found with id " + id), HttpStatus.NOT_FOUND);
+            }
+            loggerUtil.log(
+                    TransactionType.PATIENT_VIEW_RATE,
+                    LoggerUtil.currentUser(),
+                    "Get review associated by patient with id " + id);
+            return new ResponseEntity(service.findByPatient(patient), HttpStatus.OK);
+        }catch (final Exception e){
+            loggerUtil.log(
+                    TransactionType.PATIENT_VIEW_RATE, LoggerUtil.currentUser(), "Failed to get reviews");
+            return new ResponseEntity(
+                    errorResponse("Could not get reviews: " + e.getMessage()), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    /**
+     * Get review associated by hcp with the id matching the given id.
+     *
+     * @param id the id of the hcp
+     * @return List of reviews associated with hcp
+     */
+    @GetMapping("/reviews/hcp/{id}")
+    public ResponseEntity getHcpReviews(@PathVariable final String id){
+        try{
+            final User hcp = userService.findByName(id);
+            if (hcp == null) {
+                loggerUtil.log(
+                        TransactionType.HCP_VIEW_RATE,
+                        LoggerUtil.currentUser(),
+                        "Could not find hcp with id " + id);
+                return new ResponseEntity(
+                        errorResponse("No hcp found with id " + id), HttpStatus.NOT_FOUND);
+            }
+            loggerUtil.log(
+                    TransactionType.HCP_VIEW_RATE,
+                    LoggerUtil.currentUser(),
+                    "Get review associated by hcp with id " + id);
+            return new ResponseEntity(service.findByHcp(hcp), HttpStatus.OK);
+        }catch (final Exception e){
+            loggerUtil.log(
+                    TransactionType.HCP_VIEW_RATE, LoggerUtil.currentUser(), "Failed to get reviews");
+            return new ResponseEntity(
+                    errorResponse("Could not get reviews: " + e.getMessage()), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    /**
+     * Get review associated by hospital with the id matching the given id.
+     *
+     * @param id the id of the hospital
+     * @return List of reviews associated with hospital
+     */
+    @GetMapping("/reviews/hospital/{id}")
+    public ResponseEntity getHospitalReviews(@PathVariable final String id){
+        try{
+            final Hospital hospital = hospitalService.findByName(id);
+            if (hospital == null) {
+                loggerUtil.log(
+                        TransactionType.HOSPITAL_VIEW_RATE,
+                        LoggerUtil.currentUser(),
+                        "Could not find hospital with id " + id);
+                return new ResponseEntity(
+                        errorResponse("No hospital found with id " + id), HttpStatus.NOT_FOUND);
+            }
+            loggerUtil.log(
+                    TransactionType.HOSPITAL_VIEW_RATE,
+                    LoggerUtil.currentUser(),
+                    "Get review associated by hospital with id " + id);
+            return new ResponseEntity(service.findByHospital(hospital), HttpStatus.OK);
+        }catch (final Exception e){
+            loggerUtil.log(
+                    TransactionType.HOSPITAL_VIEW_RATE, LoggerUtil.currentUser(), "Failed to get reviews");
+            return new ResponseEntity(
+                    errorResponse("Could not get reviews: " + e.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }
 
