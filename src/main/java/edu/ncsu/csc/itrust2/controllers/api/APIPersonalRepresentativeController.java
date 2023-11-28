@@ -1,16 +1,32 @@
 package edu.ncsu.csc.itrust2.controllers.api;
 
+import edu.ncsu.csc.itrust2.controllers.api.comm.LogEntryRequestBody;
+import edu.ncsu.csc.itrust2.controllers.api.comm.LogEntryTableRow;
 import edu.ncsu.csc.itrust2.forms.PersonalRepresentativeForm;
+import edu.ncsu.csc.itrust2.models.Diagnosis;
 import edu.ncsu.csc.itrust2.models.PersonalRepresentative;
 import edu.ncsu.csc.itrust2.models.User;
+import edu.ncsu.csc.itrust2.models.enums.Role;
 import edu.ncsu.csc.itrust2.models.enums.TransactionType;
+import edu.ncsu.csc.itrust2.models.security.LogEntry;
+import edu.ncsu.csc.itrust2.services.DiagnosisService;
 import edu.ncsu.csc.itrust2.services.PersonalRepresentativeService;
 import edu.ncsu.csc.itrust2.services.UserService;
+import edu.ncsu.csc.itrust2.services.security.LogEntryService;
 import edu.ncsu.csc.itrust2.utils.LoggerUtil;
 
+import java.text.ParseException;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import lombok.RequiredArgsConstructor;
+
+import org.apache.catalina.connector.ResponseFacade;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,6 +36,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import ch.qos.logback.classic.Logger;
 
 @RestController
 @RequiredArgsConstructor
@@ -31,6 +49,10 @@ public class APIPersonalRepresentativeController extends APIController {
     private final UserService userService;
 
     private final LoggerUtil loggerUtil;
+
+    private final LogEntryService leservice;
+
+    private final DiagnosisService diagnosisService;
 
     /**
      * Retrieves a list of representative for a patient in the database
@@ -175,5 +197,126 @@ public class APIPersonalRepresentativeController extends APIController {
                     errorResponse("Could not delete representative: " + e.getMessage()),
                     HttpStatus.BAD_REQUEST);
         }
+    }
+
+    /**
+     * View access logs of PR. Logs are only available to declared PR / patients.
+     * 
+     * @param body
+     * @param username
+     * @return
+     */
+    @PreAuthorize("hasRole('ROLE_PATIENT')")
+    @GetMapping("/pr/logentries/{username}")
+    public ResponseEntity getRepresentativeAccessLogs(@PathVariable final String username) {
+        // If not declared, throw error
+        User self = userService.findByName(LoggerUtil.currentUser());
+        User patient = userService.findByName(username);
+        if (!personalRepresentativeService
+            .existsByPatientAndRepresentative(self, patient)
+            && !personalRepresentativeService
+            .existsByPatientAndRepresentative(patient, self)) {
+            return new ResponseEntity(
+                errorResponse("Forbidden: Not a representative of " + username),
+                HttpStatus.FORBIDDEN
+            );    
+        }
+
+        // If the entries array is null give an error response
+        List<LogEntry> entries = leservice.findAllForUser(username);
+        if (entries == null) {
+            return new ResponseEntity(
+                    errorResponse("Error retrieving Log Entries"),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        // Use only log entries that are viewable by the user
+        List<LogEntry> visible;
+        final User user = userService.findByName(username);
+        if (user.getRoles().contains(Role.ROLE_PATIENT)) {
+            visible = new ArrayList<>();
+
+            for (final LogEntry le : entries) {
+                if (le.getLogCode().isPatientViewable()) {
+                    visible.add(le);
+                }
+            }
+        } else {
+            visible = entries;
+        }
+        Collections.reverse(visible);
+        
+        // Turn these log entries into proper table rows for the application to
+        // display
+        final List<LogEntryTableRow> table = new ArrayList<>();
+        for (final LogEntry le : visible) {
+            final LogEntryTableRow row = new LogEntryTableRow();
+
+            row.setPrimary(le.getPrimaryUser());
+            row.setSecondary(le.getSecondaryUser());
+
+            // Convert to OffsetDateTime String so that
+            // text-based timezone is not included
+            row.setDateTime(le.getTime().toOffsetDateTime().toString());
+            row.setTransactionType(le.getLogCode().getDescription());
+            row.setNumPages(1);
+
+            if (user.getRoles().contains(Role.ROLE_PATIENT)) {
+                row.setPatient(true);
+
+                if (le.getPrimaryUser().equals(username)) {
+                    final User secondary = userService.findByName(le.getSecondaryUser());
+                    if (secondary != null) {
+                        row.setRole(secondary.getRoles().toString());
+                    }
+                } else {
+                    final User primary = userService.findByName(le.getPrimaryUser());
+                    row.setRole(primary.getRoles().toString());
+                }
+            }
+
+            table.add(row);
+        }
+
+        // Create a log entry 
+        loggerUtil.log(
+            TransactionType.VIEW_USER_LOG,
+            LoggerUtil.currentUser(),
+            LoggerUtil.currentUser() + " viewed their access logs");
+
+        return new ResponseEntity(table, HttpStatus.OK);
+    }
+
+    /**
+     * Returns a list of diagnoses of PR / patients
+     *
+     * @return List of Diagnoses for the patient
+     */
+    @PreAuthorize("hasRole('ROLE_PATIENT')")
+    @GetMapping("/pr/diagnoses/{username}")
+    public ResponseEntity getRepresentativeDiagnosis(@PathVariable final String username) {
+        // If not declared, throw error
+        User patient = userService.findByName(username);
+        User self = userService.findByName(LoggerUtil.currentUser());
+        if (!personalRepresentativeService
+            .existsByPatientAndRepresentative(self, patient)
+            && !personalRepresentativeService
+            .existsByPatientAndRepresentative(patient, self)) {
+            return new ResponseEntity(
+                errorResponse("Forbidden: Not a representative of " + username),
+                HttpStatus.FORBIDDEN
+            );    
+        }
+
+        if (patient == null) {
+            return null;
+        }
+        loggerUtil.log(
+                TransactionType.DIAGNOSIS_PATIENT_VIEW_ALL,
+                LoggerUtil.currentUser(),
+                LoggerUtil.currentUser() + " viewed their diagnoses");
+
+        return new ResponseEntity(
+            diagnosisService.findByPatient(patient), HttpStatus.OK);
     }
 }
