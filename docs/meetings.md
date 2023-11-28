@@ -147,11 +147,21 @@
 
 - Allocate leader roles for Iteration 3.
 - Discuss the progress of each team
-  - Team 1: UC19 WIP
+  - Team 1: UC19 WIP, UC16 almost finished.
   - Team 2: Almost done with UCs, planning to merge.
   - Team 3: Troubleshooting for UC17, UC23 WIP
 - Share difficulties for each team.
-  - solution for problem in UC17 shared.
+  - solution for problem in UC17 shared. 
+  - Contents in UC15 might be used in UC16.
+- Discuss future plans
+  - Team 1 finish UC development ASAP.
+  - Collaborate with team 3 to develop new UC. 
+  - Start writing test code
+  - Create html for Office Visit if necessary
+  - Project Presentation planning
+- Report the progress of each team periodically.
+  - Try to share problems immediately with the whole team.
+
 
 ---
 
