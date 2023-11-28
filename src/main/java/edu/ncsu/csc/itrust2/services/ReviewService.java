@@ -32,4 +32,22 @@ public class ReviewService extends Service {
     public List<Review> findByHospital(final Hospital hospital){
         return repository.findByHospital(hospital);
     }
+
+    public Double averageHcp(final User hcp){
+        List<Review> reviews = repository.findByHcp(hcp);
+        Double rateSum = 0.0;
+        for(Review review : reviews){
+            rateSum += review.getRate();
+        }
+        return rateSum / reviews.size();
+    }
+
+    public Double averageHospital(final Hospital hospital){
+        List<Review> reviews = repository.findByHospital(hospital);
+        Double rateSum = 0.0;
+        for(Review review : reviews){
+            rateSum += review.getRate();
+        }
+        return rateSum / reviews.size();
+    }
 }

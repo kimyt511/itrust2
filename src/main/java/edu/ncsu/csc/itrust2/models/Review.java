@@ -38,6 +38,7 @@ public class Review extends DomainObject {
     @JoinColumn(name = "hospital_id", columnDefinition = "varchar(100)")
     private Hospital hospital;
 
+    @Getter
     @Setter
     @NotNull
     private double rate;

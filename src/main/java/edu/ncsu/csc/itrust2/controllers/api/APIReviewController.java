@@ -327,6 +327,68 @@ public class APIReviewController {
         }
     }
 
+    /**
+     * Get average rate of review associated by hcp with the id matching the given id.
+     *
+     * @param id the id of the hcp
+     * @return Average rate of reviews associated with hcp
+     */
+    @GetMapping("/reviews/average/hcp/{id}")
+    public ResponseEntity getAverageHcp(@PathVariable final String id){
+        try{
+            final User hcp = userService.findByName(id);
+            if (hcp == null) {
+                loggerUtil.log(
+                        TransactionType.AVERAGE_HCP_RATE,
+                        LoggerUtil.currentUser(),
+                        "Could not find hcp with id " + id);
+                return new ResponseEntity(
+                        errorResponse("No hcp found with id " + id), HttpStatus.NOT_FOUND);
+            }
+            loggerUtil.log(
+                    TransactionType.AVERAGE_HCP_RATE,
+                    LoggerUtil.currentUser(),
+                    "Get average rate of review associated by hcp with id " + id);
+            return new ResponseEntity(service.averageHcp(hcp), HttpStatus.OK);
+        }catch (final Exception e){
+            loggerUtil.log(
+                    TransactionType.AVERAGE_HCP_RATE, LoggerUtil.currentUser(), "Failed to get average rate of reviews");
+            return new ResponseEntity(
+                    errorResponse("Could not get average rate of reviews: " + e.getMessage()), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    /**
+     * Get average rate of review associated by hospital with the id matching the given id.
+     *
+     * @param id the id of the hospital
+     * @return Average rate of reviews associated with hospital
+     */
+    @GetMapping("/reviews/average/hospital/{id}")
+    public ResponseEntity getAverageHospital(@PathVariable final String id){
+        try{
+            final Hospital hospital = hospitalService.findByName(id);
+            if (hospital == null) {
+                loggerUtil.log(
+                        TransactionType.AVERAGE_HOSPITAL_RATE,
+                        LoggerUtil.currentUser(),
+                        "Could not find hospital with id " + id);
+                return new ResponseEntity(
+                        errorResponse("No hospital found with id " + id), HttpStatus.NOT_FOUND);
+            }
+            loggerUtil.log(
+                    TransactionType.AVERAGE_HOSPITAL_RATE,
+                    LoggerUtil.currentUser(),
+                    "Get average rate of review associated by hospital with id " + id);
+            return new ResponseEntity(service.averageHospital(hospital), HttpStatus.OK);
+        }catch (final Exception e){
+            loggerUtil.log(
+                    TransactionType.AVERAGE_HOSPITAL_RATE, LoggerUtil.currentUser(), "Failed to get average rate of reviews");
+            return new ResponseEntity(
+                    errorResponse("Could not get average rate of reviews: " + e.getMessage()), HttpStatus.BAD_REQUEST);
+        }
+    }
+
 
 
 

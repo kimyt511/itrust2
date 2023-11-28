@@ -242,6 +242,8 @@ public enum TransactionType {
     OPHTHALMOLOGY_SURGERY_EDIT(2202, "HCP edits basic health metrics", true),
     /** Patient views basic health metrics for an ophthalmology surgery */
     OPHTHALMOLOGY_SURGERY_PATIENT_VIEW(2210, "View ophthalmology surgery by Patient", true),
+    /** ophthalmology surgery is deleted */
+    OPHTHALMOLOGY_SURGERY_DELETE(2211, "ophthalmology surgery deleted", true),
 
     /** Patient rates an HCP */
     PATIENT_RATE_HCP(2301, "Patient rates an HCP", true),
@@ -259,9 +261,11 @@ public enum TransactionType {
     HCP_VIEW_RATE(2307, "Hcp views a review", true),
     /** Hospital views a review */
     HOSPITAL_VIEW_RATE(2308, "Hospital views a review", true),
+    /** Get average rate of hcp */
+    AVERAGE_HCP_RATE(2309, "Get average rate of hcp", true),
+    /** Get average rate of hospital */
+    AVERAGE_HOSPITAL_RATE(2310, "Get average rate of hospital", true),
 
-    /** ophthalmology surgery is deleted */
-    OPHTHALMOLOGY_SURGERY_DELETE(2211, "ophthalmology surgery deleted", true),
     /** Blood Sugar Diary entry is created */
     CREATE_BLOOD_SUGAR_DIARY(2501, "Blood Sugar Diary Entry Created", true),
     /** Patient views their blood sugar diary entries */
