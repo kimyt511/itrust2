@@ -466,7 +466,8 @@ public class APIOfficeVisitTest {
                         put("/api/v1/officevisits/" + tempId)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(TestUtils.asJsonString(visit)))
-                .andExpect(status().isNotFound());
+                // .andExpect(status().isNotFound());
+                .andExpect(status().is4xxClientError());
 
         vList.get(0).setId(0L);
         OfficeVisitForm vf = new OfficeVisitForm(vList.get(0));

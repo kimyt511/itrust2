@@ -26,7 +26,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 /**
  * Test for API functionality for interacting with Hospitals
  *
@@ -109,6 +109,18 @@ public class APIHospitalTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(TestUtils.asJsonString(hospital)))
                 .andExpect(status().isNotFound());
+        
+        mvc.perform(
+                get("/api/v1/hospitals")
+        ).andExpect(status().isOk());
+
+        mvc.perform(
+                delete("/api/v1/hospitals/iTrust Test Hospital 3")
+        ).andExpect(status().isNotFound());
+
+        mvc.perform(
+                delete("/api/v1/hospitals/iTrust Test Hospital 2")
+        ).andExpect(status().isOk());
     }
 
     @Test

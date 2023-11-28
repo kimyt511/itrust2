@@ -37,6 +37,8 @@ import java.util.stream.Collectors;
 import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -72,6 +74,16 @@ public class APIDiagnosisTest {
         final Hospital hospital =
                 new Hospital("iTrust Test Hospital 2", "1 iTrust Test Street", "27607", "NC");
         hospitalService.save(hospital);
+    }
+
+    @Test
+    @Transactional
+    @WithMockUser(
+            username = "hcp2",
+            roles = {"HCP"})
+    public void testDiagnoses2() throws Exception {
+        mvc.perform(get("/api/v1/diagnoses")).andExpect(status().isOk());
+        mvc.perform(get("/api/v1/diagnoses/dto")).andExpect(status().isOk());
     }
 
     @Test
@@ -210,7 +222,6 @@ public class APIDiagnosisTest {
         }
         assertTrue(flag);
 
-
         // edit a diagnosis within the editing of office visit and check they
         // work.
         form.setId(id + "");
@@ -289,6 +300,17 @@ public class APIDiagnosisTest {
             }
         }
         assertTrue(flag);
+
+        mvc.perform(get("/api/v1/diagnoses")).andExpect(status().isOk());
+        mvc.perform(get("/api/v1/diagnoses/dto")).andExpect(status().isOk());
+        mvc.perform(get("/api/v1/diagnosis/"+(id))).andExpect(status().isNotFound());
+        content =
+                mvc.perform(get("/api/v1/diagnosesforvisit/" + (10L)))
+                        .andReturn()
+                        .getResponse().getContentAsString();
+        assertEquals(content, "");
+
+
 
         /* Make sure all the editing didn't create any duplicates */
         Assert.assertEquals(2, diagnosisService.count());

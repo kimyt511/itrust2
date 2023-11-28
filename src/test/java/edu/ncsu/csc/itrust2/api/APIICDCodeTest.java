@@ -53,6 +53,11 @@ public class APIICDCodeTest {
             roles = {"USER", "ADMIN"})
     public void testCodeAPI() throws Exception {
         final ICDCodeForm form = new ICDCodeForm();
+        mvc.perform(
+        post("/api/v1/icdcodes")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(TestUtils.asJsonString(form))).andExpect(status().is4xxClientError());
+
         form.setCode("T12");
         form.setDescription("Test Code");
 
@@ -82,6 +87,11 @@ public class APIICDCodeTest {
 
         // edit it
         form.setCode("T13");
+        mvc.perform(
+                put("/api/v1/icdcode/" + form.getId()+10L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(TestUtils.asJsonString(form)))
+                        .andExpect(status().isNotFound());
         content =
                 mvc.perform(
                                 put("/api/v1/icdcode/" + form.getId())
@@ -104,6 +114,10 @@ public class APIICDCodeTest {
 
         // then delete it and check that its gone.
         mvc.perform(
+                        delete("/api/v1/icdcode/" + "TTTTTTTT")
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError());
+        mvc.perform(
                         delete("/api/v1/icdcode/" + form.getId())
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
@@ -111,5 +125,9 @@ public class APIICDCodeTest {
         assertNull(service.findById(form.getId()));
         mvc.perform(get("/api/v1/icdcode/" + form.getId()).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
+
+        mvc.perform(
+                        get("/api/v1/icdcodes"))
+                .andExpect(status().isOk());
     }
 }

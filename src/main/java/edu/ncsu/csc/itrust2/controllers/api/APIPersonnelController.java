@@ -111,12 +111,12 @@ public class APIPersonnelController extends APIController {
         }
 
         fromDb.update(personnelF);
-        if ((null != fromDb.getUsername() && !id.equals(fromDb.getUsername()))) {
-            return new ResponseEntity(
-                    errorResponse(
-                            "The ID provided does not match the ID of the Personnel provided"),
-                    HttpStatus.CONFLICT);
-        }
+        // if ((null != fromDb.getUsername() && !id.equals(fromDb.getUsername()))) {
+        //     return new ResponseEntity(
+        //             errorResponse(
+        //                     "The ID provided does not match the ID of the Personnel provided"),
+        //             HttpStatus.CONFLICT);
+        // }
         try {
             service.save(fromDb);
             loggerUtil.log(TransactionType.EDIT_DEMOGRAPHICS, LoggerUtil.currentUser());

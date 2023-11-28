@@ -66,6 +66,16 @@ public class APIPersonnelTest {
         mvc.perform(get("/api/v1/personnel/-1")).andExpect(status().isNotFound());
     }
 
+    /** Tests getting a non existent personnel and ensures that the correct status is returned. */
+    @Test
+    @Transactional
+    @WithMockUser(
+            username = "hcp",
+            roles = {"HCP"})
+    public void testGetNonExistentPersonnel2() throws Exception {
+        mvc.perform(get("/api/v1/curPersonnel")).andExpect(status().isNotFound());
+    }
+
     /** Tests PersonnelAPI */
     @Test
     @Transactional
@@ -125,6 +135,10 @@ public class APIPersonnelTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(TestUtils.asJsonString(personnel)))
                 .andExpect(status().is4xxClientError());
+
+        mvc.perform(get("/api/v1/curPersonnel"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
     }
 
     /** Tests getting personnel by their roles. */
