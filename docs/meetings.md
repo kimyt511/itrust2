@@ -139,6 +139,30 @@
   - Focus on unit testing
   - Features will be merged to `develop` branch after test coverage of 80% or above.
 
+### Meeting 9
+
+**Date**: 2023-11-27
+
+#### Discussion:
+
+- Allocate leader roles for Iteration 3.
+- Discuss the progress of each team
+  - Team 1: UC19 WIP, UC16 almost finished.
+  - Team 2: Almost done with UCs, planning to merge.
+  - Team 3: Troubleshooting for UC17, UC23 WIP
+- Share difficulties for each team.
+  - solution for problem in UC17 shared. 
+  - Contents in UC15 might be used in UC16.
+- Discuss future plans
+  - Team 1 finish UC development ASAP.
+  - Collaborate with team 3 to develop new UC. 
+  - Start writing test code
+  - Create html for Office Visit if necessary
+  - Project Presentation planning
+- Report the progress of each team periodically.
+  - Try to share problems immediately with the whole team.
+
+
 ---
 
 ## Team 1 Meetings
@@ -238,3 +262,11 @@ Todo:
 **Date**: 2023-11-17
 - Organizing progress
 - Overall planning for UC23
+
+### Meeting 4
+**Date**: 2023-11-27
+- Discuss about current progress and TODO.
+TODO: Create test code for UC17
+TODO: Finalize UC17 frontend (patient view office visit page)
+TODO: Finalize UC23 backend API
+TODO: UC23 frontend

@@ -29,17 +29,19 @@
 
 ### Iteration 2
 
-2023.11.3 ~
+2023.11.3 ~ 2023.11.23
 
-- **Team Leader**:
+- **Team Leader**: 유지민
 - **Planning Leader**: 최원재
-- **QA Leader**:
+- **QA Leader**: 김윤태
 
 ### Iteration 3
 
-- **Team Leader**:
-- **Planning Leader**:
-- **QA Leader**:
+2023.11.24 ~
+
+- **Team Leader**: 한철원
+- **Planning Leader**: 반석
+- **QA Leader**: 김성환
 
 ---
 
