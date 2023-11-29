@@ -1,32 +1,25 @@
 package edu.ncsu.csc.itrust2.controllers.api;
 
-import edu.ncsu.csc.itrust2.controllers.api.comm.LogEntryRequestBody;
 import edu.ncsu.csc.itrust2.controllers.api.comm.LogEntryTableRow;
 import edu.ncsu.csc.itrust2.forms.PersonalRepresentativeForm;
-import edu.ncsu.csc.itrust2.models.Diagnosis;
 import edu.ncsu.csc.itrust2.models.PersonalRepresentative;
 import edu.ncsu.csc.itrust2.models.User;
 import edu.ncsu.csc.itrust2.models.enums.Role;
 import edu.ncsu.csc.itrust2.models.enums.TransactionType;
 import edu.ncsu.csc.itrust2.models.security.LogEntry;
 import edu.ncsu.csc.itrust2.services.DiagnosisService;
+import edu.ncsu.csc.itrust2.services.OfficeVisitService;
 import edu.ncsu.csc.itrust2.services.PersonalRepresentativeService;
 import edu.ncsu.csc.itrust2.services.UserService;
 import edu.ncsu.csc.itrust2.services.security.LogEntryService;
 import edu.ncsu.csc.itrust2.utils.LoggerUtil;
 
-import java.text.ParseException;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import lombok.RequiredArgsConstructor;
 
-import org.apache.catalina.connector.ResponseFacade;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -36,8 +29,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import ch.qos.logback.classic.Logger;
 
 @RestController
 @RequiredArgsConstructor
@@ -53,6 +44,8 @@ public class APIPersonalRepresentativeController extends APIController {
     private final LogEntryService leservice;
 
     private final DiagnosisService diagnosisService;
+
+    private final OfficeVisitService officeVisitService;
 
     /**
      * Retrieves a list of representative for a patient in the database
@@ -208,7 +201,7 @@ public class APIPersonalRepresentativeController extends APIController {
      */
     @PreAuthorize("hasRole('ROLE_PATIENT')")
     @GetMapping("/pr/logentries/{username}")
-    public ResponseEntity getRepresentativeAccessLogs(@PathVariable final String username) {
+    public ResponseEntity getAccessLogsPR(@PathVariable final String username) {
         // If not declared, throw error
         User self = userService.findByName(LoggerUtil.currentUser());
         User patient = userService.findByName(username);
@@ -282,7 +275,8 @@ public class APIPersonalRepresentativeController extends APIController {
         loggerUtil.log(
             TransactionType.VIEW_USER_LOG,
             LoggerUtil.currentUser(),
-            LoggerUtil.currentUser() + " viewed their access logs");
+            patient.getUsername(),
+            LoggerUtil.currentUser() + " viewed access logs of " + patient.getUsername());
 
         return new ResponseEntity(table, HttpStatus.OK);
     }
@@ -294,7 +288,7 @@ public class APIPersonalRepresentativeController extends APIController {
      */
     @PreAuthorize("hasRole('ROLE_PATIENT')")
     @GetMapping("/pr/diagnoses/{username}")
-    public ResponseEntity getRepresentativeDiagnosis(@PathVariable final String username) {
+    public ResponseEntity getDiagnosesPR(@PathVariable final String username) {
         // If not declared, throw error
         User patient = userService.findByName(username);
         User self = userService.findByName(LoggerUtil.currentUser());
@@ -312,11 +306,43 @@ public class APIPersonalRepresentativeController extends APIController {
             return null;
         }
         loggerUtil.log(
-                TransactionType.DIAGNOSIS_PATIENT_VIEW_ALL,
-                LoggerUtil.currentUser(),
-                LoggerUtil.currentUser() + " viewed their diagnoses");
+            TransactionType.DIAGNOSIS_PATIENT_VIEW_ALL,
+            LoggerUtil.currentUser(),
+            patient.getUsername(),
+            LoggerUtil.currentUser() + " viewed diagnoses of " + patient.getUsername());
 
         return new ResponseEntity(
             diagnosisService.findByPatient(patient), HttpStatus.OK);
+    }
+
+    /**
+     * Retrieves a list of all OfficeVisits for specific patient
+     *
+     * @return list of office visits
+     */
+    @GetMapping("/pr/officevisits/{username}")
+    @PreAuthorize("hasRole('ROLE_PATIENT')")
+    public ResponseEntity getOfficeVisitsPR(@PathVariable final String username) {
+        // If not declared, throw error
+        User patient = userService.findByName(username);
+        User self = userService.findByName(LoggerUtil.currentUser());
+        if (!personalRepresentativeService
+            .existsByPatientAndRepresentative(self, patient)
+            && !personalRepresentativeService
+            .existsByPatientAndRepresentative(patient, self)) {
+            return new ResponseEntity(
+                errorResponse("Forbidden: Not a representative of " + username),
+                HttpStatus.FORBIDDEN
+            );    
+        }
+
+        loggerUtil.log(
+            TransactionType.VIEW_ALL_OFFICE_VISITS, 
+            LoggerUtil.currentUser(),
+            patient.getUsername(),
+            LoggerUtil.currentUser() + " viewed medical records of " + patient.getUsername());
+        
+        return new ResponseEntity(
+            officeVisitService.findByPatient(patient), HttpStatus.OK);
     }
 }

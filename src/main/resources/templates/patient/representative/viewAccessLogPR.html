@@ -30,7 +30,7 @@
         return p.firstName + " " + p.lastName + " (" + p.id + ")";
       };
 
-      // get all diagnoses of patient and display in table
+      // get all access logs of patient and display in table
       $http.get("/iTrust2/api/v1/pr/logentries/" +  $scope.patient.username).then(
         function (response) {
           $scope.logs = response.data;
@@ -67,7 +67,8 @@
                 <td name="transactionType">{{l.transactionType}}</td>
                 <td name="hcp">{{l.primary}}</td>
                 <td name="code">{{l.secondary}}</td>
-                <td name="description">{{l.dateTime}}</td>
+                <td name="description">{{l.dateTime | date : 'EEE MMM dd
+                  h:mm:ss a yyyy'}}</td>
               </tr>
             </tbody>
           </table>
