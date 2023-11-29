@@ -12,7 +12,7 @@
 
 </head>
 
-<body th:include="layout :: body" th:with="content=~{::content}">
+<body>
 <div th:fragment="content">
 
   <script th:inline="javascript">
@@ -31,7 +31,7 @@
       };
 
       // get all diagnoses of patient and display in table
-      $http.get("/iTrust2/api/v1/diagnoses/" +  $scope.patient.username).then(
+      $http.get("/iTrust2/api/v1/pr/diagnoses/" +  $scope.patient.username).then(
               function (response) {
                 $scope.diagnoses = response.data;
                 $scope.message = "";

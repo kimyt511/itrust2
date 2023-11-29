@@ -96,10 +96,22 @@ public class PatientController {
      * @param model data for front end
      * @return The page for the patient to view Personal Representatives
      */
-    @GetMapping(value = "patient/viewPersonalRepresentatives")
+    @GetMapping(value = "patient/representative/viewPersonalRepresentatives")
     @PreAuthorize("hasRole('ROLE_PATIENT')")
     public String viewPersonalRepresentatives(final Model model) {
-        return "/patient/viewPersonalRepresentatives";
+        return "/patient/representative/viewPersonalRepresentatives";
+    }
+
+    /**
+     * Create a page for the patient to view access logs of a patient in PR page
+     *
+     * @param model data for front end
+     * @return The page for the patient to view access logs of a patient in PR page
+     */
+    @GetMapping(value = "patient/representative/viewAccessLogPR")
+    @PreAuthorize("hasRole('ROLE_PATIENT')")
+    public String viewAccessLogPR(final Model model) {
+        return "/patient/representative/viewAccessLogPR";
     }
 
     /**
@@ -108,10 +120,9 @@ public class PatientController {
      * @param model data for front end
      * @return The page for the patient to view Diagnoses of a patient in PR page
      */
-    @GetMapping(value = "patient/viewPatientDiagnoses")
+    @GetMapping(value = "patient/representative/viewDiagnosesPR")
     @PreAuthorize("hasRole('ROLE_PATIENT')")
-    public String viewPatientDiagnoses(final Model model) {
-        return "/patient/viewPatientDiagnoses";
+    public String viewDiagnosesPR(final Model model) {
+        return "/patient/representative/viewDiagnosesPR";
     }
-
 }

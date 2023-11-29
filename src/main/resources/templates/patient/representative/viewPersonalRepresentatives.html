@@ -234,10 +234,32 @@
             ///////////////////////////Initially Load Table/////////////////////////
 
             ///////////////////////////Access Diagnoses Page/////////////////////////
+            // **DEPRECATED**
             $scope.accessDiagnoses = function() {
 
-                var url = document.querySelector('a[href="/iTrust2/patient/viewPatientDiagnoses"]').getAttribute('href');
+                var url = document.getElementById('viewDiagnosesPR').getAttribute('href');
                 var windowName = "Diagnoses popup";
+                var width = (window.screen.width * 90) / 100;
+                var height = (window.screen.height * 70) / 100;
+                var left = 100;
+                var top = 100;
+
+                // Convert the diaryentry object to a JSON string
+                var Json = JSON.stringify($scope.viewRepresentative);
+
+                // Construct the URL with the JSON string as a query parameter
+                var urlWithParams = url + "?data=" + encodeURIComponent(Json);
+
+                // Open a new window for the form
+                var $popup = $window.open(urlWithParams, windowName, "width=" + width + ",height=" + height + "," +
+                    "left=" + left + ",top=" + top);
+            }
+
+            //--------------View more information about PR---------------------
+            $scope.representativeInfo = function (elementId) {
+                console.log(elementId);
+                var url = document.getElementById(elementId).getAttribute('href');
+                var windowName = "PR Information";
                 var width = (window.screen.width * 90) / 100;
                 var height = (window.screen.height * 70) / 100;
                 var left = 100;
@@ -410,13 +432,17 @@
                                     </table>
                                     <div style="display: flex; flex-wrap: wrap; justify-content: space-between;">
                                         <button class="btn btn-primary" style="width: 44%; margin-bottom: 10px;"
-                                            onclick="location.href = '/iTrust2/hcp/'">Access Log</button>
+                                            ng-click="representativeInfo('viewAccessLogPR')">Access Log</button>
                                         <button class="btn btn-primary" style="width: 44%; margin-bottom: 10px;"
                                             onclick="location.href = '/iTrust2/hcp/'">Medical Records</button>
                                         <button class="btn btn-primary" style="width: 44%; margin-bottom: 10px;"
-                                            ng-click = "accessDiagnoses()" >Diagnoses</button>
+                                            ng-click = "representativeInfo('viewDiagnosesPR')" >Diagnoses</button>
                                         <button class="btn btn-primary" style="width: 44%; margin-bottom: 10px;"
                                             onclick="location.href = '/iTrust2/hcp/'">Appointment</button>
+                                    </div>
+                                    <div style="display: none;">
+                                        <a href="/iTrust2/patient/representative/viewDiagnosesPR" id="viewDiagnosesPR"></a>
+                                        <a href="/iTrust2/patient/representative/viewAccessLogPR" id="viewAccessLogPR"></a>
                                     </div>
                                 </div>
                             </div>
