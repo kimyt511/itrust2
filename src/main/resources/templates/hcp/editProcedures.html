@@ -40,7 +40,7 @@
                     if (!override && formDifferent($scope.procedureForm, $scope.originalForm)) {
                         if (!confirm("You have made changes to this procedure. Would you like to continue? (changes will be lost)")) {
                             $scope.selectedProcedure = "";
-                            $scope.selectedProcedure = $scope.procedureForm.name;
+                            $scope.selectedProcedure = $scope.procedureForm.id;
                             return;
                         }
                     }
@@ -75,7 +75,7 @@
                     pf.patient = of.patient = procedure.patient;
                     $scope.patient = procedure.patient.username;
 
-                    $scope.selectedProcedure = pf.name;
+                    $scope.selectedProcedure = pf.id;
                 };
 
                 $http.get("/iTrust2/api/v1/patients").then(function (response) {
@@ -83,10 +83,18 @@
                 });
 
 				$scope.procedures = [];
+				$scope.actualHcp = [[${#httpServletRequest.remoteUser}]];
 
 				$scope.loadProcedures = function () {
                 	$http.get("/iTrust2/api/v1/procedure").then(function (response) {
-                    	$scope.procedures = response.data;
+						let proceduresFiltered = [];
+						let resp = response.data;
+						for(let i = 0; i < resp.length; i++){
+							if(resp[i].hcp.username == $scope.actualHcp){
+								proceduresFiltered.push(resp[i]);
+							}
+						}
+                    	$scope.procedures = proceduresFiltered;
                 	});
 	        	}
 
@@ -191,7 +199,7 @@
 				<li ng-repeat="procedure in procedures | filter:filterProcedures"><h4>
 					<label> <input type="radio"
 								   ng-model="$parent.selectedProcedure" name="procedure"
-								   value="{{procedure.name}}"
+								   value="{{procedure.id}}"
 								   ng-click='$parent.selectProcedure(procedure)' />&nbsp;{{$parent.displayName(procedure)}}
 					</label>
 					<input type="button" value="Delete" class="btn btn-danger" name="deleteUser" ng-click="deleteProcedure(procedure)"/>

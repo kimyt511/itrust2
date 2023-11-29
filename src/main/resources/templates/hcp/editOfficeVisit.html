@@ -1,7 +1,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <head th:include="layout :: head(title=~{::title},links=~{})">
-<title>View Visit Requests</title>
+<title>Edit office visits</title>
 </head>
 
 <body th:include="layout :: body" th:with="content=~{::content}">
@@ -12,7 +12,7 @@
 		<script th:inline="javascript">
 			/* Otherwise Thymeleaf tries to parse Javascript as XML and breaks itself sometimes.  Sigh */
 			/*<![CDATA[*/
-			var app = angular.module("viewOfficeVisitPatientApp", []);
+			var app = angular.module("viewOfficeVisitHCPApp", []);
 			
 			/**
 			 * A filter to humanize the text to be more user friendly.
@@ -25,12 +25,11 @@
 				}
             });
 
-			app.controller('viewOfficeVisitPatientCtrl', function ($scope, $http) {
+			app.controller('viewOfficeVisitHCPCtrl', function ($scope, $http) {
 				$scope.selectedVisit = {};
 				$scope.visits = [];
-				$scope.patient = /*[[${#httpServletRequest.remoteUser}]]*/null;
 				$scope.loadVisits = function () {
-					$http.get("/iTrust2/api/v1/officevisits/myofficevisits")
+					$http.get("/iTrust2/api/v1/officevisits/HCP")
 						.then(function (response) {
 							$scope.visits = response.data;
 							if ($scope.visits.length == 0) {
@@ -103,13 +102,27 @@
 					$scope.visit.hospital = v.hospital;
                 }
 
+                $scope.deleteProcedure = function(p){
+	        		if(p.procedureStatus !== "Assigned"){
+						$scope.message = "You can only delete procedure only if its status is 'ASSIGNED'";
+						return;
+	        		}
+	            	$http.delete('/iTrust2/api/v1/procedure/' + p.id).then(
+	            		function (response) {
+	                		$scope.loadProcedures();
+							$scope.message = "";
+	              		}, function (rejection) {
+							$scope.message = "Could not remove procedure";
+	              		});
+                }
+
 				$scope.loadVisits();
 			});
 			/*]]>*/
 		</script>
 
-		<div ng-app="viewOfficeVisitPatientApp"
-			ng-controller="viewOfficeVisitPatientCtrl">
+		<div ng-app="viewOfficeVisitHCPApp"
+			ng-controller="viewOfficeVisitHCPCtrl">
 			<div style="float: left; width: 30%; height: 75%; overflow-y: auto">
 				<h2>Your office visits</h2>
 				<!-- Info on scrolling taken from here: https://www.w3schools.com/cssref/pr_pos_overflow.asp -->
@@ -311,6 +324,7 @@
 									</div>
 									<div class="col-xs-6"> {{pr.procedureStatus | humanize}}</div>
 								</div>
+								<input type="button" value="Delete" class="btn btn-danger" name="deleteProcedure" ng-click="deleteProcedure(pr)"/>
 							</div>
 						</div>
 					</div>
