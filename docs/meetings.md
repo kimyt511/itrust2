@@ -200,6 +200,25 @@
 - Backend for UC16 completed
 - TODO: Discuss about UC19
 
+### Meeting 6
+**Date**: 2023.11.20
+- UC16 almost finished, start to concentrate on UC19
+- Discuss UC19 development idea.
+  - Calendar system.
+  - pop-up system to display food entries.
+  - Fractionize the funcitonalities: View entry, Add entry, update entries.
+- Come back later to perfect UC16.
+
+### Meeting 7
+**Date**: 2023.11.28
+- UC19 finished
+  - Calendar is not necessary, develop in the future if time available.
+- UC16 Scenario2 problem.
+  - Discuss how to display general PR info (logs, disnoses, appointments, medical records).
+  - Additional backend functionalities required.
+- Start writing test code for two UCs allocated.
+- Be prepared to merge the UCs to develop branch.
+
 ---
 
 ## Team 2 Meetings
