@@ -1,12 +1,16 @@
 package edu.ncsu.csc.itrust2.controllers.api;
 
 import edu.ncsu.csc.itrust2.controllers.api.comm.LogEntryTableRow;
+import edu.ncsu.csc.itrust2.forms.AppointmentRequestForm;
 import edu.ncsu.csc.itrust2.forms.PersonalRepresentativeForm;
+import edu.ncsu.csc.itrust2.models.AppointmentRequest;
 import edu.ncsu.csc.itrust2.models.PersonalRepresentative;
 import edu.ncsu.csc.itrust2.models.User;
 import edu.ncsu.csc.itrust2.models.enums.Role;
+import edu.ncsu.csc.itrust2.models.enums.Status;
 import edu.ncsu.csc.itrust2.models.enums.TransactionType;
 import edu.ncsu.csc.itrust2.models.security.LogEntry;
+import edu.ncsu.csc.itrust2.services.AppointmentRequestService;
 import edu.ncsu.csc.itrust2.services.DiagnosisService;
 import edu.ncsu.csc.itrust2.services.OfficeVisitService;
 import edu.ncsu.csc.itrust2.services.PersonalRepresentativeService;
@@ -17,6 +21,7 @@ import edu.ncsu.csc.itrust2.utils.LoggerUtil;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
 
@@ -46,6 +51,8 @@ public class APIPersonalRepresentativeController extends APIController {
     private final DiagnosisService diagnosisService;
 
     private final OfficeVisitService officeVisitService;
+
+    private final AppointmentRequestService appointmentRequestService;
 
     /**
      * Retrieves a list of representative for a patient in the database
@@ -344,5 +351,34 @@ public class APIPersonalRepresentativeController extends APIController {
         
         return new ResponseEntity(
             officeVisitService.findByPatient(patient), HttpStatus.OK);
+    }
+
+    /**
+     * Retrieves the AppointmentRequest specified by the username provided
+     *
+     * @return list of appointment requests for the logged in patient
+     */
+    @GetMapping("/pr/appointmentrequest/{username}")
+    @PreAuthorize("hasAnyRole('ROLE_PATIENT')")
+    public ResponseEntity getAppointmentRequestsForPatient(@PathVariable final String username) {
+        // If not declared, throw error
+        User patient = userService.findByName(username);
+        User self = userService.findByName(LoggerUtil.currentUser());
+        if (!personalRepresentativeService
+            .existsByPatientAndRepresentative(self, patient)
+            && !personalRepresentativeService
+            .existsByPatientAndRepresentative(patient, self)) {
+            return new ResponseEntity(
+                errorResponse("Forbidden: Not a representative of " + username),
+                HttpStatus.FORBIDDEN
+            );    
+        }
+
+        return new ResponseEntity(
+            appointmentRequestService.findByPatient(patient).stream()
+                .filter(e -> e.getStatus().equals(Status.PENDING))
+                .collect(Collectors.toList()), 
+            HttpStatus.OK
+        );
     }
 }

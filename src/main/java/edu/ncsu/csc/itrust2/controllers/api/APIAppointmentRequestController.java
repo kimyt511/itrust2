@@ -7,6 +7,7 @@ import edu.ncsu.csc.itrust2.models.enums.Role;
 import edu.ncsu.csc.itrust2.models.enums.Status;
 import edu.ncsu.csc.itrust2.models.enums.TransactionType;
 import edu.ncsu.csc.itrust2.services.AppointmentRequestService;
+import edu.ncsu.csc.itrust2.services.PersonalRepresentativeService;
 import edu.ncsu.csc.itrust2.services.UserService;
 import edu.ncsu.csc.itrust2.utils.LoggerUtil;
 
@@ -43,6 +44,8 @@ public class APIAppointmentRequestController extends APIController {
     private final LoggerUtil loggerUtil;
 
     private final UserService userService;
+
+    private final PersonalRepresentativeService personalRepresentativeService;
 
     /**
      * Retrieves a list of all AppointmentRequests in the database
@@ -187,8 +190,13 @@ public class APIAppointmentRequestController extends APIController {
         }
 
         /* Patient can't look at anyone else's requests */
+        /* Personal representatives can also look at requests */
         final User self = userService.findByName(LoggerUtil.currentUser());
-        if (self.getRoles().contains(Role.ROLE_PATIENT) && !request.getPatient().equals(self)) {
+        final User patient = request.getPatient();
+        if (self.getRoles().contains(Role.ROLE_PATIENT) 
+            && !(patient.equals(self)
+                || personalRepresentativeService.existsByPatientAndRepresentative(self, patient)
+                || personalRepresentativeService.existsByPatientAndRepresentative(patient, self))) {
             return new ResponseEntity(HttpStatus.UNAUTHORIZED);
         }
         try {
