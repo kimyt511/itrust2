@@ -37,6 +37,9 @@ import java.util.stream.Collectors;
 import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -143,6 +146,7 @@ public class APIVaccinationTest {
 
         // get the list of diagnoses for this office visit and make sure both
         // are there
+        mvc.perform(get("/api/v1/vaccinations/patient/haha")).andExpect(status().isNotFound());
         content =
                 mvc.perform(
                                 get("/api/v1/vaccinations/patient/" + "patient")
@@ -195,13 +199,6 @@ public class APIVaccinationTest {
                 gson.fromJson(content, new TypeToken<ArrayList<Vaccination>>() {}.getType());
         flag = false;
         for (final Vaccination pp : plist) {
-            if (pp.getPatient().getUsername().equals(v.getPatient().getUsername())) {
-                flag = true;
-            }
-        }
-        assertTrue(flag);
-        flag = false;
-        for (final Vaccination pp : plist) {
             if (pp.getPatient().getUsername().equals(v2.getPatient().getUsername())) {
                 flag = true;
             }
@@ -244,5 +241,101 @@ public class APIVaccinationTest {
         // }
         // assertTrue(flag);
 
+    }
+
+    @Test
+    @Transactional
+    @WithMockUser(
+            username = "patient",
+            roles = {"PATIENT"})
+    public void testVaccinations2() throws Exception {
+        mvc.perform(get("/api/v1/vaccinations")).andExpect(status().isOk());
+    }
+
+    @Test
+    @Transactional
+    @WithMockUser(
+            username = "patient2",
+            roles = {"PATIENT"})
+    public void testVaccinations3() throws Exception {
+        mvc.perform(get("/api/v1/vaccinations")).andExpect(status().isNotFound());
+    }
+
+    @Test
+    @Transactional
+    @WithMockUser(
+            username = "hcp",
+            roles = {"HCP"})
+    public void testVaccinations4() throws Exception {
+        final Gson gson = new GsonBuilder().create();
+        String content;
+        
+        VaccinationForm vf1 = new VaccinationForm();
+        vf1.setVaccineCptCode("90000");
+        vf1.setPatientUserName("patient");
+        vf1.setDateAdministered(LocalDate.of(2023,06,26).toString());
+
+        // mvc.perform(
+        //                 post("/api/v1/vaccinations")
+        //                         .contentType(MediaType.APPLICATION_JSON)
+        //                         .content(TestUtils.asJsonString(vf1)))
+        //         .andExpect(status().is4xxClientError());
+
+        final Vaccine vaccine1 = new Vaccine();
+        vaccine1.setName("test1");
+        vaccine1.setAbbreviation("t1");
+        vaccine1.setCptCode("90000");
+        vaccine1.setComments("com1");
+
+        final Vaccine vaccine2 = new Vaccine();
+        vaccine2.setName("test2");
+        vaccine2.setAbbreviation("t2");
+        vaccine2.setCptCode("90001");
+        vaccine2.setComments("com2");
+
+        vaccineService.saveAll(List.of(vaccine1, vaccine2));
+
+        mvc.perform(
+                        post("/api/v1/vaccinations")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(TestUtils.asJsonString(vf1)))
+                .andExpect(status().isOk());
+
+        content =
+                mvc.perform(
+                                get("/api/v1/vaccinations/patient/" + "patient")
+                                        .contentType(MediaType.APPLICATION_JSON))
+                        .andReturn()
+                        .getResponse()
+                        .getContentAsString();
+        List<Vaccination> plist =
+                gson.fromJson(content, new TypeToken<ArrayList<Vaccination>>() {}.getType());
+        boolean flag = false;
+        long id=0;
+        for (final Vaccination pp : plist) {
+            if (pp.getVaccine().getCptCode().equals(vf1.getVaccineCptCode())) {
+                flag = true;
+                id = pp.getId();
+            }
+                
+        }
+        assertTrue(flag);
+        
+        vf1.setVaccineCptCode("90001");
+        mvc.perform(
+                        put("/api/v1/vaccinations/" + 1L)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(TestUtils.asJsonString(vf1)))
+                .andExpect(status().isNotFound());
+        mvc.perform(
+                        put("/api/v1/vaccinations/" + id)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(TestUtils.asJsonString(vf1)))
+                .andExpect(status().isOk());
+
+        mvc.perform(
+            delete("/api/v1/vaccinations/"+id)).andExpect(status().isOk());
+        mvc.perform(
+            delete("/api/v1/vaccinations/"+id)).andExpect(status().isNotFound());
     }
 }

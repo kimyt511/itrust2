@@ -37,6 +37,9 @@ import java.util.stream.Collectors;
 import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -290,5 +293,92 @@ public class APIPrescriptionTest {
 
         /* Make sure all the editing didn't create any duplicates */
         Assert.assertEquals(2, prescriptionService.count());
+    }
+
+    @Test
+    @Transactional
+    @WithMockUser(
+            username = "hcp",
+            roles = {"HCP"})
+    public void testPrescriptionsCtr() throws Exception {
+        final Gson gson = new GsonBuilder().create();
+        String content;
+
+        final Drug drug1 = new Drug("0000-0000-01", "TEST1", "Desc1");
+
+        final Drug drug2 = new Drug("0000-0000-02", "TEST2", "Desc2");
+
+        drugService.saveAll(List.of(drug1, drug2));
+
+        PrescriptionForm pf = new PrescriptionForm();
+        pf.setDrug("0000-0000-01");
+        pf.setDosage(10);
+        pf.setStartDate(LocalDate.of(2023,06,15).toString());
+        pf.setEndDate(LocalDate.of(2023,06,23).toString());
+        pf.setRenewals(1);
+        pf.setPatient("patient");
+
+        mvc.perform(
+                post("/api/v1/prescriptions")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(TestUtils.asJsonString(pf)))
+        .andExpect(status().isOk());
+
+        // pf.setDrug("0000-0000-03");
+        // mvc.perform(
+        //         post("/api/v1/prescriptions")
+        //                 .contentType(MediaType.APPLICATION_JSON)
+        //                 .content(TestUtils.asJsonString(pf)))
+        // .andExpect(status().is4xxClientError());
+
+        content =
+                mvc.perform(
+                                get("/api/v1/prescriptions")
+                                        .contentType(MediaType.APPLICATION_JSON))
+                        .andReturn()
+                        .getResponse()
+                        .getContentAsString();
+        List<Prescription> plist =
+                gson.fromJson(content, new TypeToken<ArrayList<Prescription>>() {}.getType());
+        boolean flag = false;
+        for (final Prescription pp : plist) {
+            if (pp.getDosage() == pf.getDosage()) {
+                flag = true;
+                pf.setId(pp.getId());
+            }
+        }
+        assertTrue(flag);
+
+        mvc.perform(
+            get("/api/v1/prescriptions/"+pf.getId())
+        ).andExpect(status().isOk());
+
+        pf.setDosage(20);
+        mvc.perform(
+                put("/api/v1/prescriptions")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(TestUtils.asJsonString(pf)))
+        .andExpect(status().isOk());
+
+        long id = pf.getId();
+        pf.setId(2L);
+        mvc.perform(
+                put("/api/v1/prescriptions")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(TestUtils.asJsonString(pf)))
+        .andExpect(status().isNotFound());
+
+        mvc.perform(
+            delete("/api/v1/prescriptions/"+id)
+        ).andExpect(status().isOk());
+
+        mvc.perform(
+            get("/api/v1/prescriptions/"+1L)
+        ).andExpect(status().isNotFound());
+
+        mvc.perform(
+            delete("/api/v1/prescriptions/"+1L)
+        ).andExpect(status().isNotFound());
+
     }
 }

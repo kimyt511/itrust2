@@ -28,6 +28,7 @@ import static org.junit.Assert.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -147,5 +148,8 @@ public class APIDrugTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(TestUtils.asJsonString(drug2)))
                 .andExpect(status().isOk());
+
+        mvc.perform(delete("/api/v1/drugs/"+drug2.getId())).andExpect(status().isOk());
+        mvc.perform(delete("/api/v1/drugs/"+1L)).andExpect(status().isNotFound());
     }
 }

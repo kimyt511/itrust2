@@ -28,6 +28,7 @@ import static org.junit.Assert.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -67,6 +68,12 @@ public class APIVaccineTest {
         form1.setCptCode("90000");
         form1.setComments("DESC1");
 
+        final VaccineForm form2 = new VaccineForm();
+        form2.setName("TEST2");
+        form2.setAbbreviation("T2");
+        form2.setCptCode("90002");
+        form2.setComments("DESC2");
+
 
         // Add Vaccine1 to system
         final String content1 =
@@ -78,6 +85,20 @@ public class APIVaccineTest {
                         .andReturn()
                         .getResponse()
                         .getContentAsString();
+        
+        mvc.perform(
+                post("/api/v1/vaccine")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(TestUtils.asJsonString(form2)))
+        .andExpect(status().isOk());
+        
+        form1.setName("Test3");
+        mvc.perform(
+                post("/api/v1/vaccine")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(TestUtils.asJsonString(form1)))
+        .andExpect(status().isConflict());
+        form1.setName("TEST1");
 
         // Parse response as Vaccine object
         final Gson gson = new GsonBuilder().create();
@@ -85,6 +106,21 @@ public class APIVaccineTest {
         final VaccineForm vf1 = new VaccineForm(Vaccine1);
         assertEquals(form1.getCptCode(), vf1.getCptCode());
         assertEquals(form1.getName(), vf1.getName());
+
+        form1.setCptCode("90001");
+        mvc.perform(
+                post("/api/v1/vaccine")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(TestUtils.asJsonString(form1)))
+        .andExpect(status().isConflict());
+        form1.setCptCode("90000");
+
+        vf1.setId(1L);
+        mvc.perform(
+                put("/api/v1/vaccine")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(TestUtils.asJsonString(vf1)))
+        .andExpect(status().isNotFound());
 
         // Verify Vaccines have been added
         mvc.perform(get("/api/v1/vaccine"))
@@ -115,5 +151,20 @@ public class APIVaccineTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(TestUtils.asJsonString(Vaccine1)))
                 .andExpect(status().isOk());
+        Vaccine1.setCptCode("90002");
+        mvc.perform(
+                        put("/api/v1/vaccine")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(TestUtils.asJsonString(Vaccine1)))
+                .andExpect(status().isConflict());
+        Vaccine1.setName("TEST2");
+        mvc.perform(
+                        put("/api/v1/vaccine")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(TestUtils.asJsonString(Vaccine1)))
+                .andExpect(status().isConflict());
+        
+        mvc.perform(delete("/api/v1/vaccine/"+"1")).andExpect(status().isNotFound());
+        mvc.perform(delete("/api/v1/vaccine/"+Vaccine1.getId())).andExpect(status().isOk());
     }
 }

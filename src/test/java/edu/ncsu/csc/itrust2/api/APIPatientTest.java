@@ -1,5 +1,8 @@
 package edu.ncsu.csc.itrust2.api;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import edu.ncsu.csc.itrust2.common.TestUtils;
 import edu.ncsu.csc.itrust2.forms.PatientForm;
 import edu.ncsu.csc.itrust2.forms.UserForm;
@@ -11,8 +14,11 @@ import edu.ncsu.csc.itrust2.models.enums.Gender;
 import edu.ncsu.csc.itrust2.models.enums.Role;
 import edu.ncsu.csc.itrust2.models.enums.State;
 import edu.ncsu.csc.itrust2.services.PatientService;
+import edu.ncsu.csc.itrust2.dto.PatientDto;
+import edu.ncsu.csc.itrust2.dto.EhrDto;
 
 import javax.transaction.Transactional;
+import java.time.LocalDate;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -31,6 +37,9 @@ import org.springframework.web.context.WebApplicationContext;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Test for API functionality for interacting with Patients
@@ -73,6 +82,8 @@ public class APIPatientTest {
             roles = {"HCP"})
     @Transactional
     public void testPatientAPI() throws Exception {
+        final Gson gson = new GsonBuilder().create();
+        String content;
 
         final PatientForm patient = new PatientForm();
         patient.setAddress1("1 Test Street");
@@ -104,6 +115,7 @@ public class APIPatientTest {
         // Creating a User should create the Patient record automatically
         mvc.perform(get("/api/v1/patients/antti")).andExpect(status().isOk());
 
+        // mvc.perform(get("/api/v1/patients/ehr/antti")).andExpect(status().isOk());
         // get all patients
         mvc.perform(get("/api/v1/patients")).andExpect(status().isOk());
 
@@ -117,12 +129,60 @@ public class APIPatientTest {
                                 .content(TestUtils.asJsonString(patient)))
                 .andExpect(status().isOk());
 
+        content =
+                mvc.perform(
+                                get("/api/v1/patients/ehr/antti"))
+                        .andReturn()
+                        .getResponse()
+                        .getContentAsString();
+        EhrDto ehrdto =
+                gson.fromJson(content, new TypeToken<EhrDto>() {}.getType());
+        Assert.assertEquals(ehrdto.getUsername(), "antti");
+        Assert.assertEquals(ehrdto.getFirstName(), "Antti");
+        Assert.assertEquals(ehrdto.getLastName(), "Walhelm");
+        Assert.assertTrue(ehrdto.getDateOfBirth().equals(LocalDate.of(1977,06,15)));
+        Assert.assertEquals(ehrdto.getGender(), Gender.Male);
+        Assert.assertEquals(ehrdto.getBloodType(), BloodType.APos);
+
         Patient anttiRetrieved = (Patient) service.findByName("antti");
+
 
         // Test a few fields to be reasonably confident things are working
         Assert.assertEquals("Walhelm", anttiRetrieved.getLastName());
         Assert.assertEquals(Gender.Male, anttiRetrieved.getGender());
         Assert.assertEquals("Viipuri", anttiRetrieved.getCity());
+
+        content =
+                mvc.perform(
+                                get("/api/v1/patients/search/" + "Walh"))
+                        .andReturn()
+                        .getResponse()
+                        .getContentAsString();
+        List<PatientDto> plist =
+                gson.fromJson(content, new TypeToken<ArrayList<PatientDto>>() {}.getType());
+        boolean flag = false;
+        for (final PatientDto pp : plist) {
+            if (pp.getUsername().equals("antti")) {
+                flag = true;
+            }
+        }
+        Assert.assertTrue(flag);
+
+        content =
+                mvc.perform(
+                                get("/api/v1/patients/searchmid/" + "an"))
+                        .andReturn()
+                        .getResponse()
+                        .getContentAsString();
+        plist =
+                gson.fromJson(content, new TypeToken<ArrayList<PatientDto>>() {}.getType());
+        flag = false;
+        for (final PatientDto pp : plist) {
+            if (pp.getUsername().equals("antti")) {
+                flag = true;
+            }
+        }
+        Assert.assertTrue(flag);
 
         // Also test a field we haven't set yet
         Assert.assertNull(anttiRetrieved.getPreferredName());
@@ -189,6 +249,8 @@ public class APIPatientTest {
 
         service.save(antti);
 
+        mvc.perform(get("/api/v1/patient/findexperts/getzip")).andExpect(status().isNoContent());
+
         final PatientForm patient = new PatientForm();
         patient.setAddress1("1 Test Street");
         patient.setAddress2("Some Location");
@@ -232,5 +294,10 @@ public class APIPatientTest {
 
         // we should be able to update our record too
         mvc.perform(get("/api/v1/patient/")).andExpect(status().isOk());
+
+        mvc.perform(get("/api/v1/patient/findexperts/getzip")).andExpect(status().isOk());
+
+
     }
+
 }
