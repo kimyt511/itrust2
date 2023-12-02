@@ -1,0 +1,98 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="layout :: head(title=~{::title},links=~{})">
+    <title>View Appointment</title>
+
+    <!-- Angular and Bootstrap files  -->
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
+          rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+</head>
+
+<body>
+<div th:fragment="content">
+
+    <script th:inline="javascript">
+        /* Otherwise Thymeleaf tries to parse Javascript as XML and breaks itself sometimes.  Sigh */
+        /*<![CDATA[*/
+        const app = angular.module("viewAppointmentPR", []);
+        app.controller('ControllerPR', function ($scope, $http) {
+            $scope.appointments = {};
+
+            var queryString = window.location.search;
+            var urlParams = new URLSearchParams(queryString);
+            var Json = urlParams.get('data');
+            $scope.patient = JSON.parse(decodeURIComponent(Json));
+
+
+            $scope.displayName = function (p) {
+                return p.firstName + " " + p.lastName + " (" + p.id + ")";
+            };
+
+            // get all appointments of patient and display in table
+            $scope.loadAppointment = function () {
+                $http.get("/iTrust2/api/v1/pr/appointmentrequest/" + $scope.patient.username).then(
+                    function (response) {
+                        $scope.appointments = response.data;
+                        $scope.message = "";
+                    }, function (rejection) {
+                        $scope.appointments = {};
+                        $scope.message = "Unable to fetch appointment";
+                    });
+            };
+
+            $scope.loadAppointment();
+        });
+    </script>
+
+    <div ng-app="viewAppointmentPR" ng-controller="ControllerPR">
+
+        <!-- Info on tables from https://hello-angularjs.appspot.com/removetablerow -->
+        <div class="container">
+            <div class="panel panel-primary">
+                <div class="panel panel-heading">
+                    <h2>Appointment</h2>
+                    <h4 ng-model="message" style="color: red"></h4>
+                </div>
+                <div class="panel panel-body">
+                    <h3>{{displayName(patient)}}</h3>
+                    <table class="table table-hover" style="width: 100%">
+                        <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Status</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr name="appointments" ng-repeat="appt in appointments">
+                            <td>{{appt.type | humanize}}</td>
+                            <td>{{appt.date | date : 'MM/dd/yyyy'}}</td>
+                            <td>{{appt.date | date : 'shortTime'}}</td>
+                            <td>{{appt.status | humanize}}</td>
+                        </tr>
+                        </tbody>
+                        <!--<div class="panel-body">
+                            <ul style="list-style: none; padding: 0;">
+                                <li ng-repeat="appointment in appointments">
+                                    <span>
+                                        <label style="vertical-align: middle; padding-left: 10px; cursor: pointer;">
+                                        Type: {{appointment.type | humanize}}<br/>
+                                            Date: {{appointment.date | date : 'MM/dd/yyyy'}}<br/>
+                                            Time: {{appointment.date | date : 'shortTime'}}<br/>
+                                            Status: {{appointment.status | humanize}}
+                                        </label>
+                                    </span>
+                                </li>
+                            </ul>
+                        </div>-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
