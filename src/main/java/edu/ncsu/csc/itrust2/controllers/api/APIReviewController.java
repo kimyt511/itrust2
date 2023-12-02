@@ -19,7 +19,7 @@ import static edu.ncsu.csc.itrust2.controllers.api.APIController.errorResponse;
 @SuppressWarnings({"unchecked", "rawtypes"})
 @RestController
 @RequiredArgsConstructor
-public class APIReviewController {
+public class APIReviewController extends APIController {
 
     private final ReviewService service;
     private final UserService userService;
@@ -108,7 +108,7 @@ public class APIReviewController {
      * @return the edited review or an error message
      */
     @PreAuthorize("hasRole('ROLE_PATIENT')")
-    @PutMapping("/reivews/hcp")
+    @PutMapping("/reviews/hcp")
     public ResponseEntity editHcpReview(@RequestBody final ReviewForm form){
         try {
             // Check for existing review in database
