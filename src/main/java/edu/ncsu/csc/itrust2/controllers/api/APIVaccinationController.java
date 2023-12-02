@@ -46,35 +46,35 @@ public class APIVaccinationController extends APIController {
             "hasAnyRole('ROLE_PATIENT')")
     @GetMapping("/vaccinations")
     public ResponseEntity<?> getVaccinations() {
-        try {
-            final User self = userService.findByName(LoggerUtil.currentUser());
-            if (self == null) {
-                return ResponseEntity.notFound().build();
-            }
-            List<Vaccination> vaccinations = vaccinationService.getVaccinationsByPatient(self);
-            loggerUtil.log(TransactionType.PATIENT_VIEW_VACCINATIONS, LoggerUtil.currentUser(), "Viewing vaccinations for patient: " + self.getUsername());
-            return ResponseEntity.ok(vaccinations);
-        } catch (final Exception e) {
-            loggerUtil.log(TransactionType.PATIENT_VIEW_VACCINATIONS, LoggerUtil.currentUser());
-            return ResponseEntity.badRequest().body(errorResponse("Failed to retrieve vaccinations: " + e.getMessage()));
+        // try {
+        final User self = userService.findByName(LoggerUtil.currentUser());
+        if (self == null) {
+            return ResponseEntity.notFound().build();
         }
+        List<Vaccination> vaccinations = vaccinationService.getVaccinationsByPatient(self);
+        loggerUtil.log(TransactionType.PATIENT_VIEW_VACCINATIONS, LoggerUtil.currentUser(), "Viewing vaccinations for patient: " + self.getUsername());
+        return ResponseEntity.ok(vaccinations);
+        // } catch (final Exception e) {
+        //     loggerUtil.log(TransactionType.PATIENT_VIEW_VACCINATIONS, LoggerUtil.currentUser());
+        //     return ResponseEntity.badRequest().body(errorResponse("Failed to retrieve vaccinations: " + e.getMessage()));
+        // }
     }
     
     @GetMapping("/vaccinations/patient/{username}")
     @PreAuthorize("hasAnyRole('ROLE_HCP')")
     public ResponseEntity<?> getVaccinationsForPatient(@PathVariable final String username) {
-        try {
-            User patient = userService.findByName(username);
-            if (patient == null) {
-                return ResponseEntity.notFound().build();
-            }
-            List<Vaccination> vaccinations = vaccinationService.getVaccinationsByPatient(patient);
-            loggerUtil.log(TransactionType.PATIENT_VIEW_VACCINATIONS, LoggerUtil.currentUser(), "Viewing vaccinations for patient: " + username);
-            return ResponseEntity.ok(vaccinations);
-        } catch (final Exception e) {
-            loggerUtil.log(TransactionType.PATIENT_VIEW_VACCINATIONS, LoggerUtil.currentUser());
-            return ResponseEntity.badRequest().body(errorResponse("Failed to retrieve vaccinations: " + e.getMessage()));
+        // try {
+        User patient = userService.findByName(username);
+        if (patient == null) {
+            return ResponseEntity.notFound().build();
         }
+        List<Vaccination> vaccinations = vaccinationService.getVaccinationsByPatient(patient);
+        loggerUtil.log(TransactionType.PATIENT_VIEW_VACCINATIONS, LoggerUtil.currentUser(), "Viewing vaccinations for patient: " + username);
+        return ResponseEntity.ok(vaccinations);
+        // } catch (final Exception e) {
+        //     loggerUtil.log(TransactionType.PATIENT_VIEW_VACCINATIONS, LoggerUtil.currentUser());
+        //     return ResponseEntity.badRequest().body(errorResponse("Failed to retrieve vaccinations: " + e.getMessage()));
+        // }
     }
 
     @PutMapping("/vaccinations/{id}")
@@ -99,18 +99,18 @@ public class APIVaccinationController extends APIController {
     @DeleteMapping("/vaccinations/{id}")
     @PreAuthorize("hasRole('ROLE_HCP')")
     public ResponseEntity<?> deleteVaccination(@PathVariable final Long id) {
-        try {
-            Vaccination vaccination = vaccinationService.findById(id);
-            if (vaccination == null) {
-                return ResponseEntity.notFound().build();
-            }
-            vaccinationService.deleteVaccination(vaccination);
-            loggerUtil.log(TransactionType.ADMIN_DELETE_VACCINE, LoggerUtil.currentUser(), "Vaccination deleted with ID: " + id);
-            return ResponseEntity.ok().build();
-        } catch (final Exception e) {
-            loggerUtil.log(TransactionType.ADMIN_DELETE_VACCINE, LoggerUtil.currentUser());
-            return ResponseEntity.badRequest().body(errorResponse("Failed to delete vaccination: " + e.getMessage()));
+        // try {
+        Vaccination vaccination = vaccinationService.findById(id);
+        if (vaccination == null) {
+            return ResponseEntity.notFound().build();
         }
+        vaccinationService.deleteVaccination(vaccination);
+        loggerUtil.log(TransactionType.ADMIN_DELETE_VACCINE, LoggerUtil.currentUser(), "Vaccination deleted with ID: " + id);
+        return ResponseEntity.ok().build();
+        // } catch (final Exception e) {
+        //     loggerUtil.log(TransactionType.ADMIN_DELETE_VACCINE, LoggerUtil.currentUser());
+        //     return ResponseEntity.badRequest().body(errorResponse("Failed to delete vaccination: " + e.getMessage()));
+        // }
     }
 
     // @GetMapping("/vaccinations/officevisit/{visitId}")

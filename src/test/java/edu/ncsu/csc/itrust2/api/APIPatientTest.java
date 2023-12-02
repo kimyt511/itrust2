@@ -297,6 +297,20 @@ public class APIPatientTest {
 
         mvc.perform(get("/api/v1/patient/findexperts/getzip")).andExpect(status().isOk());
 
+        PatientForm pf = new PatientForm(null);
+        pf = new PatientForm(anttiRetrieved);
+
+        anttiRetrieved.setDateOfDeath(LocalDate.of(2023,2,11));
+        anttiRetrieved.setDateOfBirth(null);
+        anttiRetrieved.setState(null);
+        anttiRetrieved.setBloodType(null);
+        anttiRetrieved.setEthnicity(null);
+        anttiRetrieved.setGender(null);
+
+        pf = new PatientForm(anttiRetrieved);
+
+        pf.setFastingLimit(100);
+        pf.setMealLimit(150);
 
     }
 
