@@ -44,7 +44,7 @@ public class Review extends DomainObject {
     private double rate;
 
     @Setter
-    @NotNull @Length(max = 500)
+    @Length(max = 500)
     private String comment;
 
     public Review(final ReviewForm form){

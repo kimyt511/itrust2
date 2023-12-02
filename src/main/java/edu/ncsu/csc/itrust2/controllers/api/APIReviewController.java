@@ -44,6 +44,11 @@ public class APIReviewController {
                 loggerUtil.log(TransactionType.PATIENT_RATE_HCP,
                         LoggerUtil.currentUser(),
                         "Review has created");
+            }else{
+                loggerUtil.log(TransactionType.PATIENT_RATE_HCP,
+                        LoggerUtil.currentUser(),
+                        "Failed to create review");
+                return new ResponseEntity(errorResponse("Could not add review: hcp should be included "), HttpStatus.BAD_REQUEST);
             }
 
             return new ResponseEntity(review, HttpStatus.OK);
@@ -76,6 +81,11 @@ public class APIReviewController {
                 loggerUtil.log(TransactionType.PATIENT_RATE_HOSPITAL,
                         LoggerUtil.currentUser(),
                         "Review has created");
+            }else{
+                loggerUtil.log(TransactionType.PATIENT_RATE_HOSPITAL,
+                        LoggerUtil.currentUser(),
+                        "Failed to create review");
+                return new ResponseEntity(errorResponse("Could not add review: hospital should be included"), HttpStatus.BAD_REQUEST);
             }
 
             return new ResponseEntity(review, HttpStatus.OK);
@@ -174,9 +184,9 @@ public class APIReviewController {
      */
     @PreAuthorize("hasRole('ROLE_PATIENT')")
     @DeleteMapping("/reviews/hcp/{id}")
-    public ResponseEntity deleteHcpReviews(@PathVariable final String id) {
+    public ResponseEntity deleteHcpReviews(@PathVariable final Long id) {
         try {
-            final Review review = (Review) service.findById(Long.parseLong(id));
+            final Review review = (Review) service.findById(id);
             if (review == null) {
                 loggerUtil.log(
                         TransactionType.RATE_DELETE,
@@ -208,9 +218,9 @@ public class APIReviewController {
      */
     @PreAuthorize("hasRole('ROLE_PATIENT')")
     @DeleteMapping("/reviews/hospital/{id}")
-    public ResponseEntity deleteHospitalReviews(@PathVariable final String id) {
+    public ResponseEntity deleteHospitalReviews(@PathVariable final Long id) {
         try {
-            final Review review = (Review) service.findById(Long.parseLong(id));
+            final Review review = (Review) service.findById(id);
             if (review == null) {
                 loggerUtil.log(
                         TransactionType.RATE_DELETE,
