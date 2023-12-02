@@ -88,6 +88,12 @@ public class APIAppointmentRequestTest {
     @Transactional
     public void testDeleteNonExistentAppointment() throws Exception {
         mvc.perform(delete("/api/v1/appointmentrequests/-1")).andExpect(status().isNotFound());
+
+        mvc.perform(get("/api/v1/appointmentrequests")).andExpect(status().isOk());
+
+        mvc.perform(get("/api/v1/appointmentrequestForHCP")).andExpect(status().isOk());
+
+        mvc.perform(get("/api/v1/viewAppointments")).andExpect(status().isOk());
     }
 
     /** Tests creating an appointment request with bad data. Should return a bad request. */
