@@ -97,10 +97,33 @@ public class PatientController {
      * @param model data for front end
      * @return The page for the patient to review HCP and Hospital
      */
-
     @GetMapping("/patient/reviewHCPandHospital")
     @PreAuthorize("hasRole('ROLE_PATIENT')")
     public String reviewHCPandHospital(final Model model) {
         return "/patient/reviewHCPandHospital";
+    }
+
+    /**
+     * Create a page for the patient to review page
+     *
+     * @param model data for front end
+     * @return The page for the patient to review page
+     */
+    @GetMapping("/patient/reviewPage")
+    @PreAuthorize("hasRole('ROLE_PATIENT')")
+    public String reviewPage(final Model model) {
+        return "/patient/reviewPage";
+    }
+
+    /**
+     * Create a page for the patient to review page
+     *
+     * @param model data for front end
+     * @return The page for the patient to review page
+     */
+    @GetMapping("/patient/writeReview")
+    @PreAuthorize("hasRole('ROLE_PATIENT')")
+    public String writeReview(final Model model) {
+        return "/patient/writeReview";
     }
 }

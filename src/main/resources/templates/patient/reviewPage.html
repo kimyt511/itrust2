@@ -1,0 +1,212 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="layout :: head(title=~{::title},links=~{::script})">
+    <title>Review</title>
+    <script th:src="@{/js/dateTimeService.js}" src="../js/dateTimeService.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.5.0/ui-bootstrap-tpls.min.js"></script>
+
+</head>
+<body th:include="layout :: body" th:with="content=~{::content}">
+<div th:fragment="content">
+
+    <script th:inline="javascript">
+        /* Otherwise Thymeleaf tries to parse Javascript as XML and breaks itself sometimes.  Sigh */
+        /*<![CDATA[*/
+
+        const app = angular.module('reviewApp', ['dateTimeServices', 'ui.bootstrap','ng']);
+
+        //You can use this if you want to display the review entries sorted by date
+        //You may need to adjust this function
+        ///////////////////////////For sorting entries by date//////////////////////////////////
+        app.filter('sortByDate', function() {
+            return function(items) {
+                return items.slice().sort(function(a, b) {
+                    // Assuming a and b are objects with a 'date' property
+                    var dateA = new Date(a.date);
+                    var dateB = new Date(b.date);
+
+                    // Compare the date values in descending order
+                    return dateB - dateA;
+                });
+            };
+        });
+        ///////////////////////////For sorting food entreis by date//////////////////////////////////
+
+        //Controller
+        app.controller('reviewCtrl', function ($scope, $http,$window,$filter,dateTimeService) {
+
+            ////////////////////////Function to Display patient name////////////////////////
+            $scope.displayName = function (p) {
+                return p.firstName + " " + p.lastName + " (" + p.username + ")";
+            }
+            ////////////////////////Function to Display patient name////////////////////////
+
+            ///////////////////////get current user(patient)//////////////////////////////////////////
+            $http.get("/iTrust2/api/v1/patient").then(function (response) {
+                    $scope.currentPatient = response.data;
+                }, function (rejection) {
+                    console.error("Could not retrieve expected Patient record");
+                }
+            );
+            ///////////////////////get current user(patient)//////////////////////////////////////////
+
+            ///////////////////////////////////Write review Pop-up/////////////////////////////////////////////////
+            $scope.writeReview = function () {
+                // Specify the URL, window name, and window properties
+                var url = document.querySelector('a[href="/iTrust2/patient/writeReview"]').getAttribute('href');
+                var windowName = "popup";
+                var width = 600;
+                var height = 600;
+                var left = 430;
+                var top = 200;
+
+                // Open a new window for the form
+                var $popup = window.open(url, windowName, "width=" + width + ",height=" + height + "," +
+                    "left=" + left + ",top=" + top);
+
+            };
+            ///////////////////////////////////Write Pop-up/////////////////////////////////////////////////
+
+            //Todo
+            ///////////////////////////////////Load review Entries/////////////////////////////////////////////////
+            $scope.loadTable = function () {
+                $http.get("/iTrust2/api/v1/diary/mydiary").then(
+                    function (response) {
+                        // console.log(response.data);
+                        $scope.myDiary = response.data;
+                        $scope.message = "";
+                    }, function (rejection) {
+                        $scope.myDiary = [];
+                        $scope.message = "Could not load Diary";
+                    }
+                );
+            };
+            $scope.loadTable();
+            ///////////////////////////////////Load review Entries/////////////////////////////////////////////////
+
+            //Todo, if required. You can check uc19 how this function is used
+            ///////////////////////////////////Load selected entry /////////////////////////////////////////////////
+            $scope.selectedEntry = "";
+            $scope.loadEntry = function (entry) {
+                $scope.selectedEntry = entry;
+
+                var url = document.querySelector('a[href="/iTrust2/patient/viewReviewEntry"]').getAttribute('href');
+                var windowName = "Entry popup";
+                var width = 700;
+                var height = 500;
+                var left = 400;
+                var top = 100;
+
+                // Convert the diaryentry object to a JSON string
+                var reviewEntryJson = JSON.stringify(diaryentry);
+
+                // Construct the URL with the JSON string as a query parameter
+                var urlWithParams = url + "?data=" + encodeURIComponent(reviewEntryJson);
+
+                // Open a new window for the form
+                var $popup = $window.open(urlWithParams, windowName, "width=" + width + ",height=" + height + "," +
+                    "left=" + left + ",top=" + top);
+            };
+            ///////////////////////////////////Load selected entry /////////////////////////////////////////////////
+
+        });
+        /*]]>*/
+    </script>
+
+    <!---------------------------------------------Style CSS------------------------------------------------------>
+    <style>
+        @import url('https://fonts.googleapis.com/css?family=Questrial&display=swap');
+
+        .table-container {
+            grid-column: 1 / -1; /* Set the grid column to take up the left-top cell */
+            grid-row: 1 / -1;   /* Set the grid row to take up the left-top cell */
+            width: 70%;
+            height: 90%;
+            margin-top: 10px;
+            margin: auto;
+            overflow-y: auto;
+        }
+
+        .entry-table td[name="entryCell"] {
+            height: 30px;
+            width: 500px;
+            padding: 5%;
+            text-align: left;
+            font-size: 1.7rem;
+            font-family: 'Questrial', sans-serif;
+            background-color: #FFFFFF;
+            cursor: pointer;
+        }
+        .entry-table td[name="entryCell"]:hover {
+            background: #eee;
+        }
+        .entry-table tr {
+            height: 30px; /* Adjust the height of each row */
+        }
+
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 10px; /* Adjust the gap between cells */
+            width: 100%;
+        }
+
+    </style>
+    <!---------------------------------------------Style CSS------------------------------------------------------>
+
+
+
+    <div ng-app="reviewApp" ng-controller="reviewCtrl">
+        <!-- information on vertical rule found here: https://stackoverflow.com/questions/571900/is-there-a-vr-vertical-rule-in-html  -->
+        <div style="margin: 0 auto; width: 60%; height: 100%; overflow-y: auto;">
+            <div style="height: 90%" >
+                <h2 id="header0" >My Reviews</h2>
+                <div>
+                    <h4 style = "padding-left: 2%": >Username: {{displayName(currentPatient)}}</h4>
+                    <hr style="margin: 10px 0;"> <!-- Horizontal line -->
+
+                    <div class="grid-container" >
+                        <!-----------------------------Entry Table----------------------------------------->
+                        <!-- Display All reviews -->
+                        <div class="table-container" >
+                            <caption>
+                                <div style="font-size: 20px; margin-bottom: 2%;">
+                                    Reviews:
+                                    <!-- A button to write a review -->
+                                    <button ng-click="writeReview()" style="float: right" class="btn btn-info">
+                                        write a review
+                                    </button>
+                                    <!-- A button to write a review -->
+                                </div>
+                            </caption>
+                            <hr style="margin: 10px 0;"> <!-- Horizontal line -->
+                            <div>
+                                <!--Display message if there is no entry-->
+                                <div ng-if="myDiary.length === 0">
+                                    <p>You have no reviews yet.</p>
+                                </div>
+                                <!--Display message if there is no entry-->
+
+                                <table class="entry-table table-bordered">
+                                    <tbody>
+                                    <tr name="foodDiaryTableRow"
+                                        ng-repeat="f in myDiary | sortByDate"
+                                        ng-click="loadEntry(f); getDayEntries(f); calculateDayEntries()" style="cursor:pointer;">
+                                        <td name="entryCell"><strong >{{f.foodName}}</strong>
+                                            &nbsp;({{f.date}})</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <!-----------------------------Entry Table----------------------------------------->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

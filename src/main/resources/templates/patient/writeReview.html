@@ -1,0 +1,209 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:include="layout :: head(title=~{::title},links=~{})">
+    <title>Review HCP and Hospital</title>
+</head>
+
+    <script th:inline="javascript">
+        /* Otherwise Thymeleaf triess to parse Javascript as XML and breaks itself sometimes.  Sigh */
+        /*<![CDATA[*/
+        var app = angular.module("reviewsApp", []);
+
+        app.controller('reviewsCtrl', function ($scope, $http) {
+
+            // Rating enum///////
+            $scope.rating = [
+                { score: '1' },
+                { score: '2' },
+                { score: '3' },
+                { score: '4' },
+                { score: '5' },
+            ];
+
+            $scope.review = {};
+            $scope.reviewHCPs = [];
+
+            $scope.reviewHospital ={};
+            $scope.reviewHospitals = [];
+
+
+            $scope.getPersonnelByRole = function (roleObj) {
+
+                if (Array.isArray(roleObj)) {
+                    for (let role of roleObj) {
+                        $scope.getPersonnelByRole(role);
+
+                    }
+                } else {
+                    $http.get(`/iTrust2/api/v1/personnel/getbyroles/ROLE_HCP`).then(
+                        function (response) {
+                            for (let user of response.data) {
+                                $scope.reviewHCPs.push(user);
+                            }
+                        }, function(rejection) {
+                            $scope.reviewHCPs = [];
+                            $scope.message = "";
+                            $scope.errorMsg += 'HCP not found\n';
+                        });
+                }
+            }
+
+            /**
+             * Submits the review.
+             */
+
+            $scope.submit = function() {
+
+                $scope.errorMsg = "";
+                $scope.review.patient = /*[[${#httpServletRequest.remoteUser}]]*/null;
+
+                // Add error message to front
+                if ($scope.errorMsg) {
+                    $scope.errorMsg = "Could not submit review\n" + $scope.errorMsg;
+                }
+
+
+                // URL link is formatted correctly
+                //Error 404 is always appearing
+                //Reason is yet to be found.
+                $http.post("/iTrust2/api/v1/reviews/hospital", $scope.reviewHospital).then(
+                    function (response) {
+                        //$scope.loadHospitalTable();
+                        $scope.message = "Your hospital review has been submitted.";
+                        $scope.message1 = "";
+                        $scope.reviewHospital = {};
+
+                        $scope.errorMsg = "";
+                        $scope.selectedHospitalReviews = {};
+                    }, function (rejection) {
+                        $scope.errorMsg += "Could not add hospital review"
+                        $scope.message = "";
+                        $scope.message1 = "";
+                    });
+            }
+            // end submit function
+
+            $scope.selectedHCPReviews = {};
+            $scope.HCPReview = [];
+            $scope.patient = /*[[${#httpServletRequest.remoteUser}]]*/null;
+
+
+            $scope.selectedHospitalReviews = {};
+            $scope.HospitalReview = [];
+
+            // Same thing with adding
+            // Cannot find the URL Address even though it is formatted correctly.
+            // Error 404 keeps appearing. Must be fixed later.
+            $scope.deleteReviewHospital = function () {
+                $http.delete('/iTrust2/api/v1/reviews/' + $scope.reviewHospital.id).then(
+                    function (response) {
+                        $scope.message1 = "Your review was successfully deleted.";
+                        $scope.message = "";
+                        //$scope.loadHCPTable();
+                        $scope.errorMsg = "";
+                        $scope.reviewHospital = {};
+                    }, function (rejection) {
+                        $scope.errorMsg = "Could not remove review";
+                    })
+            }
+
+
+            /*Getting a list of hospitals*/
+            $http.get("/iTrust2/api/v1/hospitals").then(
+                function (response) {
+                    $scope.hospitals = response.data;
+                });
+        });
+
+        /*]]>*/
+    </script>
+
+    <div ng-app="reviewsApp" ng-controller="reviewsCtrl">
+
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="panel panel-default" style="height: 500px;">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Review HCP / Hospital</h3>
+                        </div>
+                        <div class="panel-body">
+
+
+                            <!------You need to declare the required variables,  like ng-model = "xxxx"-->
+                            <!------in the controller And adjust the fileds below---------->
+                            <form>
+                                <!-------------------- Modify review Target HCP or Hospital fields here -------------->
+                                <div class="form-group">
+                                    <label for="selectType">Select Type:
+                                        <select ng-model="selectedType" name="selectType" id="selectType"
+                                                class="form-control">
+                                            <option value="hospital">Hospital</option>
+                                            <option value="hcp">HCP</option>
+                                        </select>
+                                    </label>
+                                </div>
+                                <!-------------------- Modify review Target HCP or Hospital fields here -------------->
+
+                                <!-------------------- Modify hospital fields here ------------------>
+
+                                <div ng-if="selectedType === 'hospital'">
+                                    <div class="form-group">
+                                        <label for="hospital">Hospital:
+                                            <select ng-model="reviewHospital.hospital" name="hospital" id="hospital"
+                                                    class="form-control">
+                                                <option ng-repeat="hospital in hospitals">{{hospital.name}}</option>
+                                            </select>
+                                        </label>
+                                    </div>
+                                </div>
+                                <!-------------------- Modify hospital fields here ------------------>
+
+                                <!-------------------- Modify HCP form fields here ------------------>
+                                <div ng-if="selectedType === 'hcp'">
+                                    <!-- Add HCP form fields here -->
+                                    <div class="form-group">
+                                        <label for="hcpName">HCP Name:
+                                            <input type="text" class="form-control" name="hcpName"
+                                                   ng-model="reviewHospital.hcpName" required/>
+                                        </label>
+                                    </div>
+                                </div>
+                                <!-------------------- Modify HCP form fields here ------------------>
+
+
+                                <div >
+                                    <label for="rate">Rate: </label>
+                                    <!-------------modify  here----------------->
+                                        <select name="rate" id="rate" style="width: 50px;"
+                                            ng-model="rateValue" ng-required="true" class="form-control">
+                                            <option ng-repeat="r in rating">{{r.score}}</option>
+                                        </select>
+                                    <!-------------modify  here----------------->
+                                </div>
+
+                                <div class="form-group" style="margin-top: 10px;">
+                                    <div>
+                                        <label for="comments">Comments:</label>
+                                        <textarea id="comments" class="form-control" style="height: 100px;"
+                                                  ng-model="reviewHospital.comments" name="comments"> </textarea>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Buttons to submit food Diary-->
+                    <div class="text-center">
+                        <button class="btn btn-success" style="float: center;" ng-click="submit()">
+                            Submit
+                        </button>
+                    </div>
+                    <!-- Buttons to submit food Diary-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
