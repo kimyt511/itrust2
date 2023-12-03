@@ -13,6 +13,8 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -21,6 +23,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -29,6 +32,9 @@ import org.springframework.web.context.WebApplicationContext;
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
+
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -278,6 +284,153 @@ public class APIReviewTest {
 
         Assert.assertEquals(0, service.count());
     }
+
+    @Test
+    @Transactional
+    public void testGetPatientReviews() throws Exception{
+        Assert.assertEquals(0, service.count());
+
+        final ReviewForm form = new ReviewForm();
+        form.setPatient(userService.findByName("patient"));
+        form.setHcp(userService.findByName("hcp"));
+        form.setRate(0.0);
+
+        final Review review = new Review(form);
+        service.save(review);
+        Long id = service.findByPatient(userService.findByName("patient")).get(0).getId();
+        mvc.perform(
+                        MockMvcRequestBuilders.get("/api/v1/reviews/patient/" + "patient"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(jsonPath("$.[0].id").value(id));
+    }
+
+    @Test
+    @Transactional
+    public void testGetPatientInvalidReview() throws Exception{
+        mvc.perform(
+                        MockMvcRequestBuilders.get("/api/v1/reviews/patient/" + "patient2"))
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError());
+    }
+
+    @Test
+    @Transactional
+    public void testGetHcpReviews() throws Exception{
+        Assert.assertEquals(0, service.count());
+
+        final ReviewForm form = new ReviewForm();
+        form.setPatient(userService.findByName("patient"));
+        form.setHcp(userService.findByName("hcp"));
+        form.setRate(0.0);
+
+        final Review review = new Review(form);
+        service.save(review);
+        Long id = service.findByPatient(userService.findByName("patient")).get(0).getId();
+        mvc.perform(
+                        MockMvcRequestBuilders.get("/api/v1/reviews/hcp/" + "hcp"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(jsonPath("$.[0].id").value(id));
+    }
+
+    @Test
+    @Transactional
+    public void testGetHcpInvalidReview() throws Exception{
+        mvc.perform(
+                        MockMvcRequestBuilders.get("/api/v1/reviews/hcp/" + "hcp2"))
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError());
+    }
+
+    @Test
+    @Transactional
+    public void testGetHospitalReviews() throws Exception{
+        Assert.assertEquals(0, service.count());
+
+        final ReviewForm form = new ReviewForm();
+        form.setPatient(userService.findByName("patient"));
+        form.setHospital(hospitalService.findByName("hospital"));
+        form.setRate(0.0);
+
+        final Review review = new Review(form);
+        service.save(review);
+        Long id = service.findByPatient(userService.findByName("patient")).get(0).getId();
+        mvc.perform(
+                        MockMvcRequestBuilders.get("/api/v1/reviews/hospital/" + "hospital"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(jsonPath("$.[0].id").value(id));
+    }
+
+    @Test
+    @Transactional
+    public void testGetHospitalInvalidReview() throws Exception{
+        mvc.perform(
+                        MockMvcRequestBuilders.get("/api/v1/reviews/hospital/" + "hospital2"))
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError());
+    }
+
+    @Test
+    @Transactional
+    public void testGetAverageHcp() throws Exception{
+        Assert.assertEquals(0, service.count());
+
+        final ReviewForm form = new ReviewForm();
+        form.setPatient(userService.findByName("patient"));
+        form.setHcp(userService.findByName("hcp"));
+        form.setRate(0.0);
+
+        final Review review1 = new Review(form);
+        service.save(review1);
+        form.setRate(5.0);
+        final Review review2 = new Review(form);
+        service.save(review2);
+
+        Assert.assertEquals(2, service.count());
+
+        Long id = service.findByPatient(userService.findByName("patient")).get(0).getId();
+        mvc.perform(
+                        MockMvcRequestBuilders.get("/api/v1/reviews/average/hcp/" + "hcp"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().string("2.5"));
+
+    }
+    @Test
+    @Transactional
+    public void testGetInvalidAverageHcp() throws Exception{
+        mvc.perform(
+                        MockMvcRequestBuilders.get("/api/v1/reviews/average/hcp/" + "hcp2"))
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError());
+    }
+
+    @Test
+    @Transactional
+    public void testGetAverageHospital() throws Exception{
+        Assert.assertEquals(0, service.count());
+
+        final ReviewForm form = new ReviewForm();
+        form.setPatient(userService.findByName("patient"));
+        form.setHospital(hospitalService.findByName("hospital"));
+        form.setRate(0.0);
+
+        final Review review1 = new Review(form);
+        service.save(review1);
+        form.setRate(5.0);
+        final Review review2 = new Review(form);
+        service.save(review2);
+
+        Assert.assertEquals(2, service.count());
+
+        mvc.perform(
+                        MockMvcRequestBuilders.get("/api/v1/reviews/average/hospital/" + "hospital"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().string("2.5"));
+
+    }
+    @Test
+    @Transactional
+    public void testGetInvalidAverageHospital() throws Exception{
+        mvc.perform(
+                        MockMvcRequestBuilders.get("/api/v1/reviews/average/hospital/" + "hospital2"))
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError());
+    }
+
 
     @After
     public void deleteData(){
