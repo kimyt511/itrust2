@@ -62,33 +62,35 @@
 
     <!-- Info on tables from https://hello-angularjs.appspot.com/removetablerow -->
     <div class="container">
-      <h4 style="color: red" ng-model="message"></h4>
-
-      <h2>Diagnoses</h2>
-      <h3>{{displayName(patient)}}</h3>
-      <table style="width: 100%" class="table table-hover">
-        <thead>
-        <tr>
-          <th>Date</th>
-          <th>HCP</th>
-          <th>ICD-10 Code</th>
-          <th>Description</th>
-          <th>Notes</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr ng-repeat="d in diagnoses" name="diagnosis">
-          <td name="date">{{getDate(d.visit.date)}}</td>
-          <td name="hcp">{{d.visit.hcp.username}}</td>
-          <td name="code">{{d.code.code}}</td>
-          <td name="description">{{d.code.description}}</td>
-          <td name="note">{{d.note}}</td>
-        </tr>
-        </tbody>
-      </table>
+      <div class="panel panel-primary">
+        <div class="panel panel-heading">
+          <h4 style="color: red" ng-model="message"></h4>
+          <h2>Diagnoses</h2>
+        </div>
+        <div class="panel panel-body">
+          <h3>{{displayName(patient)}}</h3>
+          <table style="width: 100%" class="table table-hover">
+            <thead>
+            <tr>
+              <th>Date</th>
+              <th>HCP</th>
+              <th>ICD-10 Code</th>
+              <th>Description</th>
+              <th>Notes</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="d in diagnoses" name="diagnosis">
+              <td name="date">{{getDate(d.visit.date)}}</td>
+              <td name="hcp">{{d.visit.hcp.username}}</td>
+              <td name="code">{{d.code.code}}</td>
+              <td name="description">{{d.code.description}}</td>
+              <td name="note">{{d.note}}</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
     </div>
   </div>
-
-</div>
 </body>
 </html>
