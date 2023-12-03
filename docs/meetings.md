@@ -162,6 +162,17 @@
 - Report the progress of each team periodically.
   - Try to share problems immediately with the whole team.
 
+### Meeting 10
+
+**Date**: 2023-12-03
+
+#### Discussion:
+
+- Discuss the progress of each team
+  - Team 1: UCs finished developing, working on test codes.
+  - Team 2: UCs merged into develop.
+  - Team 3: UC17 finished and tested, UC23 needs help from other teams.
+
 
 ---
 
