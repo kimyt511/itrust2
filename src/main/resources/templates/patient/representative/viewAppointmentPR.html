@@ -69,10 +69,10 @@
                         </thead>
                         <tbody>
                         <tr name="appointments" ng-repeat="appt in appointments">
-                            <td>{{appt.type | humanize}}</td>
+                            <td>{{appt.type}}</td>
                             <td>{{appt.date | date : 'MM/dd/yyyy'}}</td>
                             <td>{{appt.date | date : 'shortTime'}}</td>
-                            <td>{{appt.status | humanize}}</td>
+                            <td>{{appt.status}}</td>
                         </tr>
                         </tbody>
                         <!--<div class="panel-body">

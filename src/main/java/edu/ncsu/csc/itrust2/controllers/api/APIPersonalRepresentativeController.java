@@ -1,9 +1,7 @@
 package edu.ncsu.csc.itrust2.controllers.api;
 
 import edu.ncsu.csc.itrust2.controllers.api.comm.LogEntryTableRow;
-import edu.ncsu.csc.itrust2.forms.AppointmentRequestForm;
 import edu.ncsu.csc.itrust2.forms.PersonalRepresentativeForm;
-import edu.ncsu.csc.itrust2.models.AppointmentRequest;
 import edu.ncsu.csc.itrust2.models.PersonalRepresentative;
 import edu.ncsu.csc.itrust2.models.User;
 import edu.ncsu.csc.itrust2.models.enums.Role;

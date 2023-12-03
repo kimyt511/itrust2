@@ -137,4 +137,16 @@ public class PatientController {
     public String viewMedicalRecordsPR(final Model model) {
         return "/patient/representative/viewMedicalRecordsPR";
     }
+
+    /**
+     * Create a page for the patient to view appointments of a patient in PR page
+     *
+     * @param model data for front end
+     * @return The page for the patient to view appointments of a patient in PR page
+     */
+    @GetMapping(value = "patient/representative/viewAppointmentPR")
+    @PreAuthorize("hasRole('ROLE_PATIENT')")
+    public String viewAppointmentPR(final Model model) {
+        return "/patient/representative/viewAppointmentPR";
+    }
 }
