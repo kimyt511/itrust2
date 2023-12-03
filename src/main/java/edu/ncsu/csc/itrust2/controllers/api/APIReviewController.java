@@ -1,13 +1,19 @@
 package edu.ncsu.csc.itrust2.controllers.api;
 
+
+import java.util.List;
+import java.util.stream.Collectors;
 import edu.ncsu.csc.itrust2.forms.ReviewForm;
 import edu.ncsu.csc.itrust2.models.Hospital;
 import edu.ncsu.csc.itrust2.models.Review;
 import edu.ncsu.csc.itrust2.models.User;
+import edu.ncsu.csc.itrust2.models.Hospital;
+import edu.ncsu.csc.itrust2.models.OfficeVisit;
 import edu.ncsu.csc.itrust2.models.enums.TransactionType;
 import edu.ncsu.csc.itrust2.services.HospitalService;
 import edu.ncsu.csc.itrust2.services.ReviewService;
 import edu.ncsu.csc.itrust2.services.UserService;
+import edu.ncsu.csc.itrust2.services.OfficeVisitService;
 import edu.ncsu.csc.itrust2.utils.LoggerUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -25,6 +31,7 @@ public class APIReviewController extends APIController {
     private final UserService userService;
     private final HospitalService hospitalService;
     private final LoggerUtil loggerUtil;
+    private final OfficeVisitService officeVisitService;
 
     /**
      * Adds a new review of hcp to the system. Requires patient permissions. Returns an error message if
@@ -408,7 +415,7 @@ public class APIReviewController extends APIController {
         try {
             final User patient = userService.findByName(id);
             if (patient == null) {
-                return new ResponseEntity
+                return new ResponseEntity(
                 errorResponse("No patient found with id " + id),
                         HttpStatus.NOT_FOUND);
             }
@@ -421,7 +428,7 @@ public class APIReviewController extends APIController {
 
             return new ResponseEntity(hcps, HttpStatus.OK);
         } catch (final Exception e) {
-            return new ResponseEntity
+            return new ResponseEntity(
             errorResponse("Could not retrieve visited HCPs: " + e.getMessage()),
                     HttpStatus.BAD_REQUEST);
         }
@@ -432,7 +439,7 @@ public class APIReviewController extends APIController {
      */
     @GetMapping("/reviews/hospitals/{id}")
     @PreAuthorize("hasRole('ROLE_PATIENT')")
-    public ResponseEntity<List<User>> getVisitedHospitals(@PathVariable final String id) {
+    public ResponseEntity<List<Hospital>> getVisitedHospitals(@PathVariable final String id) {
         try {
             final User patient = userService.findByName(id);
             if (patient == null) {
@@ -440,7 +447,7 @@ public class APIReviewController extends APIController {
                         errorResponse("No patient found with id " + id),
                         HttpStatus.NOT_FOUND);
             }
-            List<User> hospitals = officeVisitService
+            List<Hospital> hospitals = officeVisitService
                     .findByPatient(patient)
                     .stream()
                     .map(OfficeVisit::getHospital)
