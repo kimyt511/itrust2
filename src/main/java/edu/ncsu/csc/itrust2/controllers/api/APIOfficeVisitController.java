@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class APIOfficeVisitController extends APIController {
 
+
     private final OfficeVisitService officeVisitService;
 
     private final UserService userService;
