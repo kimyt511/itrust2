@@ -171,7 +171,7 @@
             // documentation on Angular filters: https://docs.angularjs.org/api/ng/filter/filter
             $scope.searchFilter = "";
             $scope.filterPatients = function (patient) {
-                 return ($scope.displayName(patient)).toLowerCase().match($scope.searchFilter.toLowerCase());
+                return ($scope.displayName(patient)).toLowerCase().match($scope.searchFilter.toLowerCase());
             };
 
             $http.get("/iTrust2/api/v1/patients").then(
@@ -187,11 +187,15 @@
             $scope.selectedPatient = null;
             $scope.declare = { patient: "", representative: "", comment: "" };
 
+            $scope.displayName2 = function (p) {
+                return p.firstName + " " + p.lastName;
+            };
+
             $scope.selectPatient = function(patient) {
                 $scope.selectedPatient = patient;
                 $scope.declare.representative = patient.username;
                 // Update the search filter to display the selected patient's name or MID in the search box
-                $scope.searchFilter = $scope.displayName(patient);
+                $scope.searchFilter = $scope.displayName2(patient);
                 $scope.declare.patient = $scope.currentPatient.username;
             };
             /////////////////////update search filter////////////////////////////////////
@@ -400,6 +404,15 @@
                                                         </label>
                                                     </div>
                                                     <!--To be completed-->
+                                                </li>
+                                                <!-- Display "no matching patients" if there are no results -->
+                                                <li class="list-group-item" ng-if="(patients | filter:filterPatients).length === 0"
+                                                    style="width: 75%; height:40px;">
+                                                    <div>
+                                                        <label style="font-size: 14px; color: red;">
+                                                            No matching patients found.
+                                                        </label>
+                                                    </div>
                                                 </li>
                                             </ul>   
                                         </div>

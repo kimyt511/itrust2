@@ -15,6 +15,9 @@
             $scope.displayName = function (p) {
                 return p.firstName + " " + p.lastName + " (" + p.username + ")";
             };
+            $scope.displayName2 = function (p) {
+                return p.firstName + " " + p.lastName;
+            };
 
             //////////////////////////////Search for patient, part 1/////////////////////////////////////
              // documentation on Angular filters: https://docs.angularjs.org/api/ng/filter/filter
@@ -35,7 +38,7 @@
             $scope.selectPatient = function(patient) {
                 $scope.selectedPatient = patient;
                 // Update the search filter to display the selected patient's name or MID in the search box
-                $scope.searchFilter = $scope.displayName(patient);
+                $scope.searchFilter = $scope.displayName2(patient);
 
                 // Toggle the visibility of the search section
                 if($scope.showSearchSection){
@@ -103,7 +106,7 @@
                 $scope.selectedPatient2 = patient2;
                 $scope.declare.representative = $scope.selectedPatient2.username;
                 // Update the search filter to display the selected patient's name or MID in the search box
-                $scope.searchFilter2 = $scope.displayName(patient2);
+                $scope.searchFilter2 = $scope.displayName2(patient2);
                 $scope.declare.patient = $scope.selectedPatient.username;
             };
 
@@ -165,14 +168,21 @@
             <ul class="list-group" style="overflow: auto;height: 90%; margin-right: 5%">
                 <li class="list-group-item" ng-repeat="patient in patients | filter:filterPatients"
                     style="width: 100%; height:40px;">
-                    <!--To be completed-->
                     <div>
                         <label ng-click="$parent.selectPatient(patient); $parent.refreshTable()"
                                style="font-size: 18px; cursor: pointer;">
                             {{ $parent.displayName(patient) }}
                         </label>
                     </div>
-                    <!--To be completed-->
+                </li>
+                <!-- Display "no matching patients" if there are no results -->
+                <li class="list-group-item" ng-if="(patients | filter:filterPatients).length === 0"
+                    style="width: 100%; height:40px;">
+                    <div>
+                        <label style="font-size: 14px; color: red;">
+                            No matching patients found.
+                        </label>
+                    </div>
                 </li>
             </ul>
         </div>
@@ -299,14 +309,22 @@
                         <li class="list-group-item" ng-repeat="patient2 in patients2 | filter:filterPatients2"
                             ng-if="selectedPatient.username !== patient2.username"
                             style="width: 70%; height:35px;">
-                            <!--To be completed-->
+                            <!--Display labels if there are results-->
                             <div >
                                 <label ng-click="$parent.selectPatient2(patient2)"
                                     style="font-size: 16px; cursor: pointer;">
                                     {{ $parent.displayName(patient2) }}
                                 </label>
                             </div>
-                            <!--To be completed-->
+                        </li>
+                        <!-- Display "no matching patients" if there are no results -->
+                        <li class="list-group-item" ng-if="(patients2 | filter:filterPatients2).length === 0"
+                            style="width: 70%; height:35px;">
+                            <div>
+                                <label style="font-size: 14px; color: red;">
+                                    No matching patients found.
+                                </label>
+                            </div>
                         </li>
                     </ul>
                 </div>
