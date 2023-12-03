@@ -399,10 +399,59 @@ public class APIReviewController extends APIController {
         }
     }
 
+    /**
+     * Get a list of HCPs visited by a specific patient.
+     */
+    @GetMapping("/reviews/hcps/{id}")
+    @PreAuthorize("hasRole('ROLE_PATIENT')")
+    public ResponseEntity<List<User>> getVisitedHcps(@PathVariable final String id) {
+        try {
+            final User patient = userService.findByName(id);
+            if (patient == null) {
+                return new ResponseEntity
+                errorResponse("No patient found with id " + id),
+                        HttpStatus.NOT_FOUND);
+            }
+            List<User> hcps = officeVisitService
+                    .findByPatient(patient)
+                    .stream()
+                    .map(OfficeVisit::getHcp)
+                    .distinct()
+                    .collect(Collectors.toList());
 
+            return new ResponseEntity(hcps, HttpStatus.OK);
+        } catch (final Exception e) {
+            return new ResponseEntity
+            errorResponse("Could not retrieve visited HCPs: " + e.getMessage()),
+                    HttpStatus.BAD_REQUEST);
+        }
+    }
 
+    /**
+     * Get a list of hospitals visited by a specific patient.
+     */
+    @GetMapping("/reviews/hospitals/{id}")
+    @PreAuthorize("hasRole('ROLE_PATIENT')")
+    public ResponseEntity<List<User>> getVisitedHospitals(@PathVariable final String id) {
+        try {
+            final User patient = userService.findByName(id);
+            if (patient == null) {
+                return new ResponseEntity(
+                        errorResponse("No patient found with id " + id),
+                        HttpStatus.NOT_FOUND);
+            }
+            List<User> hospitals = officeVisitService
+                    .findByPatient(patient)
+                    .stream()
+                    .map(OfficeVisit::getHospital)
+                    .distinct()
+                    .collect(Collectors.toList());
 
-
-
-
+            return new ResponseEntity(hospitals, HttpStatus.OK);
+        } catch (final Exception e) {
+            return new ResponseEntity(
+                    errorResponse("Could not retrieve visited HCPs: " + e.getMessage()),
+                    HttpStatus.BAD_REQUEST);
+        }
+    }
 }
