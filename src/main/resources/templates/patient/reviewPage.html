@@ -60,8 +60,14 @@
                 var left = 430;
                 var top = 200;
 
+                // Convert the patient object to a JSON string
+                var patientJson = JSON.stringify($scope.currentPatient);
+
+                // Construct the URL with the JSON string as a query parameter
+                var urlWithParams = url + "?data=" + encodeURIComponent(patientJson);
+
                 // Open a new window for the form
-                var $popup = window.open(url, windowName, "width=" + width + ",height=" + height + "," +
+                var $popup = window.open(urlWithParams, windowName, "width=" + width + ",height=" + height + "," +
                     "left=" + left + ",top=" + top);
 
             };
