@@ -21,15 +21,16 @@
             ];
 
             //////submit form////////
-            $scope.declare = {patient: "", hcp: "", rate: "", comment: "" };
+            $scope.declare = {id: "",patient: "", hcp: "", hospital: "", rate: "", comment: "" };
 
-            //////////////////////////Get current patient////////////////////////////////////////
-            var queryString = window.location.search;
-            var urlParams = new URLSearchParams(queryString);
-            var patientJson = urlParams.get('data');
-            //current patient variable
-            $scope.patient = JSON.parse(decodeURIComponent(patientJson));
-            //////////////////////////Get current patient////////////////////////////////////////
+            ///////////////////////get current user(patient)//////////////////////////////////////////
+            $http.get("/iTrust2/api/v1/patient").then(function (response) {
+                    $scope.patient = response.data;
+                }, function (rejection) {
+                    console.error("Could not retrieve expected Patient record");
+                }
+            );
+            ///////////////////////get current user(patient)//////////////////////////////////////////
 
             //////get hcp, for API testing purpose////////////////
             $http.get("/iTrust2/api/v1/users/" + "hcp").then(
@@ -43,7 +44,7 @@
             //////get hcp, for API testing purpose////////////////
 
             //////////////////////////Get review of current patient////////////////////////////////////////
-            $http.get("/iTrust2/api/v1/reviews/patient/" + $scope.patient.username).then(
+            $http.get("/iTrust2/api/v1/reviews/patient/"+ $scope.patient).then(
                 function (response) {
                     //patient review
                     $scope.patientReview = response.data;
@@ -63,20 +64,27 @@
                     $scope.errorMsg = "Could not submit review\n" + $scope.errorMsg;
                 }
 
+                //$scope.declare = {};
+                //Object.assign($scope.declare, $scope.patient);
+
                ///////for API testing
+                $scope.declare.id = 1;
                 $scope.declare.patient = $scope.patient.username;
                 $scope.declare.hcp = $scope.hcp.username;
-                $scope.declare.rate = 5;
+                $scope.declare.rate = 5.0;
+                $scope.declare.hospital = "Yonsei Hospital"
                 $scope.declare.comment = "test";
                 ///////for API testing
 
                 $http.post("/iTrust2/api/v1/reviews/hcp", $scope.declare).then(
                     function (response) {
-                        //$scope.loadHospitalTable();
+
+                        //alert popup
+                        alert("Review Posted Successfully");
+
                         $scope.message = "Your hospital review has been submitted.";
                         $scope.message1 = "";
                         $scope.reviewHospital = {};
-
                         $scope.errorMsg = "";
                         $scope.selectedHospitalReviews = {};
                     }, function (rejection) {
@@ -131,6 +139,7 @@
                     <div class="panel panel-default" style="height: 500px;">
                         <div class="panel-heading">
                             <h3 class="panel-title">Review HCP / Hospital</h3>
+                            <h3 class="panel-title">{{patient.username}}</h3>
                         </div>
                         <div class="panel-body">
 
