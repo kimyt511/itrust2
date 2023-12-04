@@ -2,11 +2,14 @@ package edu.ncsu.csc.itrust2.api;
 
 
 import edu.ncsu.csc.itrust2.common.TestUtils;
+import edu.ncsu.csc.itrust2.forms.OfficeVisitForm;
 import edu.ncsu.csc.itrust2.forms.ReviewForm;
 import edu.ncsu.csc.itrust2.forms.UserForm;
 import edu.ncsu.csc.itrust2.models.*;
+import edu.ncsu.csc.itrust2.models.enums.AppointmentType;
 import edu.ncsu.csc.itrust2.models.enums.Role;
 import edu.ncsu.csc.itrust2.services.HospitalService;
+import edu.ncsu.csc.itrust2.services.OfficeVisitService;
 import edu.ncsu.csc.itrust2.services.ReviewService;
 import edu.ncsu.csc.itrust2.services.UserService;
 import org.junit.After;
@@ -46,6 +49,7 @@ public class APIReviewTest {
     @Autowired private ReviewService service;
     @Autowired private UserService userService;
     @Autowired private HospitalService hospitalService;
+    @Autowired private OfficeVisitService officeVisitService;
 
     @Before
     public void setup(){
@@ -292,7 +296,7 @@ public class APIReviewTest {
         Long id = service.findByPatient(userService.findByName("patient")).get(0).getId();
 
         mvc.perform(
-                        MockMvcRequestBuilders.delete("/api/v1/reviews/hcp/" + id))
+                        MockMvcRequestBuilders.delete("/api/v1/reviews/hospital/" + id))
                 .andExpect(MockMvcResultMatchers.status().isOk());
 
         Assert.assertEquals(0, service.count());
@@ -311,7 +315,7 @@ public class APIReviewTest {
         Assert.assertEquals(0, service.count());
 
         mvc.perform(
-                        MockMvcRequestBuilders.put("/api/v1/reviews/hospital/" + 0))
+                        MockMvcRequestBuilders.delete("/api/v1/reviews/hospital/" + 0))
                 .andExpect(MockMvcResultMatchers.status().is4xxClientError());
 
         Assert.assertEquals(0, service.count());
@@ -323,7 +327,7 @@ public class APIReviewTest {
         Assert.assertEquals(0, service.count());
 
         mvc.perform(
-                        MockMvcRequestBuilders.put("/api/v1/reviews/hospital/"))
+                        MockMvcRequestBuilders.delete("/api/v1/reviews/hospital/"))
                 .andExpect(MockMvcResultMatchers.status().is4xxClientError());
 
         Assert.assertEquals(0, service.count());
@@ -490,11 +494,86 @@ public class APIReviewTest {
                 .andExpect(MockMvcResultMatchers.status().is4xxClientError());
     }
 
+    @Test
+    @Transactional
+    @WithMockUser(
+            username = "test",
+            roles = {"USER", "PATIENT"})
+    public void testGetVisitedHcps() throws Exception{
+        Assert.assertEquals(0, officeVisitService.count());
+
+        final OfficeVisitForm visit = new OfficeVisitForm();
+        visit.setDate("2030-11-19T04:50:00.000-05:00");
+        visit.setHcp("hcp");
+        visit.setPatient("patient");
+        visit.setNotes("Test office visit");
+        visit.setType(AppointmentType.GENERAL_CHECKUP.toString());
+        visit.setHospital("hospital");
+
+        OfficeVisit v = officeVisitService.build(visit);
+        officeVisitService.save(v);
+        mvc.perform(
+                        MockMvcRequestBuilders.get("/api/v1/reviews/hcps/" + "patient"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(jsonPath("$.[0].username").value("hcp"));
+    }
+
+    @Test
+    @Transactional
+    @WithMockUser(
+            username = "test",
+            roles = {"USER", "PATIENT"})
+    public void testGetInvalidVisitedHcps() throws Exception{
+        Assert.assertEquals(0, officeVisitService.count());
+
+        mvc.perform(
+                        MockMvcRequestBuilders.get("/api/v1/reviews/hcps/" + "patient2"))
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError());
+    }
+
+    @Test
+    @Transactional
+    @WithMockUser(
+            username = "test",
+            roles = {"USER", "PATIENT"})
+    public void testGetVisitedHospitals() throws Exception{
+        Assert.assertEquals(0, officeVisitService.count());
+
+        final OfficeVisitForm visit = new OfficeVisitForm();
+        visit.setDate("2030-11-19T04:50:00.000-05:00");
+        visit.setHcp("hcp");
+        visit.setPatient("patient");
+        visit.setNotes("Test office visit");
+        visit.setType(AppointmentType.GENERAL_CHECKUP.toString());
+        visit.setHospital("hospital");
+
+        OfficeVisit v = officeVisitService.build(visit);
+        officeVisitService.save(v);
+        mvc.perform(
+                        MockMvcRequestBuilders.get("/api/v1/reviews/hospitals/" + "patient"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(jsonPath("$.[0].name").value("hospital"));
+    }
+
+    @Test
+    @Transactional
+    @WithMockUser(
+            username = "test",
+            roles = {"USER", "PATIENT"})
+    public void testGetInvalidVisitedHospitals() throws Exception{
+        Assert.assertEquals(0, officeVisitService.count());
+
+        mvc.perform(
+                        MockMvcRequestBuilders.get("/api/v1/reviews/hospitals/" + "patient2"))
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError());
+    }
+
 
     @After
     public void deleteData(){
         service.deleteAll();
         userService.deleteAll();
         hospitalService.deleteAll();
+        officeVisitService.deleteAll();
     }
 }

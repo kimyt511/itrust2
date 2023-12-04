@@ -361,11 +361,7 @@ public class APIReviewController extends APIController {
     public ResponseEntity<List<User>> getVisitedHcps(@PathVariable final String id) {
         try {
             final User patient = userService.findByName(id);
-            if (patient == null) {
-                return new ResponseEntity(
-                errorResponse("No patient found with id " + id),
-                        HttpStatus.NOT_FOUND);
-            }
+            if (patient == null) throw new Exception("No patient found with id " + id);
             List<User> hcps = officeVisitService
                     .findByPatient(patient)
                     .stream()
@@ -389,11 +385,7 @@ public class APIReviewController extends APIController {
     public ResponseEntity<List<Hospital>> getVisitedHospitals(@PathVariable final String id) {
         try {
             final User patient = userService.findByName(id);
-            if (patient == null) {
-                return new ResponseEntity(
-                        errorResponse("No patient found with id " + id),
-                        HttpStatus.NOT_FOUND);
-            }
+            if (patient == null) throw new Exception("No patient found with id " + id);
             List<Hospital> hospitals = officeVisitService
                     .findByPatient(patient)
                     .stream()
@@ -404,7 +396,7 @@ public class APIReviewController extends APIController {
             return new ResponseEntity(hospitals, HttpStatus.OK);
         } catch (final Exception e) {
             return new ResponseEntity(
-                    errorResponse("Could not retrieve visited HCPs: " + e.getMessage()),
+                    errorResponse("Could not retrieve visited Hospitals: " + e.getMessage()),
                     HttpStatus.BAD_REQUEST);
         }
     }
