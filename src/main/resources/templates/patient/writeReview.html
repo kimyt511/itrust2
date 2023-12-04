@@ -32,16 +32,13 @@
             );
             ///////////////////////get current user(patient)//////////////////////////////////////////
 
-            //////get hcp, for API testing purpose////////////////
-            $http.get("/iTrust2/api/v1/users/" + "hcp").then(
+            ///////////////////////get hospitals list///////////////////////////////////////////////
+            $http.get("/iTrust2/api/v1/hospitals").then(
                 function (response) {
-                    $scope.hcp = response.data;
-                    $scope.message = "";
-                }, function (rejection) {
-                    $scope.message = "Could not display patients";
+                    $scope.hospitals = response.data;
                 }
             );
-            //////get hcp, for API testing purpose////////////////
+            ///////////////////////get hospitals list///////////////////////////////////////////////
 
             //////////////////////////Get review of current patient////////////////////////////////////////
             $http.get("/iTrust2/api/v1/reviews/patient/"+ $scope.patient).then(
@@ -55,6 +52,7 @@
             );
             //////////////////////////Get review of current patient////////////////////////////////////////
 
+            ///////////////////////Submit function for Write Review///////////////////////////////////////////////
             $scope.submit = function() {
 
                 $scope.errorMsg = "";
@@ -63,9 +61,6 @@
                 if ($scope.errorMsg) {
                     $scope.errorMsg = "Could not submit review\n" + $scope.errorMsg;
                 }
-
-                //$scope.declare = {};
-                //Object.assign($scope.declare, $scope.patient);
 
                ///////for API testing
                 $scope.declare.id = 1;
@@ -78,35 +73,17 @@
 
                 $http.post("/iTrust2/api/v1/reviews/hcp", $scope.declare).then(
                     function (response) {
-
                         //alert popup
                         alert("Review Posted Successfully");
-
                         $scope.message = "Your hospital review has been submitted.";
-                        $scope.message1 = "";
-                        $scope.reviewHospital = {};
-                        $scope.errorMsg = "";
-                        $scope.selectedHospitalReviews = {};
                     }, function (rejection) {
                         console.error('Error: something went wrong');
                         $scope.errorMsg += "Could not add hospital review"
-                        $scope.message = "";
-                        $scope.message1 = "";
                     });
             }
-            // end submit function
+            ///////////////////////Submit function for Write Review///////////////////////////////////////////////
 
-            $scope.selectedHCPReviews = {};
-            $scope.HCPReview = [];
-            $scope.patient = /*[[${#httpServletRequest.remoteUser}]]*/null;
-
-
-            $scope.selectedHospitalReviews = {};
-            $scope.HospitalReview = [];
-
-            // Same thing with adding
-            // Cannot find the URL Address even though it is formatted correctly.
-            // Error 404 keeps appearing. Must be fixed later.
+            ///////////////////////Delete function for Write Review///////////////////////////////////////////////
             $scope.deleteReviewHospital = function () {
                 $http.delete('/iTrust2/api/v1/reviews/' + $scope.reviewHospital.id).then(
                     function (response) {
@@ -119,15 +96,27 @@
                         $scope.errorMsg = "Could not remove review";
                     })
             }
+            ///////////////////////Delete function for Write Review///////////////////////////////////////////////
 
 
-            /*Getting a list of hospitals*/
-            $http.get("/iTrust2/api/v1/hospitals").then(
+            //////get hcp, for API testing purpose////////////////
+            $http.get("/iTrust2/api/v1/users/" + "hcp").then(
                 function (response) {
-                    $scope.hospitals = response.data;
-                });
-        });
+                    $scope.hcp = response.data;
+                    $scope.message = "";
+                }, function (rejection) {
+                    $scope.message = "Could not display patients";
+                }
+            );
+            //////get hcp, for API testing purpose////////////////
 
+
+            // $scope.selectedHCPReviews = {};
+            // $scope.HCPReview = [];
+            // $scope.patient = /*[[${#httpServletRequest.remoteUser}]]*/null;
+            // $scope.selectedHospitalReviews = {};
+            // $scope.HospitalReview = [];
+        });
         /*]]>*/
     </script>
 
