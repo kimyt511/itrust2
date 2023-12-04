@@ -73,8 +73,8 @@ public class APIReviewTest {
         Assert.assertEquals(0, service.count());
 
         final ReviewForm form = new ReviewForm();
-        form.setPatient(userService.findByName("patient"));
-        form.setHcp(userService.findByName("hcp"));
+        form.setPatient("patient");
+        form.setHcp("hcp");
         form.setRate(0.0);
 
         mvc.perform(
@@ -96,8 +96,8 @@ public class APIReviewTest {
         Assert.assertEquals(0, service.count());
 
         final ReviewForm form = new ReviewForm();
-        form.setPatient(userService.findByName("patient"));
-        form.setHospital(hospitalService.findByName("hospital"));
+        form.setPatient("patient");
+        form.setHospital("hospital");
         form.setRate(0.0);
 
         mvc.perform(
@@ -117,7 +117,7 @@ public class APIReviewTest {
             roles = {"USER", "PATIENT"})
     public void testAddInvalidReview() throws Exception{
         final ReviewForm form1 = new ReviewForm();
-        form1.setPatient(userService.findByName("patient"));
+        form1.setPatient("patient");
 
         mvc.perform(
                         MockMvcRequestBuilders.post("/api/v1/reviews/hcp")
@@ -136,7 +136,7 @@ public class APIReviewTest {
         Assert.assertEquals(0, service.count());
 
         final ReviewForm form2 = new ReviewForm();
-        form2.setHcp(userService.findByName("patient"));
+        form2.setHcp("patient");
         mvc.perform(
                         MockMvcRequestBuilders.post("/api/v1/reviews/hcp")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -145,8 +145,7 @@ public class APIReviewTest {
 
         Assert.assertEquals(0, service.count());
 
-        Hospital tempHopsital = new Hospital();
-        form2.setHospital(tempHopsital);
+        form2.setHospital("");
         mvc.perform(
                         MockMvcRequestBuilders.post("/api/v1/reviews/hospital")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -165,11 +164,11 @@ public class APIReviewTest {
         Assert.assertEquals(0, service.count());
 
         final ReviewForm form = new ReviewForm();
-        form.setPatient(userService.findByName("patient"));
-        form.setHcp(userService.findByName("hcp"));
+        form.setPatient("patient");
+        form.setHcp("hcp");
         form.setRate(0.0);
 
-        final Review review = new Review(form);
+        final Review review = service.build(form);
         service.save(review);
         Long id = service.findByPatient(userService.findByName("patient")).get(0).getId();
         form.setId(id);
@@ -194,11 +193,11 @@ public class APIReviewTest {
         Assert.assertEquals(0, service.count());
 
         final ReviewForm form = new ReviewForm();
-        form.setPatient(userService.findByName("patient"));
-        form.setHospital(hospitalService.findByName("hospital"));
+        form.setPatient("patient");
+        form.setHospital("hospital");
         form.setRate(0.0);
 
-        final Review review = new Review(form);
+        final Review review = service.build(form);
         service.save(review);
 
         Long id = service.findByPatient(userService.findByName("patient")).get(0).getId();
@@ -222,7 +221,7 @@ public class APIReviewTest {
             roles = {"USER", "PATIENT"})
     public void testEditInvalidReview() throws Exception{
         final ReviewForm form = new ReviewForm();
-        form.setPatient(userService.findByName("patient"));
+        form.setPatient("patient");
 
         mvc.perform(
                         MockMvcRequestBuilders.put("/api/v1/reviews/hcp")
@@ -262,11 +261,11 @@ public class APIReviewTest {
         Assert.assertEquals(0, service.count());
 
         final ReviewForm form = new ReviewForm();
-        form.setPatient(userService.findByName("patient"));
-        form.setHcp(userService.findByName("hcp"));
+        form.setPatient("patient");
+        form.setHcp("hcp");
         form.setRate(0.0);
 
-        final Review review = new Review(form);
+        final Review review = service.build(form);
         service.save(review);
 
         Long id = service.findByPatient(userService.findByName("patient")).get(0).getId();
@@ -286,11 +285,11 @@ public class APIReviewTest {
         Assert.assertEquals(0, service.count());
 
         final ReviewForm form = new ReviewForm();
-        form.setPatient(userService.findByName("patient"));
-        form.setHospital(hospitalService.findByName("hospital"));
+        form.setPatient("patient");
+        form.setHospital("hospital");
         form.setRate(0.0);
 
-        final Review review = new Review(form);
+        final Review review = service.build(form);
         service.save(review);
 
         Long id = service.findByPatient(userService.findByName("patient")).get(0).getId();
@@ -339,11 +338,11 @@ public class APIReviewTest {
         Assert.assertEquals(0, service.count());
 
         final ReviewForm form = new ReviewForm();
-        form.setPatient(userService.findByName("patient"));
-        form.setHcp(userService.findByName("hcp"));
+        form.setPatient("patient");
+        form.setHcp("hcp");
         form.setRate(0.0);
 
-        final Review review = new Review(form);
+        final Review review = service.build(form);
         service.save(review);
         Long id = service.findByPatient(userService.findByName("patient")).get(0).getId();
         mvc.perform(
@@ -369,11 +368,11 @@ public class APIReviewTest {
         Assert.assertEquals(0, service.count());
 
         final ReviewForm form = new ReviewForm();
-        form.setPatient(userService.findByName("patient"));
-        form.setHcp(userService.findByName("hcp"));
+        form.setPatient("patient");
+        form.setHcp("hcp");
         form.setRate(0.0);
 
-        final Review review = new Review(form);
+        final Review review = service.build(form);
         service.save(review);
         Long id = service.findByPatient(userService.findByName("patient")).get(0).getId();
         mvc.perform(
@@ -399,11 +398,11 @@ public class APIReviewTest {
         Assert.assertEquals(0, service.count());
 
         final ReviewForm form = new ReviewForm();
-        form.setPatient(userService.findByName("patient"));
-        form.setHospital(hospitalService.findByName("hospital"));
+        form.setPatient("patient");
+        form.setHospital("hospital");
         form.setRate(0.0);
 
-        final Review review = new Review(form);
+        final Review review = service.build(form);
         service.save(review);
         Long id = service.findByPatient(userService.findByName("patient")).get(0).getId();
         mvc.perform(
@@ -429,14 +428,14 @@ public class APIReviewTest {
         Assert.assertEquals(0, service.count());
 
         final ReviewForm form = new ReviewForm();
-        form.setPatient(userService.findByName("patient"));
-        form.setHcp(userService.findByName("hcp"));
+        form.setPatient("patient");
+        form.setHcp("hcp");
         form.setRate(0.0);
 
-        final Review review1 = new Review(form);
+        final Review review1 = service.build(form);
         service.save(review1);
         form.setRate(5.0);
-        final Review review2 = new Review(form);
+        final Review review2 = service.build(form);
         service.save(review2);
 
         Assert.assertEquals(2, service.count());
@@ -465,14 +464,14 @@ public class APIReviewTest {
         Assert.assertEquals(0, service.count());
 
         final ReviewForm form = new ReviewForm();
-        form.setPatient(userService.findByName("patient"));
-        form.setHospital(hospitalService.findByName("hospital"));
+        form.setPatient("patient");
+        form.setHospital("hospital");
         form.setRate(0.0);
 
-        final Review review1 = new Review(form);
+        final Review review1 = service.build(form);
         service.save(review1);
         form.setRate(5.0);
-        final Review review2 = new Review(form);
+        final Review review2 = service.build(form);
         service.save(review2);
 
         Assert.assertEquals(2, service.count());

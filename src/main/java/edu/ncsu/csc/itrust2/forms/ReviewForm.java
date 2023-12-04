@@ -16,9 +16,9 @@ import javax.validation.constraints.NotNull;
 public class ReviewForm {
 
     private Long id;
-    private User patient;
-    private User hcp;
-    private Hospital hospital;
+    private String patient;
+    private String hcp;
+    private String hospital;
     private double rate;
     private String comment;
 
@@ -29,9 +29,9 @@ public class ReviewForm {
      */
     public ReviewForm(@NotNull final Review review){
         setId(review.getId());
-        setPatient(review.getPatient());
-        setHcp(review.getHcp());
-        setHospital(review.getHospital());
+        setPatient(review.getPatient().getId());
+        setHcp(review.getHcp().getId());
+        setHospital(review.getHospital().getName());
         setRate(review.getRate());
         setComment(review.getComment());
     }

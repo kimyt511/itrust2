@@ -1,6 +1,7 @@
 package edu.ncsu.csc.itrust2.services;
 
 
+import edu.ncsu.csc.itrust2.forms.ReviewForm;
 import edu.ncsu.csc.itrust2.models.DomainObject;
 import edu.ncsu.csc.itrust2.models.Hospital;
 import edu.ncsu.csc.itrust2.models.Review;
@@ -20,6 +21,8 @@ public class ReviewService extends Service {
 
 
    private final ReviewRepository repository;
+   private final UserService userService;
+   private final HospitalService hospitalService;
 
    @Override protected JpaRepository getRepository(){ return repository; }
 
@@ -33,6 +36,21 @@ public class ReviewService extends Service {
         return repository.findByHospital(hospital);
     }
 
+    public Review build(final ReviewForm rvf){
+       final Review rv = new Review();
+
+       rv.setPatient(userService.findByName(rvf.getPatient()));
+       rv.setHcp(userService.findByName(rvf.getHcp()));
+       rv.setHospital(hospitalService.findByName(rvf.getHospital()));
+
+       if (rvf.getId() != null){
+           rv.setId(rvf.getId());
+       }
+       rv.setRate(rvf.getRate());
+       rv.setComment(rvf.getComment());
+
+       return rv;
+    }
     public Double averageHcp(final User hcp){
         List<Review> reviews = repository.findByHcp(hcp);
         Double rateSum = 0.0;

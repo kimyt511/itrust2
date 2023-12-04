@@ -45,23 +45,21 @@ public class APIReviewController extends APIController {
     @PostMapping("/reviews/hcp")
     public ResponseEntity addHcpReview(@RequestBody final ReviewForm form){
         try{
-            final Review review = new Review(form);
-
-            if (review.getHcp() != null) {
-                final User hcp = review.getHcp();
+            if (form.getHcp() != null) {
+                final User hcp = userService.findByName(form.getHcp());
                 if (!hcp.getRoles().contains(Role.ROLE_HCP)) throw new Exception("there's no such HCP");
+                final Review review = service.build(form);
                 service.save(review);
                 loggerUtil.log(TransactionType.PATIENT_RATE_HCP,
                         LoggerUtil.currentUser(),
                         "Review has created");
+                return new ResponseEntity(review, HttpStatus.OK);
             }else{
                 loggerUtil.log(TransactionType.PATIENT_RATE_HCP,
                         LoggerUtil.currentUser(),
                         "Failed to create review");
                 return new ResponseEntity(errorResponse("Could not add review: hcp should be included "), HttpStatus.NOT_FOUND);
             }
-
-            return new ResponseEntity(review, HttpStatus.OK);
 
         }catch (final Exception e){
             loggerUtil.log(
@@ -84,23 +82,21 @@ public class APIReviewController extends APIController {
     @PostMapping("/reviews/hospital")
     public ResponseEntity addHospitalReview(@RequestBody final ReviewForm form){
         try{
-            final Review review = new Review(form);
-            final Hospital hospital = review.getHospital();
-            if (hospital != null) {
-                if (hospitalService.findByName(hospital.getName()) == null) throw new Exception("there's no such hospital");
+            if (form.getHospital() != null) {
+                final Hospital hospital = hospitalService.findByName(form.getHospital());
+                if (hospital == null) throw new Exception("there's no such hospital");
+                final Review review = service.build(form);
                 service.save(review);
                 loggerUtil.log(TransactionType.PATIENT_RATE_HOSPITAL,
                         LoggerUtil.currentUser(),
                         "Review has created");
+                return new ResponseEntity(review, HttpStatus.OK);
             }else{
                 loggerUtil.log(TransactionType.PATIENT_RATE_HOSPITAL,
                         LoggerUtil.currentUser(),
                         "Failed to create review");
                 return new ResponseEntity(errorResponse("Could not add review: hospital should be included"), HttpStatus.BAD_REQUEST);
             }
-
-            return new ResponseEntity(review, HttpStatus.OK);
-
         }catch (final Exception e){
             loggerUtil.log(
                     TransactionType.RATE_CREATE_FAILURE,
@@ -126,7 +122,7 @@ public class APIReviewController extends APIController {
             final Review savedReview = (Review) service.findById(form.getId());
             if (savedReview == null) throw new Exception("No review found");
 
-            final Review review = new Review(form);
+            final Review review = service.build(form);
 
             service.save(review); /* Overwrite existing review */
 
@@ -159,7 +155,7 @@ public class APIReviewController extends APIController {
             final Review savedReview = (Review) service.findById(form.getId());
             if (savedReview == null) throw new Exception("No review found");
 
-            final Review review = new Review(form);
+            final Review review = service.build(form);
 
             service.save(review); /* Overwrite existing review */
 
