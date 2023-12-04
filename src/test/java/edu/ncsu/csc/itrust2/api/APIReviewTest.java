@@ -112,13 +112,13 @@ public class APIReviewTest {
             username = "test",
             roles = {"USER", "PATIENT"})
     public void testAddInvalidReview() throws Exception{
-        final ReviewForm form = new ReviewForm();
-        form.setPatient(userService.findByName("patient"));
+        final ReviewForm form1 = new ReviewForm();
+        form1.setPatient(userService.findByName("patient"));
 
         mvc.perform(
                         MockMvcRequestBuilders.post("/api/v1/reviews/hcp")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(TestUtils.asJsonString(form)))
+                                .content(TestUtils.asJsonString(form1)))
                 .andExpect(MockMvcResultMatchers.status().is4xxClientError());
 
         Assert.assertEquals(0, service.count());
@@ -126,7 +126,27 @@ public class APIReviewTest {
         mvc.perform(
                         MockMvcRequestBuilders.post("/api/v1/reviews/hospital")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(TestUtils.asJsonString(form)))
+                                .content(TestUtils.asJsonString(form1)))
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError());
+
+        Assert.assertEquals(0, service.count());
+
+        final ReviewForm form2 = new ReviewForm();
+        form2.setHcp(userService.findByName("patient"));
+        mvc.perform(
+                        MockMvcRequestBuilders.post("/api/v1/reviews/hcp")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(TestUtils.asJsonString(form2)))
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError());
+
+        Assert.assertEquals(0, service.count());
+
+        Hospital tempHopsital = new Hospital();
+        form2.setHospital(tempHopsital);
+        mvc.perform(
+                        MockMvcRequestBuilders.post("/api/v1/reviews/hospital")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(TestUtils.asJsonString(form2)))
                 .andExpect(MockMvcResultMatchers.status().is4xxClientError());
 
         Assert.assertEquals(0, service.count());
@@ -215,6 +235,18 @@ public class APIReviewTest {
                 .andExpect(MockMvcResultMatchers.status().is4xxClientError());
 
         Assert.assertEquals(0, service.count());
+
+        mvc.perform(
+                        MockMvcRequestBuilders.put("/api/v1/reviews/hcp"))
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError());
+
+        Assert.assertEquals(0, service.count());
+
+        mvc.perform(
+                        MockMvcRequestBuilders.put("/api/v1/reviews/hospital"))
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError());
+
+        Assert.assertEquals(0, service.count());
     }
 
     @Test
@@ -283,6 +315,18 @@ public class APIReviewTest {
                 .andExpect(MockMvcResultMatchers.status().is4xxClientError());
 
         Assert.assertEquals(0, service.count());
+
+        mvc.perform(
+                        MockMvcRequestBuilders.delete("/api/v1/reviews/hcp/"))
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError());
+
+        Assert.assertEquals(0, service.count());
+
+        mvc.perform(
+                        MockMvcRequestBuilders.put("/api/v1/reviews/hospital/"))
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError());
+
+        Assert.assertEquals(0, service.count());
     }
 
     @Test
@@ -309,6 +353,9 @@ public class APIReviewTest {
     public void testGetPatientInvalidReview() throws Exception{
         mvc.perform(
                         MockMvcRequestBuilders.get("/api/v1/reviews/patient/" + "patient2"))
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError());
+        mvc.perform(
+                        MockMvcRequestBuilders.get("/api/v1/reviews/patient/"))
                 .andExpect(MockMvcResultMatchers.status().is4xxClientError());
     }
 
@@ -337,6 +384,9 @@ public class APIReviewTest {
         mvc.perform(
                         MockMvcRequestBuilders.get("/api/v1/reviews/hcp/" + "hcp2"))
                 .andExpect(MockMvcResultMatchers.status().is4xxClientError());
+        mvc.perform(
+                        MockMvcRequestBuilders.get("/api/v1/reviews/hcp/"))
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError());
     }
 
     @Test
@@ -363,6 +413,9 @@ public class APIReviewTest {
     public void testGetHospitalInvalidReview() throws Exception{
         mvc.perform(
                         MockMvcRequestBuilders.get("/api/v1/reviews/hospital/" + "hospital2"))
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError());
+        mvc.perform(
+                        MockMvcRequestBuilders.get("/api/v1/reviews/hospital/"))
                 .andExpect(MockMvcResultMatchers.status().is4xxClientError());
     }
 
@@ -397,6 +450,9 @@ public class APIReviewTest {
         mvc.perform(
                         MockMvcRequestBuilders.get("/api/v1/reviews/average/hcp/" + "hcp2"))
                 .andExpect(MockMvcResultMatchers.status().is4xxClientError());
+        mvc.perform(
+                        MockMvcRequestBuilders.get("/api/v1/reviews/average/hcp/"))
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError());
     }
 
     @Test
@@ -428,6 +484,9 @@ public class APIReviewTest {
     public void testGetInvalidAverageHospital() throws Exception{
         mvc.perform(
                         MockMvcRequestBuilders.get("/api/v1/reviews/average/hospital/" + "hospital2"))
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError());
+        mvc.perform(
+                        MockMvcRequestBuilders.get("/api/v1/reviews/average/hospital/"))
                 .andExpect(MockMvcResultMatchers.status().is4xxClientError());
     }
 

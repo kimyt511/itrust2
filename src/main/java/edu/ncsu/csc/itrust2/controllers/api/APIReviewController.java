@@ -9,6 +9,7 @@ import edu.ncsu.csc.itrust2.models.Review;
 import edu.ncsu.csc.itrust2.models.User;
 import edu.ncsu.csc.itrust2.models.Hospital;
 import edu.ncsu.csc.itrust2.models.OfficeVisit;
+import edu.ncsu.csc.itrust2.models.enums.Role;
 import edu.ncsu.csc.itrust2.models.enums.TransactionType;
 import edu.ncsu.csc.itrust2.services.HospitalService;
 import edu.ncsu.csc.itrust2.services.ReviewService;
@@ -47,6 +48,8 @@ public class APIReviewController extends APIController {
             final Review review = new Review(form);
 
             if (review.getHcp() != null) {
+                final User hcp = review.getHcp();
+                if (!hcp.getRoles().contains(Role.ROLE_HCP)) throw new Exception("there's no such HCP");
                 service.save(review);
                 loggerUtil.log(TransactionType.PATIENT_RATE_HCP,
                         LoggerUtil.currentUser(),
@@ -55,7 +58,7 @@ public class APIReviewController extends APIController {
                 loggerUtil.log(TransactionType.PATIENT_RATE_HCP,
                         LoggerUtil.currentUser(),
                         "Failed to create review");
-                return new ResponseEntity(errorResponse("Could not add review: hcp should be included "), HttpStatus.BAD_REQUEST);
+                return new ResponseEntity(errorResponse("Could not add review: hcp should be included "), HttpStatus.NOT_FOUND);
             }
 
             return new ResponseEntity(review, HttpStatus.OK);
@@ -82,8 +85,9 @@ public class APIReviewController extends APIController {
     public ResponseEntity addHospitalReview(@RequestBody final ReviewForm form){
         try{
             final Review review = new Review(form);
-
-            if (review.getHospital() != null) {
+            final Hospital hospital = review.getHospital();
+            if (hospital != null) {
+                if (hospitalService.findByName(hospital.getName()) == null) throw new Exception("there's no such hospital");
                 service.save(review);
                 loggerUtil.log(TransactionType.PATIENT_RATE_HOSPITAL,
                         LoggerUtil.currentUser(),
@@ -120,11 +124,7 @@ public class APIReviewController extends APIController {
         try {
             // Check for existing review in database
             final Review savedReview = (Review) service.findById(form.getId());
-            if (savedReview == null) {
-                return new ResponseEntity(
-                        errorResponse("No review found"),
-                        HttpStatus.NOT_FOUND);
-            }
+            if (savedReview == null) throw new Exception("No review found");
 
             final Review review = new Review(form);
 
@@ -157,11 +157,7 @@ public class APIReviewController extends APIController {
         try {
             // Check for existing review in database
             final Review savedReview = (Review) service.findById(form.getId());
-            if (savedReview == null) {
-                return new ResponseEntity(
-                        errorResponse("No review found"),
-                        HttpStatus.NOT_FOUND);
-            }
+            if (savedReview == null) throw new Exception("No review found");
 
             final Review review = new Review(form);
 
@@ -194,14 +190,7 @@ public class APIReviewController extends APIController {
     public ResponseEntity deleteHcpReviews(@PathVariable final Long id) {
         try {
             final Review review = (Review) service.findById(id);
-            if (review == null) {
-                loggerUtil.log(
-                        TransactionType.RATE_DELETE,
-                        LoggerUtil.currentUser(),
-                        "Could not find review with id " + id);
-                return new ResponseEntity(
-                        errorResponse("No review found with id " + id), HttpStatus.NOT_FOUND);
-            }
+            if (review == null) throw new Exception("No review found with id" + id);
             service.delete(review);
             loggerUtil.log(
                     TransactionType.RATE_DELETE,
@@ -228,14 +217,7 @@ public class APIReviewController extends APIController {
     public ResponseEntity deleteHospitalReviews(@PathVariable final Long id) {
         try {
             final Review review = (Review) service.findById(id);
-            if (review == null) {
-                loggerUtil.log(
-                        TransactionType.RATE_DELETE,
-                        LoggerUtil.currentUser(),
-                        "Could not find review with id " + id);
-                return new ResponseEntity(
-                        errorResponse("No review found with id " + id), HttpStatus.NOT_FOUND);
-            }
+            if (review == null) throw new Exception("No review found with id" + id);
             service.delete(review);
             loggerUtil.log(
                     TransactionType.RATE_DELETE,
@@ -261,14 +243,7 @@ public class APIReviewController extends APIController {
     public ResponseEntity getPatientReviews(@PathVariable final String id){
         try{
             final User patient = userService.findByName(id);
-            if (patient == null) {
-                loggerUtil.log(
-                        TransactionType.PATIENT_VIEW_RATE,
-                        LoggerUtil.currentUser(),
-                        "Could not find patient with id " + id);
-                return new ResponseEntity(
-                        errorResponse("No patient found with id " + id), HttpStatus.NOT_FOUND);
-            }
+            if (patient == null) throw new Exception("No patient found with id " + id);
             loggerUtil.log(
                     TransactionType.PATIENT_VIEW_RATE,
                     LoggerUtil.currentUser(),
@@ -292,14 +267,7 @@ public class APIReviewController extends APIController {
     public ResponseEntity getHcpReviews(@PathVariable final String id){
         try{
             final User hcp = userService.findByName(id);
-            if (hcp == null) {
-                loggerUtil.log(
-                        TransactionType.HCP_VIEW_RATE,
-                        LoggerUtil.currentUser(),
-                        "Could not find hcp with id " + id);
-                return new ResponseEntity(
-                        errorResponse("No hcp found with id " + id), HttpStatus.NOT_FOUND);
-            }
+            if (hcp == null) throw new Exception("No hcp found with id " + id);
             loggerUtil.log(
                     TransactionType.HCP_VIEW_RATE,
                     LoggerUtil.currentUser(),
@@ -323,14 +291,7 @@ public class APIReviewController extends APIController {
     public ResponseEntity getHospitalReviews(@PathVariable final String id){
         try{
             final Hospital hospital = hospitalService.findByName(id);
-            if (hospital == null) {
-                loggerUtil.log(
-                        TransactionType.HOSPITAL_VIEW_RATE,
-                        LoggerUtil.currentUser(),
-                        "Could not find hospital with id " + id);
-                return new ResponseEntity(
-                        errorResponse("No hospital found with id " + id), HttpStatus.NOT_FOUND);
-            }
+            if (hospital == null) throw new Exception("No hospital found with id " + id);
             loggerUtil.log(
                     TransactionType.HOSPITAL_VIEW_RATE,
                     LoggerUtil.currentUser(),
@@ -354,14 +315,7 @@ public class APIReviewController extends APIController {
     public ResponseEntity getAverageHcp(@PathVariable final String id){
         try{
             final User hcp = userService.findByName(id);
-            if (hcp == null) {
-                loggerUtil.log(
-                        TransactionType.AVERAGE_HCP_RATE,
-                        LoggerUtil.currentUser(),
-                        "Could not find hcp with id " + id);
-                return new ResponseEntity(
-                        errorResponse("No hcp found with id " + id), HttpStatus.NOT_FOUND);
-            }
+            if (hcp == null) throw new Exception("No hcp found with id "+ id);
             loggerUtil.log(
                     TransactionType.AVERAGE_HCP_RATE,
                     LoggerUtil.currentUser(),
@@ -385,14 +339,7 @@ public class APIReviewController extends APIController {
     public ResponseEntity getAverageHospital(@PathVariable final String id){
         try{
             final Hospital hospital = hospitalService.findByName(id);
-            if (hospital == null) {
-                loggerUtil.log(
-                        TransactionType.AVERAGE_HOSPITAL_RATE,
-                        LoggerUtil.currentUser(),
-                        "Could not find hospital with id " + id);
-                return new ResponseEntity(
-                        errorResponse("No hospital found with id " + id), HttpStatus.NOT_FOUND);
-            }
+            if (hospital == null) throw new Exception("No hospital found with id "+ id);
             loggerUtil.log(
                     TransactionType.AVERAGE_HOSPITAL_RATE,
                     LoggerUtil.currentUser(),
