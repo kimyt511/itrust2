@@ -40,19 +40,34 @@
             );
             ///////////////////////get hospitals list///////////////////////////////////////////////
 
-            //////////////////////////Get review of current patient////////////////////////////////////////
-            $http.get("/iTrust2/api/v1/reviews/patient/"+ $scope.patient).then(
+            //////////////////////////Get hcps of current patient////////////////////////////////////////
+            $http.get("/iTrust2/api/v1/reviews/hcps/patient").then(
                 function (response) {
                     //patient review
-                    $scope.patientReview = response.data;
+                    $scope.patientHCP = response.data;
                     $scope.message = "";
                 }, function (rejection) {
-                    $scope.message = "Could not display patients";
+                    $scope.message = "Could not get HCPs";
                 }
             );
-            //////////////////////////Get review of current patient////////////////////////////////////////
+            //////////////////////////Get hcps of current patient////////////////////////////////////////
+
+            //////////////////////////Get hospitals of current patient////////////////////////////////////////
+            $http.get("/iTrust2/api/v1/reviews/hospitals/patient").then(
+                function (response) {
+                    //patient review
+                    $scope.patientHospital = response.data;
+                    $scope.message = "";
+                }, function (rejection) {
+                    $scope.message = "Could not get Hospitals";
+                }
+            );
+            //////////////////////////Get hospitals of current patient////////////////////////////////////////
+
+
 
             ///////////////////////Submit function for Write Review///////////////////////////////////////////////
+            $scope.selectedType = "";
             $scope.submit = function() {
 
                 $scope.errorMsg = "";
@@ -62,24 +77,35 @@
                     $scope.errorMsg = "Could not submit review\n" + $scope.errorMsg;
                 }
 
-               ///////for API testing
+               ///////Padding required data///////////////
                 $scope.declare.id = 1;
                 $scope.declare.patient = $scope.patient.username;
-                $scope.declare.hcp = $scope.hcp.username;
-                $scope.declare.rate = 5.0;
-                $scope.declare.hospital = "Yonsei Hospital"
-                $scope.declare.comment = "test";
-                ///////for API testing
+                ///////Padding required data///////////////
 
-                $http.post("/iTrust2/api/v1/reviews/hcp", $scope.declare).then(
-                    function (response) {
-                        //alert popup
-                        alert("Review Posted Successfully");
-                        $scope.message = "Your hospital review has been submitted.";
-                    }, function (rejection) {
-                        console.error('Error: something went wrong');
-                        $scope.errorMsg += "Could not add hospital review"
-                    });
+                if($scope.selectedType === "hospital"){
+                    $http.post("/iTrust2/api/v1/reviews/hospital", $scope.declare).then(
+                        function (response) {
+                            //alert popup
+                            alert("Review Posted Successfully");
+                            $scope.message = "Your hospital review has been submitted.";
+                        }, function (rejection) {
+                            console.error('Error: something went wrong');
+                            $scope.errorMsg += "Could not add hospital review"
+                        }
+                    );
+                }
+                else{
+                    $http.post("/iTrust2/api/v1/reviews/hcp", $scope.declare).then(
+                        function (response) {
+                            //alert popup
+                            alert("Review Posted Successfully");
+                            $scope.message = "Your hospital review has been submitted.";
+                        }, function (rejection) {
+                            console.error('Error: something went wrong');
+                            $scope.errorMsg += "Could not add hospital review"
+                        }
+                    );
+                }
             }
             ///////////////////////Submit function for Write Review///////////////////////////////////////////////
 
@@ -132,11 +158,8 @@
                         </div>
                         <div class="panel-body">
 
-
-                            <!------You need to declare the required variables,  like ng-model = "xxxx"-->
-                            <!------in the controller And adjust the fileds below---------->
                             <form>
-                                <!-------------------- Modify review Target HCP or Hospital fields here -------------->
+                                <!-------------------- Select Target, HCP or Hospital -------------->
                                 <div class="form-group">
                                     <label for="selectType">Select Type:
                                         <select ng-model="selectedType" name="selectType" id="selectType"
@@ -146,9 +169,9 @@
                                         </select>
                                     </label>
                                 </div>
-                                <!-------------------- Modify review Target HCP or Hospital fields here -------------->
+                                <!-------------------- Select Target, HCP or Hospital -------------->
 
-                                <!-------------------- Modify hospital fields here ------------------>
+                                <!-------------------- hospital field ------------------>
 
                                 <div ng-if="selectedType === 'hospital'">
                                     <div class="form-group">
@@ -160,9 +183,9 @@
                                         </label>
                                     </div>
                                 </div>
-                                <!-------------------- Modify hospital fields here ------------------>
+                                <!-------------------- hospital field ------------------>
 
-                                <!-------------------- Modify HCP form fields here ------------------>
+                                <!-------------------- HCP field ------------------>
                                 <div ng-if="selectedType === 'hcp'">
                                     <!-- Add HCP form fields here -->
                                     <div class="form-group">
@@ -174,25 +197,27 @@
                                         </label>
                                     </div>
                                 </div>
-                                <!-------------------- Modify HCP form fields here ------------------>
+                                <!-------------------- HCP field ------------------>
 
 
                                 <div >
                                     <label for="rate">Rate: </label>
-                                    <!-------------modify  here----------------->
+                                    <!-------------Rating----------------->
                                         <select name="rate" id="rate" style="width: 50px;"
                                             ng-model="declare.rate" ng-required="true" class="form-control">
                                             <option ng-repeat="r in rating">{{r.score}}</option>
                                         </select>
-                                    <!-------------modify  here----------------->
+                                    <!-------------Rating----------------->
                                 </div>
 
                                 <div class="form-group" style="margin-top: 10px;">
+                                    <!-------------Comment----------------->
                                     <div>
                                         <label for="comment">Comments:</label>
                                         <textarea id="comment" class="form-control" style="height: 100px;"
                                                   ng-model="declare.comment" name="comment"> </textarea>
                                     </div>
+                                    <!-------------Comment----------------->
                                 </div>
                             </form>
                         </div>
