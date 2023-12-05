@@ -58,6 +58,7 @@ public class APIProcedureController extends APIController {
     @PostMapping ( "/procedure" )
     public ResponseEntity addProcedure ( @RequestBody final ProcedureForm form ) {
         try {
+            if (form.getLabtech() == null) throw new Exception("Labtech should be assigned");
             final Procedure procedure = procedureService.build(form);
             procedureService.save( procedure );
             loggerUtil.log( TransactionType.HCP_CREATE_PROC, LoggerUtil.currentUser(),
@@ -87,10 +88,7 @@ public class APIProcedureController extends APIController {
         try {
             // Check for existing Procedure in database
             final Procedure savedProcedure = (Procedure) procedureService.findById( form.getId() );
-            if ( savedProcedure == null ) {
-                return new ResponseEntity( errorResponse( "No Procedure found" ),
-                        HttpStatus.NOT_FOUND );
-            }
+            if ( savedProcedure == null ) throw new Exception("No procedure found");
 
             final Procedure procedure = procedureService.build(form);
 
@@ -140,7 +138,7 @@ public class APIProcedureController extends APIController {
             if (procedure.getProcedureStatus() != ProcedureStatus.Assigned){
                 loggerUtil.log( TransactionType.HCP_DELETE_PROC, LoggerUtil.currentUser(),
                         "Could not delete Procedure with progress " + ProcedureStatus.getName(procedure.getProcedureStatus().ordinal()) );
-                return new ResponseEntity( errorResponse( "No Procedure found with id " + id ), HttpStatus.NOT_FOUND );
+                return new ResponseEntity( errorResponse( "Could not delete Procedure with progress " + ProcedureStatus.getName(procedure.getProcedureStatus().ordinal()) ), HttpStatus.BAD_REQUEST );
             }
             procedureService.delete( procedure );
             loggerUtil.log( TransactionType.HCP_DELETE_PROC, LoggerUtil.currentUser(),
@@ -230,10 +228,7 @@ public class APIProcedureController extends APIController {
     public ResponseEntity reassignProcedure ( @PathVariable ( "id" ) final String id, @RequestBody final ProcedureForm form ) {
         try {
             final Procedure savedProcedure = (Procedure) procedureService.findById( form.getId() );
-            if ( savedProcedure == null ) {
-                return new ResponseEntity( errorResponse( "No Procedure found" ),
-                        HttpStatus.NOT_FOUND );
-            }
+            if ( savedProcedure == null ) throw new Exception("No procedure found");
             final User labtech = userService.findByName( id );
             form.setLabtech( labtech );
 

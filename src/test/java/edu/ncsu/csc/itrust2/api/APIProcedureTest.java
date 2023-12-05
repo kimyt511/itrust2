@@ -56,8 +56,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -118,10 +117,16 @@ public class APIProcedureTest {
         p.setName(loinc1.getName());
         p.setPatient(patient);
         p.setHcp(hcp);
-        p.setLabtech(labtech);
         p.setComment("Test Comment");
         p.setPriority(Priority.HIGH);
         p.setProcedureStatus(ProcedureStatus.Assigned);
+
+        mvc.perform(
+                        post("/api/v1/procedure")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(TestUtils.asJsonString(p)))
+                .andExpect(status().isBadRequest());
+        p.setLabtech(labtech);
 
         final String content =
                 mvc.perform(
@@ -136,7 +141,7 @@ public class APIProcedureTest {
         final Gson gson = new GsonBuilder().create();
         final Procedure procedure1 = gson.fromJson(content, Procedure.class);
         final ProcedureForm procedureForm1 = new ProcedureForm(procedure1);
-
+        procedure1.setProcedureStatus(ProcedureStatus.InProgress);
         procedure1.setComment("This is a better Comment");
         final String editContent =
                 mvc.perform(
@@ -165,7 +170,15 @@ public class APIProcedureTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
-        // Delete the Procedure
+        mvc.perform(delete("/api/v1/procedure/" + procedure1.getId()))
+                .andExpect(status().isBadRequest());
+
+        procedure1.setProcedureStatus(ProcedureStatus.Assigned);
+        mvc.perform(
+                        put("/api/v1/procedure")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(TestUtils.asJsonString(procedure1)))
+                .andExpect(status().isOk());
         mvc.perform(delete("/api/v1/procedure/" + procedure1.getId()))
                 .andExpect(status().isOk());
 
@@ -173,7 +186,7 @@ public class APIProcedureTest {
                 put("/api/v1/procedure")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(TestUtils.asJsonString(procedure1)))
-                .andExpect(status().isNotFound())
+                .andExpect(status().isBadRequest())
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
@@ -250,12 +263,21 @@ public class APIProcedureTest {
         procedure2.setPriority(Priority.HIGH);
         procedure2.setProcedureStatus(ProcedureStatus.Assigned);
 
+        final ProcedureForm procedureForm = new ProcedureForm();
+        procedureForm.setId(0L);
+        // Trying to edit with invalid it
+        mvc.perform(
+                        put("/api/v1/procedure/")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(TestUtils.asJsonString(procedureForm)))
+                .andExpect(status().isBadRequest());
+
         // Trying to reassign with no procedure
         mvc.perform(
                 put("/api/v1/procedureReassign/" + labtech2.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(TestUtils.asJsonString(procedure2)))
-                .andExpect(status().isNotFound())
+                .andExpect(status().isBadRequest())
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
@@ -418,6 +440,11 @@ public class APIProcedureTest {
                 get("/api/v1/procedureforvisit/" + visit1.getId())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
+
+        mvc.perform(
+                        get("/api/v1/procedureforvisit/" + "0")
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$").doesNotExist());
 
     }
 }

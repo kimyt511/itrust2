@@ -45,12 +45,7 @@ public class APILoincController extends APIController {
             final Loinc loinc = new Loinc( form );
 
             // Make sure code does not conflict with existing Loinc
-            if ( service.existsByCode( loinc.getCode() ) ) {
-                loggerUtil.log( TransactionType.LOINC_CREATE, LoggerUtil.currentUser(),
-                        "Conflict: LOINC with code " + loinc.getCode() + " already exists" );
-                return new ResponseEntity( errorResponse( "LOINC with code " + loinc.getCode() + " already exists" ),
-                        HttpStatus.CONFLICT );
-            }
+            if ( service.existsByCode( loinc.getCode() ) ) throw new Exception("LOINC with code " + loinc.getCode() + "already exists");
 
             service.save( loinc );
             loggerUtil.log( TransactionType.LOINC_CREATE, LoggerUtil.currentUser(),
@@ -79,10 +74,7 @@ public class APILoincController extends APIController {
         try {
             // Check for existing LOINC in database
             final Loinc savedLoinc = (Loinc) service.findById( form.getId() );
-            if ( savedLoinc == null ) {
-                return new ResponseEntity( errorResponse( "No LOINC found with code " + form.getCode() ),
-                        HttpStatus.NOT_FOUND );
-            }
+            if ( savedLoinc == null ) throw new Exception("No LOINC found with code " + form.getCode());
 
             final Loinc loinc = new Loinc( form );
 
@@ -121,11 +113,7 @@ public class APILoincController extends APIController {
     public ResponseEntity deleteLoinc ( @PathVariable final String id ) {
         try {
             final Loinc loinc = (Loinc) service.findById( Long.parseLong( id ) );
-            if ( loinc == null ) {
-                loggerUtil.log( TransactionType.LOINC_DELETE, LoggerUtil.currentUser(),
-                        "Could not find LOINC with id " + id );
-                return new ResponseEntity( errorResponse( "No LOINC found with id " + id ), HttpStatus.NOT_FOUND );
-            }
+            if ( loinc == null ) throw new Exception("No LOINC found with id " + id);
             service.delete( loinc );
             loggerUtil.log( TransactionType.LOINC_DELETE, LoggerUtil.currentUser(),
                     "Deleted LOINC with id " + loinc.getId() );

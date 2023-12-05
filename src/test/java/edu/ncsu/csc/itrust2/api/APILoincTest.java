@@ -92,7 +92,7 @@ public class APILoincTest {
                         post("/api/v1/loinccodes")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(TestUtils.asJsonString(form2)))
-                        .andExpect(status().isConflict())
+                        .andExpect(status().isBadRequest())
                         .andReturn()
                         .getResponse()
                         .getContentAsString();
@@ -167,7 +167,7 @@ public class APILoincTest {
 
         // Try to delete loinc with non existing id
         mvc.perform(delete("/api/v1/loinccodes/" + 0))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isBadRequest());
 
         // Try to delete loinc with wrong id
         mvc.perform(delete("/api/v1/loinccodes/" + "wrongId"))
@@ -184,7 +184,7 @@ public class APILoincTest {
                         put("/api/v1/loinccodes")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(TestUtils.asJsonString(loinc1)))
-                        .andExpect(status().isNotFound())
+                        .andExpect(status().isBadRequest())
                         .andReturn()
                         .getResponse()
                         .getContentAsString();
