@@ -1,12 +1,12 @@
 # UC23 Rate Health Care Provider and Hospital
 ## 23.1 Preconditions
 
-A patient, an HCP, an amind, are all registered users of the iTrust2 system (UC1). The patient, or the HCP, has authenticated themselves in the iTrust2 system (UC2).
+A patient, an HCP, an admin, are all registered users of the iTrust2 system (UC1). The patient, or the HCP, has authenticated themselves in the iTrust2 system (UC2).
 A hospital is a registered hospital added by the admin (UC5).
 
 ## 23.2 Main Flow
 
-A patientm, an HCP, or an admin can view the reviews of a HCP, or a hospital, in the iTrust2 system.[S1]
+A patient, an HCP, or an admin can view the reviews of a HCP, or a hospital, in the iTrust2 system.[S1]
 A patient can rate and review an HCP who has provided him or her medical treatment or a hospital they have visited.[S2]
 The system records the review and updates the HCP's or the hospital's review in the review page [S3].
 A patient can delete the review he or she wrote [S4].
