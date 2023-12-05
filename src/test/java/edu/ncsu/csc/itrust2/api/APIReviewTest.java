@@ -85,6 +85,12 @@ public class APIReviewTest {
 
         Assert.assertEquals(1, service.count());
 
+        mvc.perform(
+                        MockMvcRequestBuilders.post("/api/v1/reviews/hcp")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(TestUtils.asJsonString(form)))
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError());
+
     }
 
     @Test
@@ -108,6 +114,11 @@ public class APIReviewTest {
 
         Assert.assertEquals(1, service.count());
 
+        mvc.perform(
+                        MockMvcRequestBuilders.post("/api/v1/reviews/hospital")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(TestUtils.asJsonString(form)))
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError());
     }
 
     @Test

@@ -36,6 +36,9 @@ public class ReviewService extends Service {
         return repository.findByHospital(hospital);
     }
 
+    public Boolean existsByHcpAndPatient(final User hcp, final User patient) { return repository.existsByHcpAndPatient(hcp, patient);}
+    public Boolean existsByHospitalAndPatient(final Hospital hospital, final User patient) { return repository.existsByHospitalAndPatient(hospital, patient);}
+
     public Review build(final ReviewForm rvf){
        final Review rv = new Review();
 

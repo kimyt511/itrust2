@@ -47,7 +47,9 @@ public class APIReviewController extends APIController {
         try{
             if (form.getHcp() != null) {
                 final User hcp = userService.findByName(form.getHcp());
+                final User patient = userService.findByName(form.getPatient());
                 if (!hcp.getRoles().contains(Role.ROLE_HCP)) throw new Exception("there's no such HCP");
+                if (service.existsByHcpAndPatient(hcp, patient)) throw new Exception("already review exists");
                 final Review review = service.build(form);
                 service.save(review);
                 loggerUtil.log(TransactionType.PATIENT_RATE_HCP,
@@ -84,7 +86,9 @@ public class APIReviewController extends APIController {
         try{
             if (form.getHospital() != null) {
                 final Hospital hospital = hospitalService.findByName(form.getHospital());
+                final User patient = userService.findByName(form.getPatient());
                 if (hospital == null) throw new Exception("there's no such hospital");
+                if (service.existsByHospitalAndPatient(hospital, patient)) throw new Exception("already review exists");
                 final Review review = service.build(form);
                 service.save(review);
                 loggerUtil.log(TransactionType.PATIENT_RATE_HOSPITAL,
