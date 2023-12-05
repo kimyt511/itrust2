@@ -88,7 +88,9 @@ public class APIProcedureTest {
 
         final User labtech = new Personnel(new UserForm("labtech", "123456", Role.ROLE_LABTECH, 1));
 
-        userService.saveAll(List.of(patient, hcp, labtech));
+        final User labtech2 = new Personnel(new UserForm("labtech2", "123456", Role.ROLE_LABTECH, 1));
+
+        userService.saveAll(List.of(patient, hcp, labtech, labtech2));
 
         final Hospital hospital =
                 new Hospital("iTrust Test Hospital 2", "1 iTrust Test Street", "27607", "NC");
@@ -100,7 +102,254 @@ public class APIProcedureTest {
     @WithMockUser(
             username = "hcp",
             roles = {"USER", "HCP"})
-    public void testProcedureAPI() throws UnsupportedEncodingException, Exception {
+    public void testHcpProcedure() throws Exception{
+        final User patient = userService.findByName("patient");
+        final User hcp = userService.findByName("hcp");
+        final User labtech = userService.findByName("labtech");
+
+        final Loinc loinc1 = new Loinc();
+        loinc1.setCode("12345-0");
+        loinc1.setName("test1");
+        loinc1.setComponent("Test Component");
+        loinc1.setProperty("Test Property");
+
+        final ProcedureForm p = new ProcedureForm();
+        p.setCode(loinc1.getCode());
+        p.setName(loinc1.getName());
+        p.setPatient(patient);
+        p.setHcp(hcp);
+        p.setLabtech(labtech);
+        p.setComment("Test Comment");
+        p.setPriority(Priority.HIGH);
+        p.setProcedureStatus(ProcedureStatus.Assigned);
+
+        final String content =
+                mvc.perform(
+                        post("/api/v1/procedure")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(TestUtils.asJsonString(p)))
+                        .andExpect(status().isOk())
+                        .andReturn()
+                        .getResponse()
+                        .getContentAsString();
+
+        final Gson gson = new GsonBuilder().create();
+        final Procedure procedure1 = gson.fromJson(content, Procedure.class);
+        final ProcedureForm procedureForm1 = new ProcedureForm(procedure1);
+
+        procedure1.setComment("This is a better Comment");
+        final String editContent =
+                mvc.perform(
+                        put("/api/v1/procedure")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(TestUtils.asJsonString(procedure1)))
+                        .andExpect(status().isOk())
+                        .andReturn()
+                        .getResponse()
+                        .getContentAsString();
+        final Procedure editedProcedure = gson.fromJson(editContent, Procedure.class);
+        assertEquals("This is a better Comment", editedProcedure.getComment());
+
+        mvc.perform(
+                get("/api/v1/procedure")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        mvc.perform(
+                get("/api/v1/procedure/" + procedure1.getId())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        mvc.perform(
+                get("/api/v1/procedureForHcp/" + "patient")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        // Delete the Procedure
+        mvc.perform(delete("/api/v1/procedure/" + procedure1.getId()))
+                .andExpect(status().isOk());
+
+        mvc.perform(
+                put("/api/v1/procedure")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(TestUtils.asJsonString(procedure1)))
+                .andExpect(status().isNotFound())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        mvc.perform(
+                get("/api/v1/procedure/" + procedure1.getId())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+
+        mvc.perform(
+                get("/api/v1/procedureForHcp/" + "wrongPatientName")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+
+        p.setProcedureStatus(ProcedureStatus.InProgress);
+
+        mvc.perform(
+                post("/api/v1//procedure")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(TestUtils.asJsonString(p)))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        //Try to delete ongoing procedure
+        mvc.perform(delete("/api/v1/procedure/" + procedure1.getId()))
+                .andExpect(status().isNotFound());
+
+        // Try to delete loinc with non existing id
+        mvc.perform(delete("/api/v1/procedure/" + 0))
+                .andExpect(status().isNotFound());
+
+        // Try to delete loinc with wrong id
+        mvc.perform(delete("/api/v1/procedure/" + "wrongId"))
+                .andExpect(status().isBadRequest());
+
+    }
+
+    @Test
+    @Transactional
+    @WithMockUser(
+            username = "labtech",
+            roles = {"USER", "LABTECH"})
+    public void testLabtechProcedure() throws Exception{
+        final User patient = userService.findByName("patient");
+        final User hcp = userService.findByName("hcp");
+        final User labtech = userService.findByName("labtech");
+        final User labtech2 = userService.findByName("labtech2");
+
+        final Loinc loinc2 = new Loinc();
+        loinc2.setCode("12346-0");
+        loinc2.setName("test2");
+        loinc2.setComponent("Test Component");
+        loinc2.setProperty("Test Property");
+
+        final ProcedureForm p2 = new ProcedureForm();
+        p2.setCode(loinc2.getCode());
+        p2.setName(loinc2.getName());
+        p2.setPatient(patient);
+        p2.setHcp(hcp);
+        p2.setLabtech(labtech);
+        p2.setComment("Test Comment");
+        p2.setPriority(Priority.HIGH);
+        p2.setProcedureStatus(ProcedureStatus.Assigned);
+
+        final Procedure procedure2 = new Procedure();
+        procedure2.setCode(loinc2.getCode());
+        procedure2.setName(loinc2.getName());
+        procedure2.setPatient(patient);
+        procedure2.setHcp(hcp);
+        procedure2.setLabtech(labtech);
+        procedure2.setComment("Test Comment");
+        procedure2.setPriority(Priority.HIGH);
+        procedure2.setProcedureStatus(ProcedureStatus.Assigned);
+
+        // Trying to reassign with no procedure
+        mvc.perform(
+                put("/api/v1/procedureReassign/" + labtech2.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(TestUtils.asJsonString(procedure2)))
+                .andExpect(status().isNotFound())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        procedureService.saveAll(List.of(procedure2));
+
+        final Gson gson = new GsonBuilder().create();
+
+        procedure2.setComment("This is a better Comment");
+        final String editContent =
+                mvc.perform(
+                        put("/api/v1/procedure")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(TestUtils.asJsonString(procedure2)))
+                        .andExpect(status().isOk())
+                        .andReturn()
+                        .getResponse()
+                        .getContentAsString();
+        final Procedure editedProcedure = gson.fromJson(editContent, Procedure.class);
+        assertEquals("This is a better Comment", editedProcedure.getComment());
+
+        mvc.perform(
+                get("/api/v1/procedureForLabtech")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        // Reassign procedure to another labtech
+        mvc.perform(
+                put("/api/v1/procedureReassign/" + labtech2.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(TestUtils.asJsonString(procedure2)))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+    }
+
+    @Test
+    @Transactional
+    @WithMockUser(
+            username = "patient",
+            roles = {"USER", "PATIENT"})
+    public void testPatientProcedure() throws Exception{
+        final User patient = userService.findByName("patient");
+        final User hcp = userService.findByName("hcp");
+        final User labtech = userService.findByName("labtech");
+        final User labtech2 = userService.findByName("labtech2");
+
+        final Loinc loinc2 = new Loinc();
+        loinc2.setCode("12346-0");
+        loinc2.setName("test2");
+        loinc2.setComponent("Test Component");
+        loinc2.setProperty("Test Property");
+
+        final ProcedureForm p2 = new ProcedureForm();
+        p2.setCode(loinc2.getCode());
+        p2.setName(loinc2.getName());
+        p2.setPatient(patient);
+        p2.setHcp(hcp);
+        p2.setLabtech(labtech);
+        p2.setComment("Test Comment");
+        p2.setPriority(Priority.HIGH);
+        p2.setProcedureStatus(ProcedureStatus.Assigned);
+
+        final Procedure procedure2 = new Procedure();
+        procedure2.setCode(loinc2.getCode());
+        procedure2.setName(loinc2.getName());
+        procedure2.setPatient(patient);
+        procedure2.setHcp(hcp);
+        procedure2.setLabtech(labtech);
+        procedure2.setComment("Test Comment");
+        procedure2.setPriority(Priority.HIGH);
+        procedure2.setProcedureStatus(ProcedureStatus.Assigned);
+
+        procedureService.saveAll(List.of(procedure2));
+
+        mvc.perform(
+                get("/api/v1/procedureForPatient")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+
+
+
+
+
+    @Test
+    @Transactional
+    @WithMockUser(
+            username = "hcp",
+            roles = {"USER", "HCP"})
+    public void testProcedureWithOV() throws UnsupportedEncodingException, Exception {
 
         // create Loinc to use
         final Loinc loinc1 = new Loinc();
@@ -165,6 +414,10 @@ public class APIProcedureTest {
         final OfficeVisit visit1 = gson.fromJson(content, OfficeVisit.class);
         assertEquals(form.getProcedures().get(0).getCode(), visit1.getProcedures().get(0).getCode());
 
+        mvc.perform(
+                get("/api/v1/procedureforvisit/" + visit1.getId())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
 
     }
 }
