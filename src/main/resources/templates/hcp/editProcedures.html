@@ -203,7 +203,7 @@
 				<li ng-repeat="procedure in procedures | filter:filterProcedures"><h4>
 					<label> <input type="radio"
 								   ng-model="$parent.selectedProcedure" name="procedure"
-								   value="{{procedure.id}}"
+								   ng-value="{{procedure.id}}"
 								   ng-click='$parent.selectProcedure(procedure)' />&nbsp;{{$parent.displayName(procedure)}}
 					</label>
 					<input type="button" value="Delete" class="btn btn-danger" name="deleteUser" ng-click="deleteProcedure(procedure)"/>

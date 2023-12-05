@@ -40,7 +40,7 @@
                     if (!override && formDifferent($scope.procedureForm, $scope.originalForm)) {
                         if (!confirm("You have made changes to this procedure. Would you like to continue? (changes will be lost)")) {
                             $scope.selectedProcedure = "";
-                            $scope.selectedProcedure = $scope.procedureForm.name;
+                            $scope.selectedProcedure = $scope.procedureForm.id;
                             return;
                         }
                     }
@@ -75,7 +75,7 @@
                     pf.patient = of.patient = procedure.patient;
                     $scope.patient = procedure.patient.username;
 
-                    $scope.selectedProcedure = pf.name;
+                    $scope.selectedProcedure = pf.id;
                 };
 
                 $http.get("/iTrust2/api/v1/procedureForLabtech").then(function (response) {
@@ -209,7 +209,7 @@
                 <li ng-repeat="procedure in procedures | filter:filterProcedures"><h4>
                     <label> <input type="radio"
                                    ng-model="$parent.selectedProcedure" name="procedure"
-                                   value="{{procedure.name}}"
+                                   ng-value="{{procedure.id}}"
                                    ng-click='$parent.selectProcedure(procedure)' />&nbsp;{{$parent.displayName(procedure)}}
                     </label>
                 </h4></li>
