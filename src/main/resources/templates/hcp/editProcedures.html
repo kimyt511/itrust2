@@ -12,7 +12,7 @@
         /*<![CDATA[*/
 
             var app = angular.module('myApp', []);
-            app.controller("editProceduresCtrl", function ($scope, $http) {
+            app.controller("editProceduresCtrl", function ($scope, $http, $q) {
 
                 $scope.displayName = function (p) {
                     return p.code + " (" + p.name + ")";
@@ -129,50 +129,54 @@
 	        	}
 
                 $scope.submit = function () {
-                    // Fill remnants
-                    $http.get("/iTrust2/api/v1/users/" + $scope.hcp).then(
-                        function (response) {
-                            $scope.procedureForm.hcp = response.data;
-                        }
-                    );
+					var promises = [];
 
-                    $http.get("/iTrust2/api/v1/users/" + $scope.labtech).then(
-                        function (response) {
-                            $scope.procedureForm.labtech = response.data;
-                        }
-                    );
+					promises.push($http.get("/iTrust2/api/v1/users/" + $scope.hcp).then(
+						function (response) {
+							$scope.procedureForm.hcp = response.data;
+						}
+					));
 
-                    $http.get("/iTrust2/api/v1/users/" + $scope.patient).then(
-                        function (response) {
-                            $scope.procedureForm.patient = response.data;
-                    });
+					promises.push($http.get("/iTrust2/api/v1/users/" + $scope.labtech).then(
+						function (response) {
+							$scope.procedureForm.labtech = response.data;
+						}
+					));
 
-                    var procedure = angular.copy($scope.procedureForm);
+					promises.push($http.get("/iTrust2/api/v1/users/" + $scope.patient).then(
+						function (response) {
+							$scope.procedureForm.patient = response.data;
+						}
+					));
 
-                    $http({
-                        method: "PUT",
-                        url: "/iTrust2/api/v1/procedure",
-                        data: procedure,
-                    }).then(
-                        function (response) {
-                            $scope.message = "Procedure updated successfully.";
+					$q.all(promises).then(function () {
+						var procedure = angular.copy($scope.procedureForm);
 
-                            // replace the procedure in session
-                            for (var i in $scope.procedures)
-                                if ($scope.procedures[i].id == response.data.id) {
-                                    $scope.procedures[i] = response.data;
-                                    $scope.selectProcedure(response.data, true);
-                                }
-                        },
-                        function (rejection) {
-                            if (rejection.data.msg) {
-                                $scope.message = "Error: " + rejection.data.msg;
-                            } else {
-                                $scope.message = "An error occured updating procedures.";
-                            }
-                        }
-                    );
-                };
+						$http({
+							method: "PUT",
+							url: "/iTrust2/api/v1/procedure",
+							data: procedure,
+						}).then(
+							function (response) {
+								$scope.message = "Procedure updated successfully.";
+								// Replace the procedure in session
+								for (var i in $scope.procedures) {
+									if ($scope.procedures[i].id == response.data.id) {
+										$scope.procedures[i] = response.data;
+										$scope.selectProcedure(response.data, true);
+									}
+								}
+							},
+							function (rejection) {
+								if (rejection.data.msg) {
+									$scope.message = "Error: " + rejection.data.msg;
+								} else {
+									$scope.message = "An error occurred updating procedures.";
+								}
+							}
+						);
+					});
+				};
 
                 $scope.loadProcedures();
 
