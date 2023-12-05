@@ -96,7 +96,7 @@ public class APIProcedureController extends APIController {
             if (self.getRoles().contains(Role.ROLE_HCP)){
                 loggerUtil.log( TransactionType.HCP_EDIT_PROC, LoggerUtil.currentUser(),
                         "Procedure with id " + procedure.getId() + " edited" );
-            }else if (self.getRoles().contains(Role.ROLE_LABTECH)){
+            }else{
                 loggerUtil.log( TransactionType.LABTECH_EDIT_PROC, LoggerUtil.currentUser(),
                         "Procedure with id " + procedure.getId() + " edited" );
             }
@@ -106,7 +106,7 @@ public class APIProcedureController extends APIController {
         catch ( final Exception e ) {
             if (self.getRoles().contains(Role.ROLE_HCP)){
                 loggerUtil.log( TransactionType.HCP_EDIT_PROC, LoggerUtil.currentUser(), "Failed to edit Procedure" );
-            }else if (self.getRoles().contains(Role.ROLE_LABTECH)){
+            }else{
                 loggerUtil.log( TransactionType.LABTECH_EDIT_PROC, LoggerUtil.currentUser(), "Failed to edit Procedure" );
             }
 
