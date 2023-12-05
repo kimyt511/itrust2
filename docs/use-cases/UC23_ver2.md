@@ -1,20 +1,26 @@
 # UC23 Rate Health Care Provider and Hospital
 ## 23.1 Preconditions
 
-A patient, an HCP, are registered users of the iTrust2 system (UC1). The patient, or the HCP, has authenticated themselves in the iTrust2 system (UC2).
+A patient, an HCP, an amind, are all registered users of the iTrust2 system (UC1). The patient, or the HCP, has authenticated themselves in the iTrust2 system (UC2).
 A hospital is a registered hospital added by the admin (UC5).
 
 ## 23.2 Main Flow
 
-A patient can view the reviews of a HCP, or a hospital, in the iTrust2 system.[S1]
+A patientm, an HCP, or an admin can view the reviews of a HCP, or a hospital, in the iTrust2 system.[S1]
 A patient can rate and review an HCP who has provided him or her medical treatment or a hospital they have visited.[S2]
 The system records the review and updates the HCP's or the hospital's review in the review page [S3].
+A patient can delete the review he or she wrote [S4].
+An hcp can see all the reviews, but may not delete his or her own reviews[S5].
+An admin can see all the reviews and delete a review selected [S6].
 
 ## 23.3 Sub-flows
 
    * [S1]: The patient navigates to the review page in the iTrust2 Medical Records system. The patient selects an HCP or a hospital in the review list. The patient sees all reviews of the HCP or the hospital they have selected.
    * [S2]: The patient navigates to a pop-up page where they can write a review for an HCP or a hospital. The patient selects an HCP who has provided medical treatment to them or a hospital they have visited from a dropdown list. The patient selects a rating from 1 to 5 and optionally leaves a comment about their experience. The patient clicks the submit button and submit the review.[E1]
    * [S3]: The system records the review, updates the average rating for the selected HCP or hospital, and add the review in the reviews of the HCP/hospital.
+   * [S4]: The patient navigates to the review page in the iTrust2 Medical Records system. The patient navigates to a pop-up where they can see their past reviews. The patient selects a review and delete it. The review is removed from the iTrust2 system.
+   * [S5]: The HCP navigates to the review page in the iTrust2 Medical Records system. The HCP  clicks on an HCP, or a hospital, and see its reviews.
+   * [S6]: The admin navigates to the review page in the iTrust2 Medical Records system. The admin selects a review and delete it. The review is removed from the iTrust2 system.
 
 ## 23.4 Alternative Flows
 
