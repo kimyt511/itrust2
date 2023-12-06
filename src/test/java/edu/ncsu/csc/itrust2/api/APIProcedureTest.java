@@ -112,6 +112,17 @@ public class APIProcedureTest {
         loinc1.setComponent("Test Component");
         loinc1.setProperty("Test Property");
 
+        final OfficeVisitForm visit = new OfficeVisitForm();
+        visit.setDate("2030-11-19T04:50:00.000-05:00");
+        visit.setHcp("hcp");
+        visit.setPatient("patient");
+        visit.setNotes("Test office visit");
+        visit.setType(AppointmentType.GENERAL_CHECKUP.toString());
+        visit.setHospital("iTrust Test Hospital 2");
+        final OfficeVisit ov = officeVisitService.build(visit);
+        officeVisitService.save(ov);
+        Long ovId = officeVisitService.findByHcp(hcp).get(0).getId();
+        ov.setId(ovId);
         final ProcedureForm p = new ProcedureForm();
         p.setCode(loinc1.getCode());
         p.setName(loinc1.getName());
@@ -127,7 +138,7 @@ public class APIProcedureTest {
                                 .content(TestUtils.asJsonString(p)))
                 .andExpect(status().isBadRequest());
         p.setLabtech(labtech);
-
+        p.setVisit(ovId);
         final String content =
                 mvc.perform(
                         post("/api/v1/procedure")
@@ -141,13 +152,14 @@ public class APIProcedureTest {
         final Gson gson = new GsonBuilder().create();
         final Procedure procedure1 = gson.fromJson(content, Procedure.class);
         final ProcedureForm procedureForm1 = new ProcedureForm(procedure1);
-        procedure1.setProcedureStatus(ProcedureStatus.InProgress);
-        procedure1.setComment("This is a better Comment");
+        procedureForm1.setProcedureStatus(ProcedureStatus.InProgress);
+        procedureForm1.setComment("This is a better Comment");
+        procedureForm1.setVisit(ovId);
         final String editContent =
                 mvc.perform(
                         put("/api/v1/procedure")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(TestUtils.asJsonString(procedure1)))
+                                .content(TestUtils.asJsonString(procedureForm1)))
                         .andExpect(status().isOk())
                         .andReturn()
                         .getResponse()
@@ -173,11 +185,11 @@ public class APIProcedureTest {
         mvc.perform(delete("/api/v1/procedure/" + procedure1.getId()))
                 .andExpect(status().isBadRequest());
 
-        procedure1.setProcedureStatus(ProcedureStatus.Assigned);
+        procedureForm1.setProcedureStatus(ProcedureStatus.Assigned);
         mvc.perform(
                         put("/api/v1/procedure")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(TestUtils.asJsonString(procedure1)))
+                                .content(TestUtils.asJsonString(procedureForm1)))
                 .andExpect(status().isOk());
         mvc.perform(delete("/api/v1/procedure/" + procedure1.getId()))
                 .andExpect(status().isOk());
@@ -243,6 +255,18 @@ public class APIProcedureTest {
         loinc2.setComponent("Test Component");
         loinc2.setProperty("Test Property");
 
+        final OfficeVisitForm visit = new OfficeVisitForm();
+        visit.setDate("2030-11-19T04:50:00.000-05:00");
+        visit.setHcp("hcp");
+        visit.setPatient("patient");
+        visit.setNotes("Test office visit");
+        visit.setType(AppointmentType.GENERAL_CHECKUP.toString());
+        visit.setHospital("iTrust Test Hospital 2");
+        final OfficeVisit ov = officeVisitService.build(visit);
+        officeVisitService.save(ov);
+        Long ovId = officeVisitService.findByHcp(hcp).get(0).getId();
+        ov.setId(ovId);
+
         final ProcedureForm p2 = new ProcedureForm();
         p2.setCode(loinc2.getCode());
         p2.setName(loinc2.getName());
@@ -252,16 +276,9 @@ public class APIProcedureTest {
         p2.setComment("Test Comment");
         p2.setPriority(Priority.HIGH);
         p2.setProcedureStatus(ProcedureStatus.Assigned);
+        p2.setVisit(ovId);
 
-        final Procedure procedure2 = new Procedure();
-        procedure2.setCode(loinc2.getCode());
-        procedure2.setName(loinc2.getName());
-        procedure2.setPatient(patient);
-        procedure2.setHcp(hcp);
-        procedure2.setLabtech(labtech);
-        procedure2.setComment("Test Comment");
-        procedure2.setPriority(Priority.HIGH);
-        procedure2.setProcedureStatus(ProcedureStatus.Assigned);
+        final Procedure procedure2 = procedureService.build(p2);
 
         final ProcedureForm procedureForm = new ProcedureForm();
         procedureForm.setId(0L);
@@ -273,25 +290,28 @@ public class APIProcedureTest {
                 .andExpect(status().isBadRequest());
 
         // Trying to reassign with no procedure
+        assertEquals(procedureService.count(), 0);
+        procedure2.setId(0L);
         mvc.perform(
                 put("/api/v1/procedureReassign/" + labtech2.getId())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(TestUtils.asJsonString(procedure2)))
+                        .content(TestUtils.asJsonString(procedureForm)))
                 .andExpect(status().isBadRequest())
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
 
         procedureService.saveAll(List.of(procedure2));
-
+        Long pid = procedureService.findByHcp(hcp).get(0).getId();
+        p2.setId(pid);
         final Gson gson = new GsonBuilder().create();
 
-        procedure2.setComment("This is a better Comment");
+        p2.setComment("This is a better Comment");
         final String editContent =
                 mvc.perform(
                         put("/api/v1/procedure")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(TestUtils.asJsonString(procedure2)))
+                                .content(TestUtils.asJsonString(p2)))
                         .andExpect(status().isOk())
                         .andReturn()
                         .getResponse()
@@ -308,7 +328,7 @@ public class APIProcedureTest {
         mvc.perform(
                 put("/api/v1/procedureReassign/" + labtech2.getId())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(TestUtils.asJsonString(procedure2)))
+                        .content(TestUtils.asJsonString(p2)))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
@@ -333,6 +353,18 @@ public class APIProcedureTest {
         loinc2.setComponent("Test Component");
         loinc2.setProperty("Test Property");
 
+        final OfficeVisitForm visit = new OfficeVisitForm();
+        visit.setDate("2030-11-19T04:50:00.000-05:00");
+        visit.setHcp("hcp");
+        visit.setPatient("patient");
+        visit.setNotes("Test office visit");
+        visit.setType(AppointmentType.GENERAL_CHECKUP.toString());
+        visit.setHospital("iTrust Test Hospital 2");
+        final OfficeVisit ov = officeVisitService.build(visit);
+        officeVisitService.save(ov);
+        Long ovId = officeVisitService.findByHcp(hcp).get(0).getId();
+        ov.setId(ovId);
+
         final ProcedureForm p2 = new ProcedureForm();
         p2.setCode(loinc2.getCode());
         p2.setName(loinc2.getName());
@@ -342,16 +374,8 @@ public class APIProcedureTest {
         p2.setComment("Test Comment");
         p2.setPriority(Priority.HIGH);
         p2.setProcedureStatus(ProcedureStatus.Assigned);
-
-        final Procedure procedure2 = new Procedure();
-        procedure2.setCode(loinc2.getCode());
-        procedure2.setName(loinc2.getName());
-        procedure2.setPatient(patient);
-        procedure2.setHcp(hcp);
-        procedure2.setLabtech(labtech);
-        procedure2.setComment("Test Comment");
-        procedure2.setPriority(Priority.HIGH);
-        procedure2.setProcedureStatus(ProcedureStatus.Assigned);
+        p2.setVisit(ovId);
+        final Procedure procedure2 = procedureService.build(p2);
 
         procedureService.saveAll(List.of(procedure2));
 
@@ -446,6 +470,53 @@ public class APIProcedureTest {
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$").doesNotExist());
 
+    }
+
+    @Test
+    @Transactional
+    public void testGetOfficeVisitByProcedure() throws Exception{
+        final User patient = userService.findByName("patient");
+        final User hcp = userService.findByName("hcp");
+        final User labtech = userService.findByName("labtech");
+
+        final Loinc loinc1 = new Loinc();
+        loinc1.setCode("12345-0");
+        loinc1.setName("test1");
+        loinc1.setComponent("Test Component");
+        loinc1.setProperty("Test Property");
+
+        final OfficeVisitForm visit = new OfficeVisitForm();
+        visit.setDate("2030-11-19T04:50:00.000-05:00");
+        visit.setHcp("hcp");
+        visit.setPatient("patient");
+        visit.setNotes("Test office visit");
+        visit.setType(AppointmentType.GENERAL_CHECKUP.toString());
+        visit.setHospital("iTrust Test Hospital 2");
+
+        final ProcedureForm p = new ProcedureForm();
+        p.setCode(loinc1.getCode());
+        p.setName(loinc1.getName());
+        p.setPatient(patient);
+        p.setHcp(hcp);
+        p.setLabtech(labtech);
+        p.setComment("Test Comment");
+        p.setPriority(Priority.HIGH);
+        p.setProcedureStatus(ProcedureStatus.Assigned);
+
+        List<ProcedureForm> procedures = new ArrayList<>();
+        procedures.add(p);
+        visit.setProcedures(procedures);
+        final OfficeVisit ov = officeVisitService.build(visit);
+        officeVisitService.save(ov);
+
+        assertEquals(procedureService.count(), 1);
+        Long pid = procedureService.findByHcp(hcp).get(0).getId();
+
+        mvc.perform(get("/api/v1/officevisit/withprocedure/" + 0))
+        .andExpect(status().isNotFound());
+
+        mvc.perform(get("/api/v1/officevisit/withprocedure/" + pid))
+                .andExpect(status().isOk());
     }
 }
 
