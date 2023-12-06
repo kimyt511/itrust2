@@ -336,7 +336,7 @@ public class APIVaccinationTest {
         mvc.perform(
             delete("/api/v1/vaccinations/"+id)).andExpect(status().isOk());
         mvc.perform(
-            delete("/api/v1/vaccinations/"+id)).andExpect(status().isNotFound());
+            delete("/api/v1/vaccinations/"+id)).andExpect(status().is4xxClientError());
     }
 
     

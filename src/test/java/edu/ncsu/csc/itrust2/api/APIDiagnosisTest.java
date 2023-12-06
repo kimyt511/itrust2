@@ -303,7 +303,7 @@ public class APIDiagnosisTest {
 
         mvc.perform(get("/api/v1/diagnoses")).andExpect(status().isOk());
         mvc.perform(get("/api/v1/diagnoses/dto")).andExpect(status().isOk());
-        mvc.perform(get("/api/v1/diagnosis/"+(id))).andExpect(status().isNotFound());
+        mvc.perform(get("/api/v1/diagnosis/"+(13212L))).andExpect(status().isNotFound());
         content =
                 mvc.perform(get("/api/v1/diagnosesforvisit/" + (10L)))
                         .andReturn()

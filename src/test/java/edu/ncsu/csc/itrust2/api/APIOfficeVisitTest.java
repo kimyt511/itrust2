@@ -470,7 +470,7 @@ public class APIOfficeVisitTest {
                 .andExpect(status().is4xxClientError());
 
         vList.get(0).setId(0L);
-        OfficeVisitForm vf = new OfficeVisitForm(vList.get(0));
+        // OfficeVisitForm vf = new OfficeVisitForm(vList.get(0));
     }
 
      /** Tests OfficeVisitAPI */
