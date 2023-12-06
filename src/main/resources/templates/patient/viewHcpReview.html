@@ -39,6 +39,24 @@
     /*]]>*/
 </script>
 
+<!---------------------------------------------Style CSS------------------------------------------------------>
+<style>
+
+    .entry-table td[name="entryCell"] {
+        height: 30px;
+        width: 700px;
+        padding: 5%;
+        text-align: left;
+        font-size: 1.7rem;
+        font-family: 'Questrial', sans-serif;
+        background-color: #FFFFFF;
+    }
+    .entry-table td[name="entryCell"]:hover {
+        background: #eee;
+    }
+</style>
+<!---------------------------------------------Style CSS------------------------------------------------------>
+
 <!-- Contents -->
 <div ng-app="viewHcpEntryApp" ng-controller="viewHcpEntryCtrl">
     <div class="container">
@@ -50,16 +68,19 @@
                     </div>
                     <div class="panel-body">
                         <!------------------------------table------------------------------------------------>
-                        <table>
+                        <table class="entry-table table-bordered">
                             <tbody>
                             <tr name="reviewTableRow" ng-repeat="review in reviews ">
-                                <td name="entryCell"><strong >{{review.patient.username}}</strong></td>
-                            </tr>
-                            <tr name="reviewTableRow" ng-repeat="review in reviews">
-                                <td>{{review.comment}}</td>
+                                <td name="entryCell">
+                                    <div>
+                                        <strong>{{review.patient.username}}</strong>
+                                    </div>
+                                    <div>
+                                        {{review.comment}}
+                                    </div>
+                                </td>
                             </tr>
                             </tbody>
-
                         </table>
                         <!------------------------------table------------------------------------------------>
                     </div>
