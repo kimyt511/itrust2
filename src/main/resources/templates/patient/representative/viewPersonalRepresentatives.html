@@ -1,0 +1,473 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:include="layout :: head(title=~{::title},links=~{})">
+    <title>Personal Representatives</title>
+</head>
+
+<body th:include="layout :: body" th:with="content=~{::content}">
+<div th:fragment="content">
+
+    <!-- To be completed ----------->
+    <script th:inline="javascript">
+        /* Otherwise Thymeleaf tries to parse Javascript as XML and breaks itself sometimes.  Sigh */
+        /*<![CDATA[*/
+
+        // define Angular JS module
+        const app = angular.module("PersonalRepresentativesApp", []);
+
+        // define Angular Js controller
+        app.controller('PersonalRepresentativesCtrl', function ($scope, $http, $window) {
+
+            ///////////////////////get current user(patient)//////////////////////////////////////////
+            $http.get("/iTrust2/api/v1/patient").then(function (response) {
+                $scope.currentPatient = response.data;
+                }, function (rejection) {
+                    console.error("Could not retrieve expected Patient record");
+                }
+            );
+            ///////////////////////get current user(patient)//////////////////////////////////////////
+
+            //Initialize data container, access these variables in html part below
+            ////////////////////////////My Representatives & patient data////////////////////////////////////////
+            $scope.loadTable = function () {
+                ////////////////////////////My Representatives data//////////////////////////////////////////////
+                // API endpoint connection to myRepresentatives
+                $http.get("/iTrust2/api/v1/pr/myrepresentatives").then(
+                    function (response) {
+                        // console.log(response.data);
+                        $scope.myRepresentatives = response.data;
+                        $scope.message = "";
+                    }, function (rejection) {
+                        $scope.representatives = [];
+                        $scope.message = "Could not display representatives";
+                    }
+                );
+                ////////////////////////////My Patients data//////////////////////////////////////////////
+                // API endpoint connection to myPatients
+                $http.get("/iTrust2/api/v1/pr/mypatients").then(
+                    function (response) {
+                        // console.log(response.data);
+                        $scope.myPatients = response.data;
+                        $scope.message = "";
+                    }, function (rejection) {
+                        $scope.representatives = [];
+                        $scope.message = "Could not display patients";
+                    }
+                );
+            };
+            ////////////////////////////My Representatives & patient data////////////////////////////////////////
+
+            ////////////////Refresh Function////////////////////////////////
+            $scope.refreshTable = function() {
+                // Reload the table
+                $scope.loadTable();
+            };
+            ////////////////Refresh Function////////////////////////////////
+
+
+            ////////////////////////////Undeclare Representatives//////////////////////////////////////////////
+
+            // Initialize array to track selected representatives
+            $scope.selectedRepresentatives = [];
+
+            ///////////////////Updating selected Representatives/////////////////////
+            // Function to update the selectedRepresentatives array
+            $scope.updateSelectedRepresentatives = function (representative) {
+                if (representative.selected) {
+                    $scope.selectedRepresentatives.push(representative.id);
+                } else {
+                    // Remove from the array if deselected
+                    const index = $scope.selectedRepresentatives.indexOf(representative.id);
+                    if (index !== -1) {
+                        $scope.selectedRepresentatives.splice(index, 1);
+                    }
+                }
+                console.log($scope.selectedRepresentatives);
+            };
+            ///////////////////Updating selected Representatives/////////////////////
+
+            /////////////Actual Function that undeclare representatives//////////////////
+            $scope.undeclareSelectedRepresentatives = function () {
+                // Send requests to undeclare each selected representative
+                $scope.selectedRepresentatives.forEach(function (id) {
+                    $http.delete('/iTrust2/api/v1/pr/undeclare/' + id)
+                        .then(function (response) {
+                            console.log('Undeclare request successful');
+                            $scope.undeclareMessage= "Undeclaration confirmed successfully";
+                            $scope.refreshTable();
+                        })
+                        .catch(function (error) {
+                            // Handle error, if needed
+                            console.error('Error in undeclare request');
+                            $scope.undeclareMessage = "Undeclared failed " + error.data.message;
+                        }
+                    );
+                });
+
+                // Reset the selectedRepresentatives array
+                $scope.selectedRepresentatives = [];
+            };
+            /////////////Actual Function that undeclare Representatives//////////////////
+            ////////////////////////////Undeclare Representatives//////////////////////////////////////////////
+
+            ////////////////////////////Undeclare Patients////////////////////////////////////////////////////
+            // Initialize array to track selected representatives
+            $scope.selectedPatients = [];
+
+            ///////////////////Updating selected Patientss///////////////////
+            // Function to update the patients array
+            $scope.updateSelectedPatients = function (patient) {
+                if (patient.selected) {
+                    $scope.selectedPatients.push(patient.id);
+                } else {
+                    // Remove from the array if deselected
+                    const index = $scope.selectedPatients.indexOf(patient.id);
+                    if (index !== -1) {
+                        $scope.selectedPatients.splice(index, 1);
+                    }
+                }
+                console.log($scope.selectedPatients);
+            };
+            ///////////////////Updating selected Patients/////////////////////
+
+            /////////////Actual Function that undeclare Patients/////////////////////
+            $scope.undeclareSelectedPatients = function () {
+                // Send requests to undeclare each selected patient
+                $scope.selectedPatients.forEach(function (id) {
+                    $http.delete('/iTrust2/api/v1/pr/undeclare/' + id)
+                        .then(function (response) {
+                            console.log('Undeclare request successful');
+                            $scope.undeclarePatientMessage = "Undeclaration confirmed successfully";
+                            $scope.refreshTable();
+                        })
+                        .catch(function (error) {
+                            // Handle error, if needed
+                            console.error('Error in undeclare request');
+                            $scope.undeclarePatientMessage = "Undeclaration failed " + error.data.message;
+                        }
+                    );
+                });
+
+                // Reset the selectedRepresentatives array
+                $scope.selectedPatients = [];
+            };
+            /////////////Actual Function that undeclare Patients//////////////////
+
+            ////////////////////////////Undeclare Patients //////////////////////////////////////////////
+
+            ////////////////////////////Search Section////////////////////////////////////////////////////
+
+            // Function to display the search section
+            $scope.showDeclareRepresentative = function () {
+                // Toggle the visibility of the search section
+                $scope.showSearchSection = !$scope.showSearchSection;
+                $scope.viewRepresentative = null;   
+            };
+
+            $scope.displayName = function (p) {
+                return p.firstName + " " + p.lastName + " (" + p.id + ")";
+            };
+
+            // documentation on Angular filters: https://docs.angularjs.org/api/ng/filter/filter
+            $scope.searchFilter = "";
+            $scope.filterPatients = function (patient) {
+                return ($scope.displayName(patient)).toLowerCase().match($scope.searchFilter.toLowerCase());
+            };
+
+            $http.get("/iTrust2/api/v1/patients").then(
+                  function (response) {
+                       $scope.patients = response.data;
+                  }
+            );
+
+            //initialize search results container
+            $scope.searchResults = [];
+
+            /////////////////////update search filter////////////////////////////////////
+            $scope.selectedPatient = null;
+            $scope.declare = { patient: "", representative: "", comment: "" };
+
+            $scope.displayName2 = function (p) {
+                return p.firstName + " " + p.lastName;
+            };
+
+            $scope.selectPatient = function(patient) {
+                $scope.selectedPatient = patient;
+                $scope.declare.representative = patient.username;
+                // Update the search filter to display the selected patient's name or MID in the search box
+                $scope.searchFilter = $scope.displayName2(patient);
+                $scope.declare.patient = $scope.currentPatient.username;
+            };
+            /////////////////////update search filter////////////////////////////////////
+            ////////////////////////////Search Section////////////////////////////////////////////////////
+
+            ////////////////////////////Declare Representative////////////////////////////////////////////////////
+            // Function to declare a representative
+            $scope.declareRepresentative = function() {
+                if ($scope.selectedPatient) {
+                    // Send the selected patient as a representative to the backend
+                    // need to be modified here.
+                    $http.post("/iTrust2/api/v1/pr/declare", $scope.declare)
+                .then(
+                    function(response) {
+                        $scope.declareMessage = "Declaration confirmed successfully";
+                        $scope.refreshTable();
+
+                        //reset the selected patient and search filter after declaring
+                        $scope.selectedPatient = null;
+                        $scope.searchFilter = '';
+                    },
+                    function(rejection) {
+                        $scope.declareMessage = "Failed to confirm declaration: " + rejection.data.message;
+                    }
+                );
+                } else {
+                    // Handle the case where no patient is selected
+                    $scope.message = "No patient selected for declaration";
+                }
+            };
+
+            $scope.showMore = function (patient) {
+                $scope.showSearchSection = false;
+                $scope.viewRepresentative = patient;
+            }
+            ////////////////////////////Declare Representative////////////////////////////////////////////////////
+
+		    ///////////////////////////Initially Load Table/////////////////////////
+			$scope.loadTable();
+            ///////////////////////////Initially Load Table/////////////////////////
+
+            ///////////////////////////Access Diagnoses Page/////////////////////////
+            // **DEPRECATED**
+            $scope.accessDiagnoses = function() {
+
+                var url = document.getElementById('viewDiagnosesPR').getAttribute('href');
+                var windowName = "Diagnoses popup";
+                var width = (window.screen.width * 90) / 100;
+                var height = (window.screen.height * 70) / 100;
+                var left = 100;
+                var top = 100;
+
+                // Convert the diaryentry object to a JSON string
+                var Json = JSON.stringify($scope.viewRepresentative);
+
+                // Construct the URL with the JSON string as a query parameter
+                var urlWithParams = url + "?data=" + encodeURIComponent(Json);
+
+                // Open a new window for the form
+                var $popup = $window.open(urlWithParams, windowName, "width=" + width + ",height=" + height + "," +
+                    "left=" + left + ",top=" + top);
+            }
+
+            //--------------View more information about PR---------------------
+            $scope.representativeInfo = function (elementId) {
+                console.log(elementId);
+                var url = document.getElementById(elementId).getAttribute('href');
+                var windowName = "PR Information";
+                var width = (window.screen.width * 90) / 100;
+                var height = (window.screen.height * 70) / 100;
+                var left = 100;
+                var top = 100;
+
+                // Convert the diaryentry object to a JSON string
+                var Json = JSON.stringify($scope.viewRepresentative);
+
+                // Construct the URL with the JSON string as a query parameter
+                var urlWithParams = url + "?data=" + encodeURIComponent(Json);
+
+                // Open a new window for the form
+                var $popup = $window.open(urlWithParams, windowName, "width=" + width + ",height=" + height + "," +
+                    "left=" + left + ",top=" + top);
+            }
+            ///////////////////////////Initially Load Table/////////////////////////
+
+
+        });
+        /*]]>*/
+    </script>
+
+    <!-- Contents -->
+    <div ng-app="PersonalRepresentativesApp" ng-controller="PersonalRepresentativesCtrl">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8" style="width: 100%;">
+                    <!-- Panel -->
+                    <div class="panel panel-primary mx-auto d-flex justify-content-center">
+                        <div class="panel-heading">
+                            <h3>Personal Representatives</h3>
+                        </div>
+                        <div class="panel-body" style="display: flex; flex-direction: row;">
+                            <!-- Display Section -->
+                            <div style="width: 70%; padding: 1%;">
+                                <table class="table table-hover table-bordered">
+                                    <caption>
+                                        Representative for:
+                                        <button ng-click="undeclareSelectedPatients()" style="float: right;">
+                                            Undeclare
+                                        </button>
+                                    </caption>
+                                    <thead><tr>
+                                        <th style="width: 30%;">MID</th>
+                                        <th style="width: 30%;">First Name</th>
+                                        <th style="width: 30%;">Last Name</th>
+                                        <th style="width: 50px;">Select</th>
+                                    </tr></thead>
+                                    <!-- Contents -->
+                                    <tbody><tr name="patientsTableRow"
+                                        ng-repeat="p in myPatients"
+                                        ng-click="showMore(p.patient)"
+                                        representativeId={{p.id}}>
+                                        <td name="midCell">{{p.patient.id}}</td>
+                                        <td name="firstNameCell">{{p.patient.firstName}}</td>
+                                        <td name="lastNameCell">{{p.patient.lastName}}</td>
+    
+                                        <!-- Undeclaration target -->
+                                        <td class="text-center" name="selectCell">
+                                            <input ng-change="updateSelectedPatients(p)" ng-model="p.selected"
+                                                   type="checkbox">
+                                        </td>
+                                    </tr></tbody>
+                                </table>
+                                <p style="color: green" ng-model="undeclarePatientMessage">{{undeclarePatientMessage}}</p>
+
+                                <!-- My Representatives -->
+                                <table class="table table-hover table-bordered">
+                                    <caption>
+                                        My Representatives:
+                                        <button ng-click="undeclareSelectedRepresentatives()" style="float: right;">
+                                            Undeclare
+                                        </button>
+                                    </caption>
+                                    <thead><tr>
+                                        <th style="width: 30%;">MID</th>
+                                        <th style="width: 30%;">First Name</th>
+                                        <th style="width: 30%;">Last Name</th>
+                                        <th style="width: 10%;">Select</th>
+                                    </tr></thead>
+                                    <!-- Contents -->
+                                    <tbody><tr name="RepresentativesTableRow"
+                                        ng-repeat="r in myRepresentatives"
+                                        ng-click="showMore(r.representative)"
+                                        representativeId={{r.id}}>
+                                        <td name="midCell">{{r.representative.id}}</td>
+                                        <td name="firstNameCell">{{r.representative.firstName}}</td>
+                                        <td name="lastNameCell">{{r.representative.lastName}}</td>
+                                        <!--------target of undeclaration------>
+                                        <td class="text-center" name="selectCell">
+                                            <input ng-change="updateSelectedRepresentatives(r)" ng-model="r.selected"
+                                                   type="checkbox">
+                                    </tr></tbody>
+                                </table>
+                                <!-- Undeclare message -->
+                                <p style="color: green" ng-model="undeclareMessage">{{undeclareMessage}}</p>
+                                <div class="text-center" style="margin-bottom: 20px;">
+                                    <button class="btn btn-primary" ng-click="showDeclareRepresentative()">
+                                        Declare a Representative
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Side Panel -->
+                            <div style="width: 30%; padding: 1%; border-left: 1px solid #bbb;">
+                                <!-- Search section -->
+                                <div>
+                                    <div class="search-section" ng-show="showSearchSection">
+                                        <h3>Enter Name or MID:</h3>
+                                        <p ng-style="{'color': declareMessage ===
+                                        'Declaration confirmed successfully' ? 'green' : 'red'}">{{declareMessage}}</p>
+                                        <!-- Search Form -->
+                                        <form>
+                                            <div class="form-row align-items-center" style="display: flex; flex-direction: column;">
+                                                <div style="float: left; display: flex; flex-direction: row;">
+                                                    <input name="search" ng-model="searchFilter" class="form-control"
+                                                        style="width:75%; height: 40px;text-align: left;"
+                                                        type="text" placeholder="Name or MID">
+                                                    <button class="btn btn-primary" ng-click="declareRepresentative()"
+                                                        style="width: 22.5%; height: 40px; margin-left: 2.5%;">
+                                                        Confirm
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                        <div style="clear: both;"></div>
+                                        <!-- Search Results -->
+                                        <div>
+                                            <ul class="list-group">
+                                                <li class="list-group-item" ng-repeat="patient in patients | filter:filterPatients"
+                                                    ng-if="patient.username !== currentPatient.username"
+                                                    style="width: 75%; height:40px;">
+                                                    <!--To be completed-->
+                                                    <div>
+                                                        <label ng-click="$parent.selectPatient(patient)"
+                                                            style="font-size: 18px; cursor: pointer;">
+                                                            {{ $parent.displayName(patient) }}
+                                                        </label>
+                                                    </div>
+                                                    <!--To be completed-->
+                                                </li>
+                                                <!-- Display "no matching patients" if there are no results -->
+                                                <li class="list-group-item" ng-if="(patients | filter:filterPatients).length === 0"
+                                                    style="width: 75%; height:40px;">
+                                                    <div>
+                                                        <label style="font-size: 14px; color: red;">
+                                                            No matching patients found.
+                                                        </label>
+                                                    </div>
+                                                </li>
+                                            </ul>   
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- View selected representative -->
+                                <div ng-if="viewRepresentative">
+                                    <h3>{{ displayName(viewRepresentative) }}</h3>
+                                    <table border="1" style="width: 100%;" class="table table-hover table-bordered">
+                                        <tr>
+                                            <td style="width: 40%;"><b>First Name</b></td>
+                                            <td style="padding-left: 10px; height: 35px;">{{viewRepresentative.firstName}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><b>Last Name</b></td>
+                                            <td style="padding-left: 10px; height: 35px;">{{viewRepresentative.lastName}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><b>Date of Birth</b></td>
+                                            <td style="padding-left: 10px; height: 35px;">{{viewRepresentative.dateOfBirth}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><b>Phone</b></td>
+                                            <td style="padding-left: 10px; height: 35px;">{{viewRepresentative.phone}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><b>Email</b></td>
+                                            <td style="padding-left: 10px; height: 35px;">{{viewRepresentative.email}}</td>
+                                        </tr>
+                                    </table>
+                                    <div style="display: flex; flex-wrap: wrap; justify-content: space-between;">
+                                        <button class="btn btn-primary" style="width: 44%; margin-bottom: 10px;"
+                                            ng-click="representativeInfo('viewAccessLogPR')">Access Log</button>
+                                        <button class="btn btn-primary" style="width: 44%; margin-bottom: 10px;"
+                                            ng-click="representativeInfo('viewMedicalRecordsPR')">Medical Records</button>
+                                        <button class="btn btn-primary" style="width: 44%; margin-bottom: 10px;"
+                                            ng-click="representativeInfo('viewDiagnosesPR')" >Diagnoses</button>
+                                        <button class="btn btn-primary" style="width: 44%; margin-bottom: 10px;"
+                                            ng-click="representativeInfo('viewAppointmentPR')">Appointment</button>
+                                    </div>
+                                    <div style="display: none;">
+                                        <a href="/iTrust2/patient/representative/viewAccessLogPR" id="viewAccessLogPR"></a>
+                                        <a href="/iTrust2/patient/representative/viewMedicalRecordsPR" id="viewMedicalRecordsPR"></a>
+                                        <a href="/iTrust2/patient/representative/viewDiagnosesPR" id="viewDiagnosesPR"></a>
+                                        <a href="/iTrust2/patient/representative/viewAppointmentPR" id="viewAppointmentPR"></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+</html>

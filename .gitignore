@@ -2,6 +2,7 @@
 db/
 src/main/resources/application.yml
 # src/main/resources/application-test.yml
+docker-compose.yml
 
 # Gradle
 .gradle/
@@ -15,3 +16,4 @@ out/
 
 # Misc
 tmp
+bin

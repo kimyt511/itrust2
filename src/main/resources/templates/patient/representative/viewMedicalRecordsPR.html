@@ -1,0 +1,205 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="layout :: head(title=~{::title},links=~{})">
+  <title>View MedicalRecords</title>
+
+  <!-- Angular and Bootstrap files  -->
+  <link rel="stylesheet"
+        href="//netdna.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+  <script
+          src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+</head>
+
+<body>
+<div th:fragment="content">
+
+  <script th:inline="javascript">
+    /* Otherwise Thymeleaf tries to parse Javascript as XML and breaks itself sometimes.  Sigh */
+    /*<![CDATA[*/
+    const app = angular.module("viewMedicalRecordsPR", []);
+    app.controller('controllerPR', function ($scope, $http) {
+
+      var queryString = window.location.search;
+      var urlParams = new URLSearchParams(queryString);
+      var Json = urlParams.get('data');
+      $scope.patient = JSON.parse(decodeURIComponent(Json));
+
+      $scope.displayName = function (p) {
+        return p.firstName + " " + p.lastName + " (" + p.id + ")";
+      };
+
+      // Get all office visits of patient and display in table
+      $http.get("/iTrust2/api/v1/pr/officevisits/" +  $scope.patient.username).then(
+        function (response) {
+          $scope.officevisits = response.data;
+          $scope.message = "";
+        }, function (rejection) {
+          $scope.officevisits = [];
+          $scope.message = "Unable to fetch medical records";
+      });
+
+      // Select OV from list
+      $scope.selectedVisit = null;
+      $scope.selectVisit = function (ov) {
+        $scope.selectedVisit = ov;
+      }
+
+    });
+  </script>
+
+  <div ng-app="viewMedicalRecordsPR" ng-controller="controllerPR">
+
+    <!-- Info on tables from https://hello-angularjs.appspot.com/removetablerow -->
+    <div class="container">
+      <div class="panel panel-primary">
+        <div class="panel panel-heading">
+          <h2>Medical Records</h2>
+          <h4 style="color: red" ng-model="message"></h4>
+        </div>
+        <div class="panel panel-body">
+          <div style="display: flex; flex-direction: row;">
+            <!-- List Section -->
+            <div style="width: 25%;">
+              <h3>{{displayName(patient)}}</h3>
+              <ul class="list-group">
+                <li class="list-group-item" ng-repeat="ov in officevisits">
+                  <div style="display: flex; flex-direction: row;"
+                       ng-click="$parent.selectVisit(ov);">
+                    <label style="width: 40%; border-right: 1px solid #ddd;">{{ ov.date | date : 'MMM dd yyyy'}}</label>
+                    <label style="width: 60%; padding-left: 5%;">{{ ov.hospital.name }}</label>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <!-- Info Section -->
+            <div style="width: 75%; padding-left: 3%; display: flex; flex-direction: row; flex-wrap: wrap;">
+              <!-- Medical Record: Summary -->
+              <div ng-if="selectedVisit" style="width: 100%; margin-bottom: 4%;">
+                <h3>Record Details</h3>
+                <p><b>Date:</b> {{ selectedVisit.date | date : 'EEE MMM dd h:mm:ss a yyyy' }}</p>
+                <p><b>Hospital:</b> {{ selectedVisit.hospital.name }} ({{ selectedVisit.hospital.address }}, {{ selectedVisit.hospital.zip }})</p>
+                <p><b>HCP:</b> {{ selectedVisit.hcp.firstName + " " + selectedVisit.hcp.lastName }}</p>
+                <p><b>Type:</b> {{ selectedVisit.type }}</p>
+                <p><b>Notes:</b> {{ selectedVisit.notes }}</p>
+              </div>
+              <!-- Medical Record: Basic Health Metrics -->
+              <div ng-if="selectedVisit" style="width: 48%; margin-right: 2%;">
+                <div class="panel panel-info">
+                  <div class="panel panel-heading">
+                    <h3>Basic Health Metrics</h3>
+                  </div>
+                  <div class="panel panel-body">
+                    <table class="table table-hover table-bordered">
+                      <tr>
+                        <td><b>Height</b></td>
+                        <td>{{selectedVisit.basicHealthMetrics.height}}</td>
+                      </tr>
+                      <tr>
+                        <td><b>Weight</b></td>
+                        <td>{{selectedVisit.basicHealthMetrics.weight}}</td>
+                      </tr>
+                      <tr>
+                        <td><b>Head Circumference</b></td>
+                        <td>{{selectedVisit.basicHealthMetrics.headCircumference}}</td>
+                      </tr>
+                      <tr>
+                        <td><b>Systolic</b></td>
+                        <td>{{selectedVisit.basicHealthMetrics.systolic}}</td>
+                      </tr>
+                      <tr>
+                        <td><b>Diastolic</b></td>
+                        <td>{{selectedVisit.basicHealthMetrics.diastolic}}</td>
+                      </tr>
+                      <tr>
+                        <td><b>HDL</b></td>
+                        <td>{{selectedVisit.basicHealthMetrics.hdl}}</td>
+                      </tr>
+                      <tr>
+                        <td><b>LDL</b></td>
+                        <td>{{selectedVisit.basicHealthMetrics.ldl}}</td>
+                      </tr>
+                      <tr>
+                        <td><b>TRI</b></td>
+                        <td>{{selectedVisit.basicHealthMetrics.tri}}</td>
+                      </tr>
+                      <tr>
+                        <td><b>House Smoking Status</b></td>
+                        <td>{{selectedVisit.basicHealthMetrics.houseSmokingStatus}}</td>
+                      </tr>
+                      <tr>
+                        <td><b>Patient Smoking Status</b></td>
+                        <td>{{selectedVisit.basicHealthMetrics.patientSmokingStatus}}</td>
+                      </tr>
+                    </table>
+                  </div>
+                </div>
+              </div>
+              <!-- Medical Record: Diagnoses -->
+              <div ng-if="selectedVisit" style="width: 48%; margin-left: 2%;">
+                <div class="panel panel-info">
+                  <div class="panel panel-heading">
+                    <h3>Diagnoses</h3>
+                  </div>
+                  <div class="panel panel-body">
+                    <table class="table table-hover table-bordered">
+                      <thead>
+                        <tr>
+                          <th>Code</th>
+                          <th>Description</th>
+                          <th>Note</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr ng-repeat="d in selectedVisit.diagnoses">
+                          <td>{{d.code.code}}</td>
+                          <td>{{d.code.description}}</td>
+                          <td>{{d.note}}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+              <!-- Medical Record: Prescriptions -->
+              <div ng-if="selectedVisit" style="width: 100%; margin-top: 4%;">
+                <div class="panel panel-info">
+                  <div class="panel panel-heading">
+                    <h3>Prescriptions</h3>
+                  </div>
+                  <div class="panel panel-body">
+                    <table class="table table-hover table-bordered">
+                      <thead>
+                        <tr>
+                          <th>Code</th>
+                          <th>Name</th>
+                          <th>Dosage</th>
+                          <th>Start Date</th>
+                          <th>End Date</th>
+                          <th>Renewals</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr ng-repeat="p in selectedVisit.prescriptions">
+                          <td>{{p.drug.code}}</td>
+                          <td>{{p.drug.name}}</td>
+                          <td>{{p.dosage}}</td>
+                          <td>{{p.startDate}}</td>
+                          <td>{{p.endDate}}</td>
+                          <td>{{p.renewals}}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

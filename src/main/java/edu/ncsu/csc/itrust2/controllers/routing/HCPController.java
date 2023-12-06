@@ -138,4 +138,16 @@ public class HCPController {
     public String editOfficeVisit(final Model model) {
         return "/hcp/editOfficeVisit";
     }
+
+    /**
+     * Returns the form page for a HCP to view Personal Representatives
+     *
+     * @param model The data for the front end
+     * @return Page to display to the user
+     */
+    @GetMapping("/hcp/hcpPersonalRepresentatives")
+    @PreAuthorize("hasRole('ROLE_HCP')")
+    public String hcpPersonalRepresentatives(final Model model) {
+        return "/hcp/hcpPersonalRepresentatives";
+    }
 }
