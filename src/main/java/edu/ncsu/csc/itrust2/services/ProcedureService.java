@@ -5,11 +5,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import edu.ncsu.csc.itrust2.models.OfficeVisit;
+import edu.ncsu.csc.itrust2.models.DomainObject;
 import edu.ncsu.csc.itrust2.repositories.OfficeVisitRepository;
+import edu.ncsu.csc.itrust2.services.OfficeVisitService;
 import org.springframework.beans.factory.annotation.Autowired;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Lazy;
 
 import edu.ncsu.csc.itrust2.models.User;
 import edu.ncsu.csc.itrust2.models.Procedure;
@@ -26,6 +29,11 @@ public class ProcedureService extends Service {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    @Lazy
+    private OfficeVisitService officeVisitService;
+
 
     @Override
     protected JpaRepository getRepository () {
@@ -53,6 +61,17 @@ public class ProcedureService extends Service {
         pr.setProcedureStatus(form.getProcedureStatus());
         if (form.getId() != null) {
             pr.setId(form.getId());
+        }
+
+        if (form.getVisit() != null) {
+            DomainObject domainObject = officeVisitService.findById(form.getVisit());
+            if (domainObject instanceof OfficeVisit) {
+                OfficeVisit visit = (OfficeVisit) domainObject;
+                pr.setVisit(visit);
+            } else {
+                // Handle the case where the returned object is not an OfficeVisit
+                // For example, you might log an error or throw an exception
+            }
         }
 
         return pr;

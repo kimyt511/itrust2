@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import edu.ncsu.csc.itrust2.models.OfficeVisit;
+import edu.ncsu.csc.itrust2.models.DomainObject;
 import edu.ncsu.csc.itrust2.models.enums.*;
 import edu.ncsu.csc.itrust2.services.OfficeVisitService;
 import lombok.RequiredArgsConstructor;
@@ -287,6 +288,20 @@ public class APIProcedureController extends APIController {
                 (visit).getPatient().getUsername(),
                 "Retrieved procedures for office visit with id " + id);
         return visit.getProcedures();
+    }
+
+    @GetMapping("/officevisit/withprocedure/{procedureId}")
+    public ResponseEntity getOfficeVisitByProcedure(@PathVariable Long procedureId) {
+        List<? extends DomainObject> domainObjects = officeVisitService.findAll();
+        for (DomainObject domainObject : domainObjects) {
+            if (domainObject instanceof OfficeVisit) {
+                OfficeVisit visit = (OfficeVisit) domainObject;
+                if (visit.getProcedures().stream().anyMatch(proc -> proc.getId().equals(procedureId))) {
+                    return ResponseEntity.ok(visit);
+                }
+            }
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No OfficeVisit found containing the specified procedure.");
     }
 
 }

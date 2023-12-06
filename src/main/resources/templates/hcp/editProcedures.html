@@ -149,6 +149,14 @@
 						}
 					));
 
+					promises.push($http.get("/iTrust2/api/v1/officevisit/withprocedure/" + $scope.procedureForm.id).then(
+						function (response) {
+							$scope.procedureForm.visit = response.data.id;
+						}
+					));
+
+					console.log($scope.procedureForm);
+
 					$q.all(promises).then(function () {
 						var procedure = angular.copy($scope.procedureForm);
 

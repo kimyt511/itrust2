@@ -12,7 +12,7 @@
         /*<![CDATA[*/
 
             var app = angular.module('myApp', []);
-            app.controller("manageProceduresCtrl", function ($scope, $http) {
+            app.controller("manageProceduresCtrl", function ($scope, $http, $q) {
 
                 $scope.displayName = function (p) {
                     return p.code + " (" + p.name + ")";
@@ -112,42 +112,55 @@
                         return;
                     }
                     // Fill remnants
-                    $http.get("/iTrust2/api/v1/users/" + $scope.hcp).then(
-                        function (response) {
-                            $scope.procedureForm.hcp = response.data;
-                        }
-                    );
+                    var promises = [];
 
-                    $http.get("/iTrust2/api/v1/users/" + $scope.patient).then(
-                        function (response) {
-                            $scope.procedureForm.patient = response.data;
-                    });
+					promises.push($http.get("/iTrust2/api/v1/users/" + $scope.hcp).then(
+						function (response) {
+							$scope.procedureForm.hcp = response.data;
+						}
+					));
 
-                    var procedure = angular.copy($scope.procedureForm);
+					promises.push($http.get("/iTrust2/api/v1/users/" + $scope.patient).then(
+						function (response) {
+							$scope.procedureForm.patient = response.data;
+						}
+					));
 
-                    $http({
-                        method: "PUT",
-                        url: "/iTrust2/api/v1/procedure",
-                        data: procedure,
-                    }).then(
-                        function (response) {
-                            $scope.message = "Procedure updated successfully.";
+					promises.push($http.get("/iTrust2/api/v1/officevisit/withprocedure/" + $scope.procedureForm.id).then(
+						function (response) {
+							$scope.procedureForm.visit = response.data.id;
+						}
+					));
 
-                            // replace the procedure in session
-                            for (var i in $scope.procedures)
-                                if ($scope.procedures[i].id == response.data.id) {
-                                    $scope.procedures[i] = response.data;
-                                    $scope.selectProcedure(response.data, true);
+					console.log($scope.procedureForm);
+
+					$q.all(promises).then(function () {
+						var procedure = angular.copy($scope.procedureForm);
+
+                        $http({
+                            method: "PUT",
+                            url: "/iTrust2/api/v1/procedure",
+                            data: procedure,
+                        }).then(
+                            function (response) {
+                                $scope.message = "Procedure updated successfully.";
+
+                                // replace the procedure in session
+                                for (var i in $scope.procedures)
+                                    if ($scope.procedures[i].id == response.data.id) {
+                                        $scope.procedures[i] = response.data;
+                                        $scope.selectProcedure(response.data, true);
+                                    }
+                            },
+                            function (rejection) {
+                                if (rejection.data.msg) {
+                                    $scope.message = "Error: " + rejection.data.msg;
+                                } else {
+                                    $scope.message = "An error occured updating procedures.";
                                 }
-                        },
-                        function (rejection) {
-                            if (rejection.data.msg) {
-                                $scope.message = "Error: " + rejection.data.msg;
-                            } else {
-                                $scope.message = "An error occured updating procedures.";
                             }
-                        }
-                    );
+                        );
+					});
                 };
 
                 $scope.reassignLabtech = function (lt) {
@@ -162,27 +175,36 @@
                                 return;
                         }
 
-                        // You don't want to get $scope.procedureForm since it may have been altered by user without saving
-                        var procedure = angular.copy($scope.originalForm);
+                        var promises = [];
+                        promises.push($http.get("/iTrust2/api/v1/officevisit/withprocedure/" + $scope.procedureForm.id).then(
+                            function (response) {
+                                $scope.originalForm.visit = response.data.id;
+                            }
+                        ));
 
-						$http({
-							method : 'PUT',
-							url : '/iTrust2/api/v1/procedureReassign/' + lt,
-							data : procedure
-						}).then(function(response) {
-							$scope.message = "Procedure updated successfully.";
+                        $q.all(promises).then(function () {
+                            // You don't want to get $scope.procedureForm since it may have been altered by user without saving
+                            var procedure = angular.copy($scope.originalForm);
 
-                            // Alert and refresh
-                            alert("The procedure has been reassigned. Reloading the page.");
-                            location.reload();
-                            return;
-						}, function(rejection) {
-							if (rejection.data.msg) {
-								$scope.message = "Error: " + rejection.data.msg;
-							} else {
-								$scope.message = "An error occured updating demographics.";
-							}
-						})
+                            $http({
+                                method : 'PUT',
+                                url : '/iTrust2/api/v1/procedureReassign/' + lt,
+                                data : procedure
+                            }).then(function(response) {
+                                $scope.message = "Procedure updated successfully.";
+
+                                // Alert and refresh
+                                alert("The procedure has been reassigned. Reloading the page.");
+                                location.reload();
+                                return;
+                            }, function(rejection) {
+                                if (rejection.data.msg) {
+                                    $scope.message = "Error: " + rejection.data.msg;
+                                } else {
+                                    $scope.message = "An error occured updating demographics.";
+                                }
+                            })
+                        });
                     }
                     $scope.labtech = $scope.procedureForm.labtech.username;
                 };
