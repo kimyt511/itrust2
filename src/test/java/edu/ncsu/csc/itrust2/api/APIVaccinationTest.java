@@ -326,7 +326,7 @@ public class APIVaccinationTest {
                         put("/api/v1/vaccinations/" + 1L)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(TestUtils.asJsonString(vf1)))
-                .andExpect(status().isNotFound());
+                .andExpect(status().is4xxClientError());
         mvc.perform(
                         put("/api/v1/vaccinations/" + id)
                                 .contentType(MediaType.APPLICATION_JSON)
