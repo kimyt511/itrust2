@@ -51,6 +51,19 @@ public class HCPController {
     public String editPrescriptions() {
         return "/hcp/editPrescriptions";
     }
+
+    /**
+     * Returns the ER for the given model
+     *
+     * @param model model to check
+     * @return role
+     */
+    @RequestMapping(value = "hcp/records")
+    @PreAuthorize("hasRole('ROLE_HCP')")
+    public String emergencyRecords(final Model model) {
+        return "personnel/records";
+    }
+
     /**
      * Method responsible for HCP's Accept/Reject requested appointment functionality. This prepares
      * the page.
@@ -100,5 +113,29 @@ public class HCPController {
     @PreAuthorize ( "hasRole('ROLE_HCP')" )
     public String viewVaccinations ( final Model model ) {
         return "/hcp/viewVaccinations";
+    }
+
+    /**
+     * Returns the form page for a HCP to document an editProcedures
+     *
+     * @param model The data for the front end
+     * @return Page to display to the user
+     */
+    @GetMapping("/hcp/editProcedures")
+    @PreAuthorize("hasRole('ROLE_HCP')")
+    public String editProcedures(final Model model) {
+        return "/hcp/editProcedures";
+    }
+
+    /**
+     * Returns the form page for a HCP to document an editOfficeVisit
+     *
+     * @param model The data for the front end
+     * @return Page to display to the user
+     */
+    @GetMapping("/hcp/editOfficeVisit")
+    @PreAuthorize("hasRole('ROLE_HCP')")
+    public String editOfficeVisit(final Model model) {
+        return "/hcp/editOfficeVisit";
     }
 }

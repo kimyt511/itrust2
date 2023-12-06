@@ -1,0 +1,337 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:include="layout :: head(title=~{::title},links=~{})">
+<title>Edit office visits</title>
+</head>
+
+<body th:include="layout :: body" th:with="content=~{::content}">
+
+
+	<div th:fragment="content">
+
+		<script th:inline="javascript">
+			/* Otherwise Thymeleaf tries to parse Javascript as XML and breaks itself sometimes.  Sigh */
+			/*<![CDATA[*/
+			var app = angular.module("viewOfficeVisitHCPApp", []);
+			
+			/**
+			 * A filter to humanize the text to be more user friendly.
+			 */
+			 app.filter('humanize', function() {
+				return function(input) {
+					return !input ? input : input.toLowerCase().split('_')
+						.map((word) => word.charAt(0).toUpperCase() + word.substring(1))
+						.join(' ');
+				}
+            });
+
+			app.controller('viewOfficeVisitHCPCtrl', function ($scope, $http) {
+				$scope.selectedVisit = {};
+				$scope.visits = [];
+				$scope.loadVisits = function () {
+					$http.get("/iTrust2/api/v1/officevisits/HCP")
+						.then(function (response) {
+							$scope.visits = response.data;
+							if ($scope.visits.length == 0) {
+								$scope.errorMsg = "No office visits found."
+							}
+							console.log(response.data);
+						});
+				}
+
+				// For viewing additional info
+				$scope.selectedVisit = "";
+
+                $scope.three = false;
+                $scope.threeAndUp = false;
+                $scope.twelveAndUp = false;
+
+                $scope.diagnoses = [];
+                $scope.prescriptions = [];
+
+				$scope.visit = {};
+				$scope.visit.hcp = {};
+				$scope.visit.hospital = {};
+
+                $scope.procedures = [];
+
+                $scope.selectVisit = function(v) {
+                	$scope.selectedVisit = v.id;
+
+                	$scope.procedures = v.procedures;
+
+					// Identify age to update scope.three ~ scope.twelveAndUp
+                    if (!v.patient.dateOfBirth) {
+                        $scope.three = true;
+                        $scope.threeAndUp = true;
+                        $scope.twelveAndUp = true;
+                    }
+					else if (!dateTimeService.isValidDate($scope.visitInputDate)) {
+                        /* Do nothing */
+                    }
+					else {
+						const age = dateTimeService.getAge(new Date(v.patient.dateOfBirth), v.date);
+						if (age < 3) {
+                        	$scope.three = true;
+                    	}
+                    	if (age >= 3) {
+                        	$scope.threeAndUp = true;
+                    	}
+                    	if (age >= 12) {
+                        	$scope.twelveAndUp = true;
+                    	}
+					}
+
+					// Now update main fields
+					const basicHealthMetrics = v.basicHealthMetrics;
+
+					$scope.visit.height = basicHealthMetrics.height;
+					$scope.visit.weight = basicHealthMetrics.weight;
+					$scope.visit.headCircumference = basicHealthMetrics.headCircumference;
+					$scope.visit.systolic = basicHealthMetrics.systolic;
+					$scope.visit.diastolic = basicHealthMetrics.diastolic;
+					$scope.visit.hdl = basicHealthMetrics.hdl;
+					$scope.visit.ldl = basicHealthMetrics.ldl;
+					$scope.visit.tri = basicHealthMetrics.tri;
+					$scope.visit.houseSmokingStatus = basicHealthMetrics.houseSmokingStatus;
+					$scope.visit.patientSmokingStatus = basicHealthMetrics.patientSmokingStatus;
+					$scope.diagnoses = v.diagnoses;
+					$scope.prescriptions = v.prescriptions;
+					$scope.visit.type = v.type;
+					$scope.visit.hcp = v.hcp;
+					$scope.visit.hospital = v.hospital;
+                }
+
+                $scope.deleteProcedure = function(p){
+	        		if(p.procedureStatus !== "Assigned"){
+						$scope.message = "You can only delete procedure only if its status is 'ASSIGNED'";
+						return;
+	        		}
+	            	$http.delete('/iTrust2/api/v1/procedure/' + p.id).then(
+	            		function (response) {
+	                		$scope.loadProcedures();
+							$scope.message = "";
+	              		}, function (rejection) {
+							$scope.message = "Could not remove procedure";
+	              		});
+                }
+
+				$scope.loadVisits();
+			});
+			/*]]>*/
+		</script>
+
+		<div ng-app="viewOfficeVisitHCPApp"
+			ng-controller="viewOfficeVisitHCPCtrl">
+			<div style="float: left; width: 30%; height: 75%; overflow-y: auto">
+				<h2>Your office visits</h2>
+				<!-- Info on scrolling taken from here: https://www.w3schools.com/cssref/pr_pos_overflow.asp -->
+				<!-- and here: https://stackoverflow.com/questions/9560330/how-to-hide-a-vertical-scroll-bar-when-not-needed -->
+				<ul style="overflow: auto;height=90%;">
+					<!-- Information on how labels wor from here: https://stackoverflow.com/questions/7863251/clicking-the-text-to-select-corresponding-radio-button -->
+					<li ng-repeat="v in visits"><h4>
+						<label> <input type="radio"
+									   ng-model="$parent.selectedVisit" name="visit"
+									   value="{{v.id}}"
+									   ng-click='$parent.selectVisit(v)' />
+							{{v.date | date: MM-dd-yyyy}} ({{v.hcp.firstName}} {{v.hcp.lastName}} at {{v.hospital.name}})
+						</label>
+					</h4></li>
+				</ul>
+			</div>
+			<!-- information on vertical rule found here: https://stackoverflow.com/questions/571900/is-there-a-vr-vertical-rule-in-html  -->
+			<div
+					style="float: left; width: 33%; border-left: 1px solid #bbb; padding-left: 3%; height: 75%; overflow-y: auto">
+				<h2 id="header0">Detailed visit info</h2>
+				<div ng-show="selectedVisit">
+					<div class="col-md-11">
+						<div class="panel panel-info">
+							<div class="panel-heading">
+								<h4>Basic Health Metrics</h4>
+							</div>
+							<div class="panel-body">
+								<div class="form-group row">
+									<div class="col-xs-6">
+										<label>Height/Length:</label>
+									</div>
+									<div class="col-xs-6">{{visit.height}} inches</div>
+								</div>
+								<div class="form-group row">
+									<div class="col-xs-6">
+										<label>Weight:</label>
+									</div>
+									<div class="col-xs-6">{{visit.weight}} pounds</div>
+								</div>
+								<div class="form-group row" ng-show="three">
+									<div class="col-xs-6">
+										<label>Head Circumference:</label>
+									</div>
+									<div class="col-xs-6">{{visit.headCircumference}} inches</div>
+								</div>
+								<div class="form-group row" ng-show="threeAndUp">
+									<div class="col-xs-6">
+										<label>Systolic:</label>
+									</div>
+									<div class="col-xs-6">{{visit.systolic}} mmHg</div>
+								</div>
+								<div class="form-group row" ng-show="threeAndUp">
+									<div class="col-xs-6">
+										<label>Diastolic:</label>
+									</div>
+									<div class="col-xs-6">{{visit.diastolic}} mmHg</div>
+								</div>
+								<div class="form-group row" ng-show="twelveAndUp">
+									<div class="col-xs-6">
+										<label>HDL:</label>
+									</div>
+									<div class="col-xs-6">{{visit.hdl}} mg/dL</div>
+								</div>
+								<div class="form-group row" ng-show="twelveAndUp">
+									<div class="col-xs-6">
+										<label>LDL:</label>
+									</div>
+									<div class="col-xs-6">{{visit.ldl}} mg/dL</div>
+								</div>
+								<div class="form-group row" ng-show="twelveAndUp">
+									<div class="col-xs-6">
+										<label>Triglycerides:</label>
+									</div>
+									<div class="col-xs-6">{{visit.tri}} mg/dL</div>
+								</div>
+								<div class="form-group row">
+									<div class="col-xs-6">
+										<label>Household Smoking Status:</label>
+									</div>
+									<div class="col-xs-6">{{visit.houseSmokingStatus | humanize}}</div>
+								</div>
+								<div class="form-group row" ng-show="twelveAndUp">
+									<div class="col-xs-6">
+										<label>Patient Smoking Status:</label>
+									</div>
+									<div class="col-xs-6">{{visit.patientSmokingStatus | humanize}}</div>
+								</div>
+							</div>
+						</div>
+						<div class="panel panel-info">
+							<div class="panel-heading">
+								<h4>Diagnoses info</h4>
+							</div>
+							<div class="panel-body">
+								<div class="row" ng-repeat="d in diagnoses">
+									<div class="col-xs-12">{{d.code.code}} - {{d.code.description}}</div>
+								</div>
+								<div class="row" ng-show="!diagnoses.length">
+									<div class="col-xs-12">No information about diagnoses found.</div>
+								</div>
+							</div>
+						</div>
+						<div class="panel panel-info">
+							<div class="panel-heading">
+								<h4>Prescription info</h4>
+							</div>
+							<div class="panel-body">
+								<div class="row" ng-repeat="p in prescriptions">
+									<div class="form-group row">
+										<div class="col-xs-6">
+											<label>Drug:</label>
+										</div>
+										<div class="col-xs-6"> {{p.drug.name}}</div>
+									</div>
+									<div class="form-group row">
+										<div class="col-xs-6">
+											<label>Dosage:</label>
+										</div>
+										<div class="col-xs-6"> {{p.dosage}} mg</div>
+									</div>
+									<div class="form-group row">
+										<div class="col-xs-6">
+											<label>Start Date:</label>
+										</div>
+										<div class="col-xs-6"> {{p.startDate}}</div>
+									</div>
+									<div class="form-group row">
+										<div class="col-xs-6">
+											<label>End Date:</label>
+										</div>
+										<div class="col-xs-6"> {{p.endDate}}</div>
+									</div>
+									<div class="form-group row">
+										<div class="col-xs-6">
+											<label>Renewals:</label>
+										</div>
+										<div class="col-xs-6"> {{p.renewals}}</div>
+									</div>
+								</div>
+								<div class="row" ng-show="!prescriptions.length">
+									<div class="col-xs-12">No information about prescriptions found.</div>
+								</div>
+							</div>
+						</div>
+						<div class="panel panel-info">
+							<div class="panel-heading">
+								<h4>Miscellaneous info</h4>
+							</div>
+							<div class="panel-body">
+								<div class="row">
+									<div class="col-xs-6">
+										<label>Visit type:</label>
+									</div>
+									<div class="col-xs-6"> {{visit.type | humanize}}</div>
+								</div>
+								<div class="row">
+									<div class="col-xs-6">
+										<label>HCP in charge:</label>
+									</div>
+									<div class="col-xs-6"> {{visit.hcp.firstName}} {{visit.hcp.lastName}}</div>
+								</div>
+								<div class="row">
+									<div class="col-xs-6">
+										<label>Hospital:</label>
+									</div>
+									<div class="col-xs-6"> {{visit.hospital.name}} ({{visit.hospital.address}})</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div
+					style="float: left; width: 33%; border-left: 1px solid #bbb; padding-left: 3%; height: 75%; overflow-y: auto">
+				<h2>Procedures info</h2>
+				<div class="col-md-11">
+					<div class="panel panel-info" ng-repeat="pr in procedures">
+						<div class="panel-heading" >
+							<h4>{{pr.name}}</h4>
+						</div>
+						<div class="panel-body">
+							<div class="row">
+								<div class="form-group row">
+									<div class="col-xs-6">
+										<label>Procedure Code:</label>
+									</div>
+									<div class="col-xs-6"> {{pr.code}}</div>
+								</div>
+								<div class="form-group row">
+									<div class="col-xs-6">
+										<label>Labtech in Charge:</label>
+									</div>
+									<div class="col-xs-6"> {{pr.labtech.firstName}} {{pr.labtech.lastName}}</div>
+								</div>
+								<div class="form-group row">
+									<div class="col-xs-6">
+										<label>Status:</label>
+									</div>
+									<div class="col-xs-6"> {{pr.procedureStatus | humanize}}</div>
+								</div>
+								<input type="button" value="Delete" class="btn btn-danger" name="deleteProcedure" ng-click="deleteProcedure(pr)"/>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+
+</html>

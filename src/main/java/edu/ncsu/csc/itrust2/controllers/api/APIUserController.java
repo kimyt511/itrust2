@@ -28,6 +28,15 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import edu.ncsu.csc.itrust2.forms.UserForm;
+import edu.ncsu.csc.itrust2.models.Patient;
+import edu.ncsu.csc.itrust2.models.Personnel;
+import edu.ncsu.csc.itrust2.models.User;
+import edu.ncsu.csc.itrust2.models.enums.Role;
+import edu.ncsu.csc.itrust2.models.enums.TransactionType;
+import edu.ncsu.csc.itrust2.services.UserService;
+import edu.ncsu.csc.itrust2.utils.LoggerUtil;
+
 /**
  * Class that provides multiple API endpoints for interacting with the Users model.
  *
@@ -96,14 +105,12 @@ public class APIUserController extends APIController {
      * @param id The username of the user to be retrieved
      * @return response
      */
-    @GetMapping("/users/{id}")
-    public ResponseEntity getUser(@PathVariable("id") final String id) {
-        final User user = userService.findByName(id);
-        loggerUtil.log(TransactionType.VIEW_USER, id);
-        return null == user
-                ? new ResponseEntity(
-                        errorResponse("No User found for id " + id), HttpStatus.NOT_FOUND)
-                : new ResponseEntity(user, HttpStatus.OK);
+    @GetMapping ( "/users/{id}" )
+    public ResponseEntity getUser ( @PathVariable ( "id" ) final String id ) {
+        final User user = userService.findByName( id );
+        loggerUtil.log( TransactionType.VIEW_USER, id );
+        return null == user ? new ResponseEntity( errorResponse( "No User found for id " + id ), HttpStatus.NOT_FOUND )
+                : new ResponseEntity( user, HttpStatus.OK );
     }
 
     /**
@@ -254,7 +261,11 @@ public class APIUserController extends APIController {
 
         userService.save(patient);
 
-        loggerUtil.log(TransactionType.USERS_GENERATED, "");
+        final User labtech = new Personnel( new UserForm( "labtech", "123456", Role.ROLE_LABTECH, 1 ) );
+
+        userService.save( labtech );
+
+        loggerUtil.log( TransactionType.USERS_GENERATED, "" );
 
         return new ResponseEntity(HttpStatus.OK);
     }

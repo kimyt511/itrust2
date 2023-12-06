@@ -6,6 +6,11 @@ import edu.ncsu.csc.itrust2.models.OfficeVisit;
 import edu.ncsu.csc.itrust2.models.User;
 import edu.ncsu.csc.itrust2.repositories.DiagnosisRepository;
 import edu.ncsu.csc.itrust2.repositories.OfficeVisitRepository;
+
+import java.util.List;
+import java.util.stream.Collectors;
+import javax.transaction.Transactional;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;

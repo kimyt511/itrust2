@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.view.RedirectView;
 
+import edu.ncsu.csc.itrust2.models.enums.Role;
+
 /**
  * Default controller that handles redirecting the logged-in user to one of the appropriate landing
  * screens based on their user roles. If a new role is added to the system, add to the

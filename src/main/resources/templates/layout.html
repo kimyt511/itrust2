@@ -154,6 +154,8 @@
                                id="manageICDCodes">Manage ICD-10 Codes</a></li>
                         <li><a href="/iTrust2/admin/vaccines"
                             id="vaccines">Manage Vaccines</a></li>
+                        <li><a href="/iTrust2/admin/manageLOINC" id="loinc">Manage
+                            LOINC</a></li>
                     </ul>
                 </li>
                 <li class="dropdown"><a class="dropdown-toggle"
@@ -193,6 +195,8 @@
                                id="editOfficeVisit">Edit Office Visit</a></li>
                         <li><a href="/iTrust2/hcp/editPrescriptions"
                                id="editPrescriptions-personnel">Edit Prescriptions</a></li>
+                        <li><a href="/iTrust2/hcp/editProcedures"
+                               id="editProcedures">Edit Procedures</a></li>
                     </ul>
                 </li>
             </ul>
@@ -227,8 +231,6 @@
                                id="viewDiagnoses">Diagnoses</a></li>
                         <li><a href="/iTrust2/patient/officeVisit/viewPrescriptions"
                                id="viewPrescriptions">Prescriptions</a></li>
-                        <li><a href="/iTrust2/patient/officeVisit/viewVaccinations"
-                                id="viewVaccinations">Vaccinations</a></li>
 
                     </ul>
                 </li>
@@ -240,11 +242,15 @@
                     </ul>
                 </li>
             </ul>
+
             <!-- Labtech navbar -->
             <ul id="labtech-dropdown" class="nav navbar-nav">
                 <li class="dropdown"><a class="dropdown-toggle"
-                    data-toggle="dropdown" href="#" id="LabtechDropDown">Labtech<span class="caret"></span></a>
+                                        data-toggle="dropdown" href="#" id="LabtechDropDown">Labtech<span class="caret"></span></a>
                     <ul class="dropdown-menu">
+
+                        <!-- created a manageProcedure drop for Labtech to access, might be modified -->
+                        <li><a href="/iTrust2/labtech/manageProcedures" id="manageProcedures">Manage Procedures(UC17)</a></li>
                     </ul></li>
             </ul>
 

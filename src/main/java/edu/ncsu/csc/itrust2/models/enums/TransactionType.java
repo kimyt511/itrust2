@@ -309,8 +309,28 @@ public enum TransactionType {
     /** Virologist searches for contact lists */
     VIROLOGIST_SEARCH_BY_DEPTH(2902, "Search for Contacts by Depth", false),
 
-    /** Virologist views R0 value */
-    VIROLOGIST_VIEW_RNAUGHT(3001, "Virologist views calculated R0 value", false);
+    /**
+     * Virologist views R0 value
+     */
+    VIROLOGIST_VIEW_RNAUGHT ( 3001, "Virologist views calculated R0 value", false ),
+
+    /**
+     * Admin created a new lab procedure
+     */
+    LABPROCEDURE_CREATE ( 904, "Admin created a new lab procedure", true ),
+    /**
+     * Admin edited an existing lab procedure
+     */
+    LABPROCEDURE_EDIT ( 905, "Admin edited an existing lab procedure", true ),
+    /**
+     * Admin deleted an existing lab procedure
+     */
+    LABPROCEDURE_DELETE ( 906, "Admin deleted an existing lab procedure", true ),
+    /**
+     * Admin views all lab procedures in the system
+     */
+    LABPROCEDURE_VIEW ( 907, "Admin views all lab procedures in the system", true );
+
 
     /**
      * Creates a TransactionType for logging events

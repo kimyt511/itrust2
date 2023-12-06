@@ -90,4 +90,17 @@ public class AdminController {
         return "admin/vaccines";
     }
 
+    /**
+     * Add or delete LOINC
+     *
+     * @param model
+     *            data for front end
+     * @return mapping
+     */
+    @RequestMapping ( value = "admin/manageLOINC" )
+    @PreAuthorize ( "hasRole('ROLE_ADMIN')" )
+    public String manageLOINC ( final Model model ) {
+        return "/admin/manageLOINC";
+    }
+
 }

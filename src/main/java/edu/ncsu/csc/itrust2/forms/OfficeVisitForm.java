@@ -101,6 +101,9 @@ public class OfficeVisitForm implements Serializable {
 
     private List<VaccinationForm> vaccinations;
 
+    /** Add Procedure to Office Visit */
+    private List<ProcedureForm> procedures;
+
     /**
      * Creates an OfficeVisitForm from the OfficeVisit provided
      *
@@ -113,16 +116,10 @@ public class OfficeVisitForm implements Serializable {
         setNotes(ov.getNotes());
         setId(ov.getId().toString());
         setPreScheduled(((Boolean) (ov.getAppointment() != null)).toString());
-        setDiagnoses(new ArrayList<>());
-        setPrescriptions(new ArrayList<>());
-        setVaccinations(new ArrayList<>());
-        // setPrescriptions(
-        //         ov.getPrescriptions().stream()
-        //                 .map(PrescriptionForm::new)
-        //                 .collect(Collectors.toList()));
-        // setVaccinations(
-        //         ov.getVaccinations().stream()
-        //                 .map(VaccinationForm::new)
-        //                 .collect(Collectors.toList()));
+        // was initially new ArrayList<> -- Reason: Not sure why.
+        // changed diagnoses to be in sync with the rest (prescriptions and procedures)
+        setDiagnoses(ov.getDiagnoses().stream().map(DiagnosisForm::new).collect(Collectors.toList()));
+        setPrescriptions(ov.getPrescriptions().stream().map(PrescriptionForm::new).collect(Collectors.toList()));
+        setProcedures(ov.getProcedures().stream().map(ProcedureForm::new).collect(Collectors.toList()));
     }
 }

@@ -111,6 +111,12 @@ public class OfficeVisit extends DomainObject {
     @JsonManagedReference
     private List<Vaccination> vaccinations;
 
+    // Copied method above for procedures
+    @Setter
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "visit")
+    @JsonManagedReference
+    private List<Procedure> procedures;
+
     public void validateDiagnoses() {
         if (diagnoses == null) {
             return;
@@ -118,7 +124,7 @@ public class OfficeVisit extends DomainObject {
         for (final Diagnosis d : diagnoses) {
             if (d.getNote().length() > 500) {
                 throw new IllegalArgumentException(
-                        "Dagnosis note too long (500 character max) : " + d.getNote());
+                        "Diagnosis note too long (500 character max) : " + d.getNote());
             }
             if (d.getCode() == null) {
                 throw new IllegalArgumentException("Diagnosis Code missing!");
