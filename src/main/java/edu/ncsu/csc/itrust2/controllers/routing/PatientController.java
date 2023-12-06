@@ -126,4 +126,27 @@ public class PatientController {
     public String writeReview(final Model model) {
         return "/patient/writeReview";
     }
+
+    /**
+     * Create a page for the patient to view reviews of a hospital
+     *
+     * @param model data for front end
+     * @return The page for the patient to view reviews of a hospital
+     */
+    @GetMapping("/patient/viewHospitalReview")
+    @PreAuthorize("hasRole('ROLE_PATIENT')")
+    public String viewHospitalReview(final Model model) {
+        return "/patient/viewHospitalReview";
+    }
+
+    /**
+     * Create a page for the patient to view reviews of an HCP
+     *
+     * @param model data for front end
+     * @return The page for the patient to view reviews of an HCP
+     */
+    @GetMapping("/patient/viewHcpReview")
+    @PreAuthorize("hasRole('ROLE_PATIENT')")
+    public String viewHcpReview(final Model model) { return "/patient/viewHcpReview";
+    }
 }
