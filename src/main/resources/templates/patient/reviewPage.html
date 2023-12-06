@@ -5,6 +5,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.5.0/ui-bootstrap-tpls.min.js"></script>
 
+
 </head>
 <body th:include="layout :: body" th:with="content=~{::content}">
 <div th:fragment="content">
@@ -92,14 +93,8 @@
                 var left = 430;
                 var top = 200;
 
-                // Convert the patient object to a JSON string
-                var patientJson = JSON.stringify($scope.currentPatient);
-
-                // Construct the URL with the JSON string as a query parameter
-                var urlWithParams = url + "?data=" + encodeURIComponent(patientJson);
-
                 // Open a new window for the form
-                var $popup = window.open(urlWithParams, windowName, "width=" + width + ",height=" + height + "," +
+                var $popup = $window.open(url, windowName, "width=" + width + ",height=" + height + "," +
                     "left=" + left + ",top=" + top);
 
             };
@@ -111,7 +106,7 @@
                 $scope.selectedHospital = entry;
 
                 var url = document.querySelector('a[href="/iTrust2/patient/viewHospitalReview"]').getAttribute('href');
-                var windowName = "Entry popup";
+                var windowName = "Entrypopup";
                 var width = 700;
                 var height = 700;
                 var left = 400;
@@ -122,6 +117,7 @@
 
                 // Construct the URL with the JSON string as a query parameter
                 var urlWithParams = url + "?data=" + encodeURIComponent(reviewEntryJson);
+                console.log("Constructed URL:", urlWithParams);
 
                 // Open a new window for the form
                 var $popup = $window.open(urlWithParams, windowName, "width=" + width + ",height=" + height + "," +
