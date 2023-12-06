@@ -50,6 +50,38 @@
             );
             ///////////////////////get current user(patient)//////////////////////////////////////////
 
+            ///////////////////////////////////Load Hospital list /////////////////////////////////////////////////
+            $scope.loadHospitals = function () {
+                $http.get("/iTrust2/api/v1/hospitals").then(
+                    function (response) {
+                        // console.log(response.data);
+                        $scope.Hospitals = response.data;
+                        $scope.message = "";
+                    }, function (rejection) {
+                        $scope.Hospitals = [];
+                        $scope.message = "Could not load hospitals";
+                    }
+                );
+            };
+            $scope.loadHospitals();
+            ///////////////////////////////////Load Hospital list/////////////////////////////////////////////////
+
+            ///////////////////////////////////Load HCP list /////////////////////////////////////////////////
+            $scope.loadHcps = function () {
+                $http.get("/iTrust2/api/v1/personnel/getbyroles/ROLE_HCP").then(
+                    function (response) {
+                        // console.log(response.data);
+                        $scope.Hcps = response.data;
+                        $scope.message = "";
+                    }, function (rejection) {
+                        $scope.Hcps = [];
+                        $scope.message = "Could not load Hcps";
+                    }
+                );
+            };
+            $scope.loadHcps();
+            ///////////////////////////////////Load HCP list/////////////////////////////////////////////////
+
             ///////////////////////////////////Write review Pop-up/////////////////////////////////////////////////
             $scope.writeReview = function () {
                 // Specify the URL, window name, and window properties
@@ -72,23 +104,6 @@
 
             };
             ///////////////////////////////////Write Pop-up/////////////////////////////////////////////////
-
-            //Todo
-            ///////////////////////////////////Load review Entries/////////////////////////////////////////////////
-            $scope.loadTable = function () {
-                $http.get("/iTrust2/api/v1/diary/mydiary").then(
-                    function (response) {
-                        // console.log(response.data);
-                        $scope.myDiary = response.data;
-                        $scope.message = "";
-                    }, function (rejection) {
-                        $scope.myDiary = [];
-                        $scope.message = "Could not load Diary";
-                    }
-                );
-            };
-            $scope.loadTable();
-            ///////////////////////////////////Load review Entries/////////////////////////////////////////////////
 
             //Todo, if required. You can check uc19 how this function is used
             ///////////////////////////////////Load selected entry /////////////////////////////////////////////////
@@ -121,15 +136,20 @@
 
     <!---------------------------------------------Style CSS------------------------------------------------------>
     <style>
-        @import url('https://fonts.googleapis.com/css?family=Questrial&display=swap');
 
-        .table-container {
-            grid-column: 1 / -1; /* Set the grid column to take up the left-top cell */
-            grid-row: 1 / -1;   /* Set the grid row to take up the left-top cell */
-            width: 70%;
+        .table-container1 {
+            grid-column: 1 / 2;
+            grid-row: 1 / 4;
+            width: 100%;
             height: 90%;
-            margin-top: 10px;
-            margin: auto;
+            overflow-y: auto;
+        }
+
+        .table-container2 {
+            grid-column: 2 / 3;
+            grid-row: 1 / 4;
+            width: 100%;
+            height: 90%;
             overflow-y: auto;
         }
 
@@ -150,13 +170,22 @@
             height: 30px; /* Adjust the height of each row */
         }
 
-
         .grid-container {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             grid-template-rows: repeat(2, 1fr);
             gap: 10px; /* Adjust the gap between cells */
             width: 100%;
+        }
+
+        .headingContainer {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .section {
+            font-size: 20px;
+            width: 50%;
         }
 
     </style>
@@ -168,45 +197,77 @@
         <!-- information on vertical rule found here: https://stackoverflow.com/questions/571900/is-there-a-vr-vertical-rule-in-html  -->
         <div style="margin: 0 auto; width: 60%; height: 100%; overflow-y: auto;">
             <div style="height: 90%" >
-                <h2 id="header0" >My Reviews</h2>
+                <h2 id="header0" >Reviews</h2>
                 <div>
-                    <h4 style = "padding-left: 2%": >Username: {{displayName(currentPatient)}}</h4>
-                    <hr style="margin: 10px 0;"> <!-- Horizontal line -->
+                    <h4 style = "padding-left: 2%": >
+                        Hello, {{displayName(currentPatient)}}
+                        <!-- A button to write a review -->
+                        <button ng-click="writeReview()" style="float: right" class="btn btn-info">
+                            write a review
+                        </button>
+                        <!-- A button to write a review -->
+                    </h4>
+                    <hr style="margin: 20px 0;"> <!-- Horizontal line -->
+
+                    <!---------Table names------>
+                    <div class = "headingContainer">
+                        <div class="section">
+                            Hospitals:
+                        </div>
+                        <div class="section">
+                            HCPs:
+                        </div>
+                    </div>
+                    <!---------Table names------>
 
                     <div class="grid-container" >
                         <!-----------------------------Entry Table----------------------------------------->
-                        <!-- Display All reviews -->
-                        <div class="table-container" >
-                            <caption>
-                                <div style="font-size: 20px; margin-bottom: 2%;">
-                                    Reviews:
-                                    <!-- A button to write a review -->
-                                    <button ng-click="writeReview()" style="float: right" class="btn btn-info">
-                                        write a review
-                                    </button>
-                                    <!-- A button to write a review -->
-                                </div>
-                            </caption>
+                        <!---------------------Display all hospitals ---------------------->
+                        <div class="table-container1" style="height: 80%;">
                             <hr style="margin: 10px 0;"> <!-- Horizontal line -->
                             <div>
                                 <!--Display message if there is no entry-->
-                                <div ng-if="myDiary.length === 0">
-                                    <p>You have no reviews yet.</p>
+                                <div ng-if="Hospitals.length === 0">
+                                    <p>No hospitals, yet.</p>
                                 </div>
                                 <!--Display message if there is no entry-->
 
                                 <table class="entry-table table-bordered">
                                     <tbody>
-                                    <tr name="foodDiaryTableRow"
-                                        ng-repeat="f in myDiary | sortByDate"
-                                        ng-click="loadEntry(f); getDayEntries(f); calculateDayEntries()" style="cursor:pointer;">
-                                        <td name="entryCell"><strong >{{f.foodName}}</strong>
-                                            &nbsp;({{f.date}})</td>
+                                    <tr name="hospitalsTableRow"
+                                        ng-repeat="hospital in Hospitals "
+                                        ng-click="" style="cursor:pointer;">
+                                        <td name="entryCell"><strong >{{hospital.name}}</strong>
+                                            &nbsp;({{hospital.address}})</td>
                                     </tr>
                                     </tbody>
                                 </table>
                             </div>
                         </div>
+                        <!---------------------Display all hospitals ---------------------->
+
+                        <!---------------------Display all Hcps ---------------------->
+                        <div class="table-container2" style="height: 80%;" >
+                            <hr style="margin: 10px 0;"> <!-- Horizontal line -->
+                            <div>
+                                <!--Display message if there is no entry-->
+                                <div ng-if="Hospitals.length === 0">
+                                    <p>No HCPs, yet.</p>
+                                </div>
+                                <!--Display message if there is no entry-->
+                                <table class="entry-table table-bordered">
+                                    <tbody>
+                                    <tr name="hcpsTableRow"
+                                        ng-repeat="hcp in Hcps "
+                                        ng-click="" style="cursor:pointer;">
+                                        <td name="entryCell"><strong >{{hcp.username}}</strong>
+                                            &nbsp;({{hcp.username}})</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <!---------------------Display all Hcps ---------------------->
                         <!-----------------------------Entry Table----------------------------------------->
                     </div>
                 </div>
