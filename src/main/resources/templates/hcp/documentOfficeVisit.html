@@ -102,11 +102,11 @@
                         return;
                     }
 
-                    if (!$scope.visit.actualPatient && patient) {
-                        $scope.visit.actualPatient = patient;
+                    if (!$scope.visit.patient && patient) {
+                        $scope.visit.patient = patient;
                     } else if (!patient) {
-                        if ($scope.visit.actualPatient) {
-                            patient = $scope.visit.actualPatient;
+                        if ($scope.visit.patient) {
+                            patient = $scope.visit.patient;
                         } else {
                             // We don't have enough information to continue
                             return;
@@ -202,13 +202,12 @@
                         }
                     });
 
-                /*Getting a list of lionc codes*/
-                /*
+                /*Getting a list of loinc codes*/
+
                 $http.get("/iTrust2/api/v1/loinccodes").then(
                     function (response) {
                         $scope.loinccodes = response.data;
                     });
-*/
 
                 /*Checks Basic Health Metrics for correctness*/
                 function checkBasicHealthMetrics() {
@@ -382,7 +381,8 @@
                                 p.patient = $scope.visit.patient;
                             });
 
-                            $scope.visit.labProcedures = $scope.procedures;
+                            $scope.visit.procedures = $scope.procedures;
+                            $scope.visit.hcp = $scope.hcp.username;
 
                             $http({
                                 method: 'POST',
@@ -445,7 +445,6 @@
                     $scope.priorityEntry = "";
                     $scope.techEntry = "";
                 }
-
 
                 // Capture each diagnosis into an array
                 $scope.diagnoses = [];
@@ -571,6 +570,7 @@
                 resetDiagnosisForm();
                 resetPrescriptionForm();
                 resetVaccinationForm();
+                resetProcedureForm();
 
                 $http.get("/iTrust2/api/v1/users/" + [[${#httpServletRequest.remoteUser}]]).then(
                     function (response) {
