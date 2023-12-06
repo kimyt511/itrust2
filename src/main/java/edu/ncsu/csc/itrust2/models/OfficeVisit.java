@@ -107,7 +107,7 @@ public class OfficeVisit extends DomainObject {
 
     // Copied method above for procedures
     @Setter
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "visit")
     @JsonManagedReference
     private List<Procedure> procedures;
 

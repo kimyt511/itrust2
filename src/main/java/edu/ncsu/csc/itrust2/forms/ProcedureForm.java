@@ -18,6 +18,10 @@ import lombok.Setter;
  *
  *
  */
+
+@Setter
+@Getter
+@NoArgsConstructor
 public class ProcedureForm {
 
     private Long   id;
@@ -30,89 +34,29 @@ public class ProcedureForm {
     private String comment;
     private Priority priority;
     private ProcedureStatus procedureStatus;
-
-    /**
-     * Empty constructor for filling in fields without a Procedure object.
-     */
-
-
-    public ProcedureForm () {
-    }
-
-
+    private Long visit;
 
     /**
      * Constructs a new form with information from the given Procedure.
      *
-     * @param Procedure
+     * @param procedure
      *            the Procedure object
      */
-    public ProcedureForm ( final Procedure Procedure ) {
-        setId( Procedure.getId() );
-        setCode( Procedure.getCode() );
-        setName( Procedure.getName() );
-        setHcp(Procedure.getHcp());
-        setLabtech(Procedure.getLabtech());
-        setPatient(Procedure.getPatient());
-        setComment(Procedure.getComment());
-        setPriority(Procedure.getPriority());
-        setProcedureStatus(Procedure.getProcedureStatus());
+    public ProcedureForm ( final Procedure procedure ) {
+        setId( procedure.getId() );
+        setCode( procedure.getCode() );
+        setName( procedure.getName() );
+        setHcp(procedure.getHcp());
+        setLabtech(procedure.getLabtech());
+        setPatient(procedure.getPatient());
+        setComment(procedure.getComment());
+        setPriority(procedure.getPriority());
+        setProcedureStatus(procedure.getProcedureStatus());
+
+        if(procedure.getVisit() != null){
+            setVisit(procedure.getVisit().getId());
+        }
     }
 
-
-    public Long getId() {
-        return id;
-    }
-    public void setId(final Long id) {
-        this.id = id;
-    }
-    public String getCode() {
-        return code;
-    }
-    public void setCode(final String code) {
-        this.code = code;
-    }
-    public String getName() {
-        return name;
-    }
-    public void setName(final String name) {
-        this.name = name;
-    }
-    public User getHcp() {
-        return hcp;
-    }
-    public void setHcp(final User hcp) {
-        this.hcp = hcp;
-    }
-    public User getLabtech() {
-        return labtech;
-    }
-    public void setLabtech(final User labtech) {
-        this.labtech = labtech;
-    }
-    public User getPatient() {
-        return patient;
-    }
-    public void setPatient(final User patient) {
-        this.patient = patient;
-    }
-    public String getComment() {
-        return comment;
-    }
-    public void setComment(final String comment) {
-        this.comment = comment;
-    }
-    public Priority getPriority() {
-        return priority;
-    }
-    public void setPriority(final Priority priority) {
-        this.priority = priority;
-    }
-    public ProcedureStatus getProcedureStatus() {
-        return procedureStatus;
-    }
-    public void setProcedureStatus(final ProcedureStatus procedureStatus) {
-        this.procedureStatus = procedureStatus;
-    }
 
 }

@@ -134,6 +134,10 @@ public class OfficeVisitService extends Service {
         if (pr != null) {
             ov.setProcedures(
                     pr.stream().map(procedureService::build).collect(Collectors.toList()));
+
+            for(final Procedure p : ov.getProcedures()){
+                p.setVisit(ov);
+            }
         }
 
         final Patient p = (Patient) ov.getPatient();
