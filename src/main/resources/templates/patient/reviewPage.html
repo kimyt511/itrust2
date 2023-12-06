@@ -100,7 +100,7 @@
             };
             ///////////////////////////////////Write Pop-up/////////////////////////////////////////////////
 
-            ///////////////////////////////////Load reviews selected hospital /////////////////////////////////////////////////
+            ///////////////////////////////////Open pop-up to Load reviews of selected hospital /////////////////////////////////////////////////
             $scope.selectedHospital = "";
             $scope.loadHospital = function (entry) {
                 $scope.selectedHospital = entry;
@@ -123,9 +123,9 @@
                 var $popup = $window.open(urlWithParams, windowName, "width=" + width + ",height=" + height + "," +
                     "left=" + left + ",top=" + top);
             };
-            ///////////////////////////////////Load reviews selected hospital /////////////////////////////////////////////////
+            /////////////////////////////////// Open pop-up to Load reviews of selected hospital /////////////////////////////////////////////////
 
-            ///////////////////////////////////Load reviews selected HCP /////////////////////////////////////////////////
+            ///////////////////////////////////Open pop-up to  Load reviews of selected HCP /////////////////////////////////////////////////
             $scope.selectedHcp = "";
             $scope.loadHcp = function (entry) {
                 $scope.selectedHcp = entry;
@@ -147,8 +147,49 @@
                 var $popup = $window.open(urlWithParams, windowName, "width=" + width + ",height=" + height + "," +
                     "left=" + left + ",top=" + top);
             };
-            ///////////////////////////////////Load reviews selected HCP /////////////////////////////////////////////////
+            ///////////////////////////////////Open pop-up to Load reviews of selected HCP //////////////////////////////////////
 
+            ///////////////////////////////////Load average rating for ONE HCP/////////////////////////////////////////////////
+            $scope.loadHcpRating = function (entry) {
+                $http.get("/iTrust2/api/v1/reviews/average/hcp/" + entry.username).then(
+                    function (response) {
+                        //todo
+                        return response.data
+                        //todo
+                    }, function (rejection) {
+                        $scope.message = "Could not load average for HCP";
+                    }
+                );
+            };
+            ///////////////////////////////////Load average rating for ONE HCP/////////////////////////////////////////////////
+
+            ///////////////////////////////////Load average rating for ONE HCP/////////////////////////////////////////////////
+            $scope.loadHospitalRating = function (entry) {
+                $http.get("/iTrust2/api/v1/reviews/average/hospital/" + entry.name).then(
+                    function (response) {
+                        var rating = parseFloat(response.data);
+
+                        // Check if parsing was successful, otherwise return 0 or handle it as needed
+                        if (isNaN(rating)) {
+                            rating = 0;
+                        }
+                        return rating;
+                    }, function (rejection) {
+                        $scope.message = "Could not load average for Hospital";
+                    }
+                );
+            };
+            ///////////////////////////////////Load average rating for ONE HCP/////////////////////////////////////////////////
+
+            //todo
+            $scope.hcpRatingsMap = {};
+            $scope.loadHcpRatings = function () {
+                // Assuming hcps is an array of objects with a 'username' property for each HCP
+                angular.forEach($scope.hcps, function (hcp) {
+                    $scope.hcpRatingsMap[hcp.username] = $scope.loadHcpRating(hcp);
+                });
+            };
+            $scope.loadHcpRatings();
         });
         /*]]>*/
     </script>
@@ -257,7 +298,9 @@
                                         ng-repeat="hospital in Hospitals "
                                         ng-click="loadHospital(hospital)" style="cursor:pointer;">
                                         <td name="entryCell"><strong >{{hospital.name}}</strong>
+                                            <!--rating-->
                                             &nbsp;({{hospital.address}})</td>
+                                            <!--rating-->
                                     </tr>
                                     </tbody>
                                 </table>
@@ -280,7 +323,9 @@
                                         ng-repeat="hcp in Hcps "
                                         ng-click="loadHcp(hcp)" style="cursor:pointer;">
                                         <td name="entryCell"><strong >{{hcp.username}}</strong>
-                                            &nbsp;({{hcp.username}})</td>
+                                            <!--rating-->
+                                            &nbsp;({{hcpRatingsMap[hcp.username]}})</td>
+                                            <!--rating-->
                                     </tr>
                                     </tbody>
                                 </table>
