@@ -1,0 +1,489 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="layout :: head(title=~{::title},links=~{::script})">
+    <title>Food Diary</title>
+    <script th:src="@{/js/dateTimeService.js}" src="../js/dateTimeService.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.5.0/ui-bootstrap-tpls.min.js"></script>
+
+</head>
+<body th:include="layout :: body" th:with="content=~{::content}">
+<div th:fragment="content">
+
+    <script th:inline="javascript">
+        /* Otherwise Thymeleaf tries to parse Javascript as XML and breaks itself sometimes.  Sigh */
+        /*<![CDATA[*/
+
+        const app = angular.module('FoodApp', ['dateTimeServices', 'ui.bootstrap','ng']);
+
+        ///////////////////////////For sorting food entreis by date//////////////////////////////////
+        app.filter('sortByDate', function() {
+            return function(items) {
+                return items.slice().sort(function(a, b) {
+                    // Assuming a and b are objects with a 'date' property
+                    var dateA = new Date(a.date);
+                    var dateB = new Date(b.date);
+
+                    // Compare the date values in descending order
+                    return dateB - dateA;
+                });
+            };
+        });
+        ///////////////////////////For sorting food entreis by date//////////////////////////////////
+
+        app.controller('viewFoodDiaryCtrl', function ($scope, $http,$window,$filter,dateTimeService) {
+
+            ////////////////////////Function to Display patient name////////////////////////
+            $scope.displayName = function (p) {
+                return p.firstName + " " + p.lastName + " (" + p.username + ")";
+            }
+            ////////////////////////Function to Display patient name////////////////////////
+
+            ///////////////////////get current user(patient)//////////////////////////////////////////
+            $http.get("/iTrust2/api/v1/patient").then(function (response) {
+                    $scope.currentPatient = response.data;
+                }, function (rejection) {
+                    console.error("Could not retrieve expected Patient record");
+                }
+            );
+            ///////////////////////get current user(patient)//////////////////////////////////////////
+
+            ///////////////////////////////////Add Entry Pop-up/////////////////////////////////////////////////
+            $scope.addEntry = function () {
+                // Specify the URL, window name, and window properties
+                var url = document.querySelector('a[href="/iTrust2/patient/addFoodDiary"]').getAttribute('href');
+                var windowName = "popup";
+                var width = 700;
+                var height = 700;
+                var left = 400;
+                var top = 150;
+
+                // Open a new window for the form
+                var $popup = $window.open(url, windowName, "width=" + width + ",height=" + height + "," +
+                    "left=" + left + ",top=" + top);
+
+                //////refresh after closing the window///////////////////
+                $popup.addEventListener('unload', function () {
+                    // Refresh the parent window when the popup is closed
+                    $scope.loadTable();
+                });
+                //////refresh after closing the window///////////////////
+
+            };
+            ///////////////////////////////////Add Entry Pop-up/////////////////////////////////////////////////
+
+            ///////////////////////////////////Load Food Diary Entries/////////////////////////////////////////////////
+            $scope.loadTable = function () {
+                $http.get("/iTrust2/api/v1/diary/mydiary").then(
+                    function (response) {
+                        // console.log(response.data);
+                        $scope.myDiary = response.data;
+                        $scope.message = "";
+                    }, function (rejection) {
+                        $scope.myDiary = [];
+                        $scope.message = "Could not load Diary";
+                    }
+                );
+            };
+            $scope.loadTable();
+            ///////////////////////////////////Load Food Diary Entries/////////////////////////////////////////////////
+
+            ///////////////////////////////////Load selected entry /////////////////////////////////////////////////
+            $scope.selectedEntry = "";
+            $scope.loadEntry = function (diaryentry) {
+                $scope.selectedEntry = diaryentry;
+
+                var url = document.querySelector('a[href="/iTrust2/patient/viewDiaryEntry"]').getAttribute('href');
+                var windowName = "Entrypopup";
+                var width = 700;
+                var height = 500;
+                var left = 400;
+                var top = 100;
+
+                // Convert the diaryentry object to a JSON string
+                var diaryentryJson = JSON.stringify(diaryentry);
+
+                // Construct the URL with the JSON string as a query parameter
+                var urlWithParams = url + "?data=" + encodeURIComponent(diaryentryJson);
+
+                // Open a new window for the form
+                var $popup = $window.open(urlWithParams, windowName, "width=" + width + ",height=" + height + "," +
+                    "left=" + left + ",top=" + top);
+            };
+            ///////////////////////////////////Load selected entry /////////////////////////////////////////////////
+
+            ///////////////////////////////////Load day table /////////////////////////////////////////////////
+            //////////////// Function to retrieve entries with the same date///////////////
+            $scope.getDayEntries = function(selectedEntry) {
+                // Extract the date part from the selected entry
+                var selectedDate = $filter('date')(selectedEntry.date, 'yyyy-MM-dd');
+
+                // Filter entries with the same date
+                $scope.dayEntries = $scope.myDiary.filter(function(entry) {
+                    var entryDate = $filter('date')(entry.date, 'yyyy-MM-dd');
+                    return entryDate === selectedDate;
+                });
+
+                if ($scope.dayEntries.length === 0) {
+                    console.log('No entries found for the selected date.');
+                }
+                else {
+                    console.log('entries found.');
+                }
+            };
+
+            /////////////////////////Calculate total of the day ///////////////////////////
+            $scope.calculateDayEntries = function(){
+                 $scope.totalCalories = 0;
+                 $scope.totalFat = 0;
+                 $scope.totalSodium = 0;
+                 $scope.totalCarb = 0;
+                 $scope.totalSugar = 0;
+                 $scope.totalFiber = 0;
+                 $scope.totalProtein = 0;
+
+                // Iterate through dayEntries and sum up the calories
+                angular.forEach($scope.dayEntries, function(entry) {
+                    $scope.totalCalories += entry.calories;
+                    $scope.totalFat += entry.fat;
+                    $scope.totalSodium += entry.sodium;
+                    $scope.totalCarb += entry.carb;
+                    $scope.totalSugar += entry.sugar;
+                    $scope.totalFiber += entry.fiber;
+                    $scope.totalProtein += entry.protein;
+                });
+            }
+            /////////////////////////Calculate total of the day ///////////////////////////
+            ///////////////////////////////////Load day table /////////////////////////////////////////////////
+
+            ///////////////////////////////Calendar, Source: https://sirius7.tistory.com/35////////////////////////////
+            // input값이 한자리 숫자인 경우 앞에 '0' 붙혀주는 함수
+            $scope.leftPad = function(value) {
+                if (value < 10) {
+                    value = "0" + value;
+                    return value;
+                }
+                return value;
+            }
+
+            // 날짜 선택
+            $scope.choiceDate = function(newDIV) {
+                if (document.getElementsByClassName("choiceDay")[0]) {                              // 기존에 선택한 날짜가 있으면
+                    document.getElementsByClassName("choiceDay")[0].classList.remove("choiceDay");  // 해당 날짜의 "choiceDay" class 제거
+                }
+                newDIV.classList.add("choiceDay");           // 선택된 날짜에 "choiceDay" class 추가
+            }
+
+            // 이전달 버튼 클릭
+            $scope.prevCalendar = function() {
+                $scope.nowMonth = new Date($scope.nowMonth.getFullYear(), $scope.nowMonth.getMonth() - 1,
+                    $scope.nowMonth.getDate());   // 현재 달을 1 감소
+                $scope.buildCalendar();    // 달력 다시 생성
+            }
+            // 다음달 버튼 클릭
+            $scope.nextCalendar = function(){
+                $scope.nowMonth = new Date($scope.nowMonth.getFullYear(), $scope.nowMonth.getMonth() + 1,
+                    $scope.nowMonth.getDate());   // 현재 달을 1 증가
+                $scope.buildCalendar();    // 달력 다시 생성
+            }
+
+            $scope.nowMonth = new Date();  // 현재 달을 페이지를 로드한 날의 달로 초기화
+            $scope.today = new Date();     // 페이지를 로드한 날짜를 저장
+            $scope.today.setHours(0, 0, 0, 0);    // 비교 편의를 위해 today의 시간을 초기화
+
+            // 달력 생성 : 해당 달에 맞춰 테이블을 만들고, 날짜를 채워 넣는다.
+            $scope.buildCalendar = function() {
+                $scope.firstDate = new Date($scope.nowMonth.getFullYear(), $scope.nowMonth.getMonth(), 1);     // 이번달 1일
+                $scope.lastDate = new Date($scope.nowMonth.getFullYear(), $scope.nowMonth.getMonth() + 1, 0);  // 이번달 마지막날
+
+                $scope.tbody_Calendar = document.querySelector(".Calendar > tbody");
+                document.getElementById("calYear").innerText = $scope.nowMonth.getFullYear();             // 연도 숫자 갱신
+                document.getElementById("calMonth").innerText = $scope.leftPad($scope.nowMonth.getMonth() + 1);  // 월 숫자 갱신
+
+                while ($scope.tbody_Calendar.rows.length > 0) {                        // 이전 출력결과가 남아있는 경우 초기화
+                    $scope.tbody_Calendar.deleteRow($scope.tbody_Calendar.rows.length - 1);
+                }
+
+                $scope.nowRow = $scope.tbody_Calendar.insertRow();        // 첫번째 행 추가
+
+                for (let j = 0; j < $scope.firstDate.getDay(); j++) {  // 이번달 1일의 요일만큼
+                    $scope.nowColumn = $scope.nowRow.insertCell();        // 열 추가
+                }
+
+                for ($scope.nowDay = $scope.firstDate; $scope.nowDay <= $scope.lastDate;
+                     $scope.nowDay.setDate($scope.nowDay.getDate() + 1)) {   // day는 날짜를 저장하는 변수, 이번달 마지막날까지 증가시키며 반복
+
+                    $scope.nowColumn = $scope.nowRow.insertCell();        // 새 열을 추가하고
+
+
+                    $scope.newDIV = document.createElement("p");
+                    $scope.newDIV.innerHTML = $scope.leftPad($scope.nowDay.getDate());        // 추가한 열에 날짜 입력
+                    $scope.nowColumn.appendChild($scope.newDIV);
+
+                    if ($scope.nowDay.getDay() == 6) {                 // 토요일인 경우
+                        $scope.nowRow = $scope.tbody_Calendar.insertRow();    // 새로운 행 추가
+                    }
+
+                    if ($scope.nowDay < $scope.today) {                       // 지난날인 경우
+                        $scope.newDIV.className = "pastDay";
+                    }
+                    else if ($scope.nowDay.getFullYear() == $scope.today.getFullYear() &&
+                        $scope.nowDay.getMonth() == $scope.today.getMonth() &&
+                        $scope.nowDay.getDate() == $scope.today.getDate()) { // 오늘인 경우
+                        $scope.newDIV.className = "today";
+                        $scope.newDIV.onclick = function () { choiceDate(this); }
+                    }
+                    else {                                      // 미래인 경우
+                        $scope.newDIV.className = "futureDay";
+                        $scope.newDIV.onclick = function () { choiceDate(this); }
+                    }
+                }
+            }
+
+            //Initialize Calendar
+            $scope.buildCalendar();
+            ///////////////////////////////Calendar, Source: https://sirius7.tistory.com/35////////////////////////////
+        });
+        /*]]>*/
+    </script>
+
+    <!---------------------------------------------Style CSS------------------------------------------------------>
+    <style>
+        @import url('https://fonts.googleapis.com/css?family=Questrial&display=swap');
+
+        .food-table1 th, .food-table td {
+            width: 50%; /* Set the width of th and td to 50% for equal column sizes */
+        }
+
+        .day-table {
+            grid-column: 1 / 2; /* Set the grid column to take up the left-bottom cell */
+            grid-row: 2 / 3;   /* Set the grid row to take up the left-bottom cell */
+            width: 85%;
+            height: 90%;
+            margin-top: 20px;
+            margin-left:30px;
+        }
+        .day-table th, .food-table td {
+            width: 50%; /* Set the width of th and td to 50% for equal column sizes */
+        }
+
+        .table-container {
+            grid-column: 2 / 3; /* Set the grid column to take up the right-top cell */
+            grid-row: 1 / 4;   /* Set the grid row to take up the right-top cell */
+            width: 90%;
+            height: 90%;
+            margin-top: 10px;
+            margin-left:5%;
+            overflow-y: auto;
+        }
+
+        .entry-table td[name="entryCell"] {
+            height: 30px;
+            width: 500px;
+            padding: 5%;
+            text-align: left;
+            font-size: 1.7rem;
+            font-family: 'Questrial', sans-serif;
+            background-color: #FFFFFF;
+            cursor: pointer;
+        }
+        .entry-table td[name="entryCell"]:hover {
+            background: #eee;
+        }
+        .entry-table tr {
+            height: 30px; /* Adjust the height of each row */
+        }
+
+        .Calendar {
+            text-align: center;
+            grid-column: 1 / 2;
+            grid-row: 1 / 2;
+            width: 80%; /* Set the width of the calendar within its grid cell */
+            height: 90%;
+            margin: auto;
+        }
+
+        .Calendar>thead>tr:first-child>td {
+            font-family: 'Questrial', sans-serif;
+            font-size: 1.1em;
+            font-weight: bold;
+            height: 50px;
+        }
+
+        .Calendar>thead>tr:last-child>td {
+            font-family: 'Questrial', sans-serif;
+            font-weight: 600;
+        }
+
+        .Calendar>tbody>tr>td>p {
+            font-family: 'Montserrat', sans-serif;
+            height:35px;
+            width: 35px;
+            border-radius: 100px;
+            transition-duration: .2s;
+            line-height: 35px;
+            margin: 5px;
+            display: block;
+            text-align: center;
+        }
+
+        .pastDay {
+            background-color: #FFFFFF;
+            cursor: pointer;
+        }
+        .pastDay:hover {
+            background: #eee;
+        }
+
+        .today {
+            background-color: #F5D042;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .futureDay {
+            background-color: #FFFFFF;
+            cursor: pointer;
+        }
+        .futureDay:hover {
+            background: #eee;
+        }
+
+        .futureDay.choiceDay,
+        .pastDay.choiceDay,
+        .today.choiceDay {
+            background: #0A174E;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 10px; /* Adjust the gap between cells */
+            width: 100%;
+        }
+
+    </style>
+    <!---------------------------------------------Style CSS------------------------------------------------------>
+
+
+
+    <div ng-app="FoodApp" ng-controller="viewFoodDiaryCtrl">
+        <!-- information on vertical rule found here: https://stackoverflow.com/questions/571900/is-there-a-vr-vertical-rule-in-html  -->
+        <div style="margin: 0 auto; width: 75%; height: 100%; overflow-y: auto;">
+            <div style="height: 90%">
+                <h2 id="header0">Food Diary</h2>
+                <div>
+                    <h4 style = "padding-left: 2%": >Username: {{displayName(currentPatient)}}</h4>
+                    <hr style="margin: 10px 0;"> <!-- Horizontal line -->
+
+                    <div class="grid-container" >
+                        <!-----------------------------Calendar----------------------------------------->
+                        <table class="Calendar">
+                            <thead>
+                            <tr>
+                                <td ng-click="prevCalendar();" style="cursor:pointer;">&#60;</td>
+                                <td colspan="5">
+                                    <span id="calYear"></span>/
+                                    <span id="calMonth"></span>
+                                </td>
+                                <td ng-click="nextCalendar();" style="cursor:pointer;">&#62;</td>
+                            </tr>
+                            <tr>
+                                <td>Sun</td>
+                                <td>Mon</td>
+                                <td>Tue</td>
+                                <td>Wed</td>
+                                <td>Thu</td>
+                                <td>Fri</td>
+                                <td>Sat</td>
+                            </tr>
+                            </thead>
+
+                            <tbody>
+                            </tbody>
+                        </table>
+                        <!-----------------------------Calendar----------------------------------------->
+                        <!-----------------------------Entry Table----------------------------------------->
+                        <!-- Display All Food Diary -->
+                        <div class="table-container" >
+                            <caption>
+                                <div style="font-size: 20px; margin-bottom: 5%;">
+                                    Dairy Entries:
+                                    <button ng-click="addEntry()" style="float: right" class="btn btn-info">
+                                        Add Entry
+                                    </button>
+                                </div>
+                            </caption>
+                            <div>
+                                <!--Display message if there is no entry-->
+                                <div ng-if="myDiary.length === 0">
+                                    <p>No entries available.</p>
+                                </div>
+                                <!--Display message if there is no entry-->
+
+                                <table class="entry-table table-bordered">
+                                    <tbody>
+                                    <tr name="foodDiaryTableRow"
+                                        ng-repeat="f in myDiary | sortByDate"
+                                        ng-click="loadEntry(f); getDayEntries(f); calculateDayEntries()" style="cursor:pointer;">
+                                        <td name="entryCell"><strong >{{f.foodName}}</strong>
+                                            &nbsp;({{f.date}})</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <!-----------------------------Entry Table----------------------------------------->
+
+                        <!-----------------------------Total Servings Table----------------------------------------->
+                        <table class="day-table table-bordered">
+                            <tbody>
+                            <tr>
+                                <th class="col-md-2"  colspan="2">Statistics/day</th>
+                            </tr>
+                            <tr>
+                                <th class="col-md-2">Calories</th>
+                                <td style="text-align: right;">{{totalCalories}}</td>
+                            </tr>
+                            <tr>
+                                <th class="col-md-2">Grams of Fat</th>
+                                <td style="text-align: right;">{{totalFat}}</td>
+                            </tr>
+                            <tr>
+                                <th class="col-md-2">Milligrams of Sodium</th>
+                                <td style="text-align: right;">{{totalSodium}}</td>
+                            </tr>
+                            <tr>
+                                <th class="col-md-2">Grams of Carbs</th>
+                                <td style="text-align: right;">{{totalCarb}}</td>
+                            </tr>
+                            <tr>
+                                <th class="col-md-2">Grams of Sugars</th>
+                                <td style="text-align: right;">{{totalSugar}}</td>
+                            </tr>
+                            <tr>
+                                <th class="col-md-2">Grams of Fiber</th>
+                                <td style="text-align: right;">{{totalFiber}}</td>
+                            </tr>
+                            <tr>
+                                <th class="col-md-2">Grams of Protein</th>
+                                <td style="text-align: right;">{{totalProtein}}</td>
+                            </tr>
+                            <!-- To be modified -->
+                            </tbody>
+
+                        </table>
+                        <!-----------------------------Total Servings Table----------------------------------------->
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

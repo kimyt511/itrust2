@@ -1,0 +1,133 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:include="layout :: head(title=~{::title},links=~{})">
+    <title>Food Diary</title>
+</head>
+
+<div th:fragment="content">
+
+    <!-- To be completed ----------->
+    <script th:inline="javascript">
+        /* Otherwise Thymeleaf tries to parse Javascript as XML and breaks itself sometimes.  Sigh */
+        /*![CDATA[*/
+
+        //Need to be adjusted
+        const app = angular.module("viewDiaryEntryApp",[]);
+
+        // API name to need to be adjusted
+        app.controller('viewDiaryEntryCtrl', function ($scope, $http) {
+
+            //////////////////////////////Initialize form/////////////////////////////////////////
+            $scope.foodDiaryForm = { date: "", patient: "", mealType: "" ,foodName:"", servings: 0,
+                calories: 0, fat: 0, sodium: 0, carb: 0, sugar: 0, fiber: 0, protein: 0};
+            //////////////////////////////Initialize form/////////////////////////////////////////
+
+
+            var queryString = window.location.search;
+            var urlParams = new URLSearchParams(queryString);
+            var diaryentryJson = urlParams.get('data');
+            $scope.diaryEntry = JSON.parse(decodeURIComponent(diaryentryJson));
+
+
+        });
+        /*]]>*/
+    </script>
+
+    <!-- Contents -->
+    <div ng-app="viewDiaryEntryApp" ng-controller="viewDiaryEntryCtrl">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <h3>Food Diary</h3>
+                        </div>
+                        <div class="panel-body">
+                            <!------------------------------table------------------------------------------------>
+                            <table>
+                                <tr>
+                                    <td style="text-align: left; padding: 5px; height: 30px;"><b>Date</b></td>
+                                    <!-- to be adjusted-->
+                                    <td style="padding-left: 5%;  white-space: nowrap;">{{diaryEntry.date}}</td>
+                                    <!-- to be adjusted-->
+                                </tr>
+                                <tr>
+                                    <td style="text-align: left; padding: 5px; height: 30px;"><b>Type of Meal:</b></td>
+                                    <!-- to be adjusted-->
+                                    <td style="padding-left: 5%;">{{diaryEntry.mealType}}</td>
+                                    <!-- to be adjusted-->
+                                </tr>
+                                <tr>
+                                    <td style="text-align: left; padding: 5px; height: 30px;"><b>Food Name:</b></td>
+                                    <!-- to be adjusted-->
+                                    <td style="padding-left: 5%;">{{diaryEntry.foodName}}</td>
+                                    <!-- to be adjusted-->
+                                </tr>
+                                <tr>
+                                    <td style="text-align: left; padding: 5px; height: 30px;"><b>Number of Servings:</b></td>
+                                    <!-- to be adjusted-->
+                                    <td style="padding-left: 5%;">{{diaryEntry.servings}}</td>
+                                    <!-- to be adjusted-->
+                                </tr>
+                                <!-- Separater-->
+                                <tr>
+                                    <td style="text-align: left;
+                                     color: blue;padding: 5px">Statistics/Serving</td>
+                                    <td style="padding-left: 5%;"></td>
+                                    <td style="padding-left: 5%;"></td>
+                                </tr>
+                                <!-- Separater-->
+                                <tr>
+                                    <td style="text-align: left; padding: 5px; height: 30px;"><b>Calories</b></td>
+                                    <!-- to be adjusted-->
+                                    <td style="padding-left: 5%;">{{diaryEntry.calories}}</td>
+                                    <!-- to be adjusted-->
+                                </tr>
+                                <tr>
+                                    <td style="text-align: left; padding: 5px; height: 30px;"><b>Grams of Fat</b></td>
+                                    <!-- to be adjusted-->
+                                    <td style="padding-left: 5%;">{{diaryEntry.fat}}</td>
+                                    <!-- to be adjusted-->
+                                </tr>
+                                <tr>
+                                    <td style="text-align: left; padding: 5px; height: 30px;"><b>Milligrams of Sodium</b></td>
+                                    <!-- to be adjusted-->
+                                    <td style="padding-left: 5%;">{{diaryEntry.sodium}}</td>
+                                    <!-- to be adjusted-->
+                                </tr>
+                                <tr>
+                                    <td style="text-align: left; padding: 5px; height: 30px;"><b>Grams of Carbs</b></td>
+                                    <!-- to be adjusted-->
+                                    <td style="padding-left: 5%;">{{diaryEntry.carb}}</td>
+                                    <!-- to be adjusted-->
+                                </tr>
+                                <tr>
+                                    <td style="text-align: left; padding: 5px; height: 30px;"><b>Grams of Sugars</b></td>
+                                    <!-- to be adjusted-->
+                                    <td style="padding-left: 5%;">{{diaryEntry.sugar}}</td>
+                                    <!-- to be adjusted-->
+                                </tr>
+                                <tr>
+                                    <td style="text-align: left; padding: 5px; height: 30px;"><b>Grams of Fiber</b></td>
+                                    <!-- to be adjusted-->
+                                    <td style="padding-left: 5%;">{{diaryEntry.fiber}}</td>
+                                    <!-- to be adjusted-->
+                                </tr>
+                                <tr>
+                                    <td style="text-align: left; padding: 5px; height: 30px;"><b>Grams of Protein</b></td>
+                                    <!-- to be adjusted-->
+                                    <td style="padding-left: 5%;">{{diaryEntry.protein}}</td>
+                                    <!-- to be adjusted-->
+                                </tr>
+                            </table>
+                            <!------------------------------table------------------------------------------------>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+</html>

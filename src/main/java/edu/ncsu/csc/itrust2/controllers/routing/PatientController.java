@@ -161,4 +161,40 @@ public class PatientController {
     public String viewAppointmentPR(final Model model) {
         return "/patient/representative/viewAppointmentPR";
     }
+
+    /**
+     * Create a page for the patient to navigate to food diary page
+     *
+     * @param model data for front end
+     * @return The page for the patient to navigate to food diary page
+     */
+    @GetMapping(value = "patient/foodDiary")
+    @PreAuthorize("hasRole('ROLE_PATIENT')")
+    public String foodDiary(final Model model) {
+        return "/patient/foodDiary";
+    }
+
+    /**
+     * Create a page for the patient to add food diary
+     *
+     * @param model data for front end
+     * @return The page for the patient to add food diary
+     */
+    @GetMapping(value = "patient/addFoodDiary")
+    @PreAuthorize("hasRole('ROLE_PATIENT')")
+    public String addFoodDiary(final Model model) {
+        return "/patient/addFoodDiary";
+    }
+
+    /**
+     * Create a page for the patient to view selected food diary
+     *
+     * @param model data for front end
+     * @return The page for the patient to view selected food diary
+     */
+    @GetMapping(value = "patient/viewDiaryEntry")
+    @PreAuthorize("hasRole('ROLE_PATIENT')")
+    public String viewDiaryEntry(final Model model) {
+        return "/patient/viewDiaryEntry";
+    }
 }

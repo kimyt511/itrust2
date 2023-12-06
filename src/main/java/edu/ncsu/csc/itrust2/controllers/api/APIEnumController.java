@@ -2,6 +2,16 @@ package edu.ncsu.csc.itrust2.controllers.api;
 
 import edu.ncsu.csc.itrust2.models.User;
 import edu.ncsu.csc.itrust2.models.enums.*;
+import edu.ncsu.csc.itrust2.models.enums.AppointmentType;
+import edu.ncsu.csc.itrust2.models.enums.BloodType;
+import edu.ncsu.csc.itrust2.models.enums.Ethnicity;
+import edu.ncsu.csc.itrust2.models.enums.Gender;
+import edu.ncsu.csc.itrust2.models.enums.HouseholdSmokingStatus;
+import edu.ncsu.csc.itrust2.models.enums.MealType;
+import edu.ncsu.csc.itrust2.models.enums.PatientSmokingStatus;
+import edu.ncsu.csc.itrust2.models.enums.Role;
+import edu.ncsu.csc.itrust2.models.enums.State;
+import edu.ncsu.csc.itrust2.models.enums.Status;
 import edu.ncsu.csc.itrust2.services.UserService;
 import edu.ncsu.csc.itrust2.utils.LoggerUtil;
 
@@ -147,5 +157,20 @@ public class APIEnumController extends APIController {
         final List<ProcedureStatus> ret = Arrays.asList( ProcedureStatus.values() ).subList( 1,
                 ProcedureStatus.values().length );
         return ret;
+    }
+
+    /**
+     * Get meal types
+     *
+     * @return list of meal types
+     */
+    @GetMapping("/mealtype")
+    // public List<Map<String, Object>> getMealTypes() {
+    //     return Arrays.stream(MealType.values())
+    //             .map(MealType::getInfo)
+    //             .collect(Collectors.toList());
+    // }
+    public List<MealType> getMealTypes() {
+        return Arrays.asList(MealType.values());
     }
 }
