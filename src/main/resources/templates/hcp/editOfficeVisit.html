@@ -35,7 +35,6 @@
 							if ($scope.visits.length == 0) {
 								$scope.errorMsg = "No office visits found."
 							}
-							console.log(response.data);
 						});
 				}
 
@@ -57,7 +56,7 @@
 
                 $scope.selectVisit = function(v) {
                 	$scope.selectedVisit = v.id;
-
+                	$scope.actualVisit = v;
                 	$scope.procedures = v.procedures;
 
 					// Identify age to update scope.three ~ scope.twelveAndUp
@@ -104,15 +103,23 @@
 
                 $scope.deleteProcedure = function(p){
 	        		if(p.procedureStatus !== "Assigned"){
-						$scope.message = "You can only delete procedure only if its status is 'ASSIGNED'";
+						$scope.message = "";
+						$scope.errorMsg = "You can only delete procedure only if its status is 'ASSIGNED'";
 						return;
 	        		}
 	            	$http.delete('/iTrust2/api/v1/procedure/' + p.id).then(
 	            		function (response) {
-	                		$scope.loadProcedures();
-							$scope.message = "";
+	            			for(let i = 0; i < $scope.procedures.length; i++){
+	            				if($scope.procedures[i].id === p.id){
+	            					$scope.procedures.splice(i, 1);
+	            					break;
+	            				}
+	            			}
+							$scope.message = "Successfully removed procedure";
+							$scope.errorMsg = "";
 	              		}, function (rejection) {
-							$scope.message = "Could not remove procedure";
+							$scope.message = "";
+							$scope.errorMsg = "Could not remove procedure";
 	              		});
                 }
 
@@ -131,9 +138,9 @@
 					<!-- Information on how labels wor from here: https://stackoverflow.com/questions/7863251/clicking-the-text-to-select-corresponding-radio-button -->
 					<li ng-repeat="v in visits"><h4>
 						<label> <input type="radio"
-									   ng-model="$parent.selectedVisit" name="visit"
+									   ng-model="selectedVisit" name="visit"
 									   value="{{v.id}}"
-									   ng-click='$parent.selectVisit(v)' />
+									   ng-click='selectVisit(v)' />
 							{{v.date | date: MM-dd-yyyy}} ({{v.hcp.firstName}} {{v.hcp.lastName}} at {{v.hospital.name}})
 						</label>
 					</h4></li>
@@ -326,6 +333,15 @@
 								</div>
 								<input type="button" value="Delete" class="btn btn-danger" name="deleteProcedure" ng-click="deleteProcedure(pr)"/>
 							</div>
+						</div>
+					</div>
+				</div>
+				<!-- Error Messages -->
+				<div class="row">
+					<div class="col-md-12 text-right">
+						<div style="white-space: pre-line;">
+							<div name="success" class="text-success">{{message}}</div>
+							<div name="errorMsg" class="text-danger">{{errorMsg}}</div>
 						</div>
 					</div>
 				</div>

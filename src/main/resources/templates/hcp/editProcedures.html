@@ -116,15 +116,18 @@
 
 	        	$scope.deleteProcedure = function(p) {
 	        		if(p.procedureStatus !== "Assigned"){
-						$scope.message = "You can only delete procedure only if its status is 'ASSIGNED'";
+						$scope.message = "";
+						$scope.errorMsg = "You can only delete procedure only if its status is 'ASSIGNED'";
 						return;
 	        		}
 	            	$http.delete('/iTrust2/api/v1/procedure/' + p.id).then(
 	            		function (response) {
 	                		$scope.loadProcedures();
+							$scope.message = "Successfully deleted procedure";
+							$scope.errorMsg = "";
+
 							$scope.message = "";
-	              		}, function (rejection) {
-							$scope.message = "Could not remove procedure";
+							$scope.errorMsg = "Could not remove procedure";
 	              		});
 	        	}
 
@@ -167,6 +170,7 @@
 						}).then(
 							function (response) {
 								$scope.message = "Procedure updated successfully.";
+								$scope.errorMsg = "";
 								// Replace the procedure in session
 								for (var i in $scope.procedures) {
 									if ($scope.procedures[i].id == response.data.id) {
@@ -177,9 +181,11 @@
 							},
 							function (rejection) {
 								if (rejection.data.msg) {
-									$scope.message = "Error: " + rejection.data.msg;
+									$scope.message = "";
+									$scope.errorMsg = "Error: " + rejection.data.msg;
 								} else {
-									$scope.message = "An error occurred updating procedures.";
+									$scope.message = "";
+									$scope.errorMsg = "An error occurred updating procedures.";
 								}
 							}
 						);
@@ -297,8 +303,14 @@
 
 				<br />
 				<button ng-click="submit()" name="submit">Submit</button>
-
-				<div name="success">{{message}}</div>
+				<div class="row">
+					<div class="col-md-12 text-right">
+						<div style="white-space: pre-line;">
+							<div name="success" class="text-success">{{message}}</div>
+							<div name="errorMsg" class="text-danger">{{errorMsg}}</div>
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>

@@ -36,7 +36,6 @@
 							if ($scope.visits.length == 0) {
 								$scope.errorMsg = "No office visits found."
 							}
-							console.log(response.data);
 						});
 				}
 
@@ -118,9 +117,9 @@
 					<!-- Information on how labels wor from here: https://stackoverflow.com/questions/7863251/clicking-the-text-to-select-corresponding-radio-button -->
 					<li ng-repeat="v in visits"><h4>
 						<label> <input type="radio"
-									   ng-model="$parent.selectedVisit" name="visit"
+									   ng-model="selectedVisit" name="visit"
 									   value="{{v.id}}"
-									   ng-click='$parent.selectVisit(v)' />
+									   ng-click='selectVisit(v)' />
 							{{v.date | date: MM-dd-yyyy}} ({{v.hcp.firstName}} {{v.hcp.lastName}} at {{v.hospital.name}})
 						</label>
 					</h4></li>
