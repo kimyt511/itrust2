@@ -26,6 +26,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import edu.ncsu.csc.itrust2.controllers.api.comm.LogEntryRequestBody;
+import edu.ncsu.csc.itrust2.controllers.api.comm.LogEntryTableRow;
+import edu.ncsu.csc.itrust2.models.security.LogEntry;
+import java.time.ZonedDateTime;
+import java.time.ZoneId;
+
 import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -203,6 +209,89 @@ public class APIPersonalRepresentativeTest {
             }
         }
         assertTrue(flag);
+    }
+
+    @Test
+    @Transactional
+    @WithMockUser(
+            username = "patient",
+            roles = {"PATIENT"})
+    public void testPatientPR2() throws Exception {
+        final Gson gson = new GsonBuilder().create();
+        String content;
+
+        PersonalRepresentativeForm PRForm1 = new PersonalRepresentativeForm();
+        // mvc.perform(
+        //                 post("/api/v1/pr/declare")
+        //                         .contentType(MediaType.APPLICATION_JSON)
+        //                         .content(TestUtils.asJsonString(PRForm1)))
+        //         .andExpect(status().is4xxClientError());
+            
+        PRForm1.setPatient("patient2");
+        PRForm1.setRepresentative("patient");
+        PRForm1.setComment("comment1");
+
+        mvc.perform(
+                        post("/api/v1/pr/declare")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(TestUtils.asJsonString(PRForm1)))
+                .andExpect(status().isOk());
+
+        PersonalRepresentativeForm PRForm2 = new PersonalRepresentativeForm();
+        // mvc.perform(
+        //                 post("/api/v1/pr/declare")
+        //                         .contentType(MediaType.APPLICATION_JSON)
+        //                         .content(TestUtils.asJsonString(PRForm1)))
+        //         .andExpect(status().is4xxClientError());
+            
+        PRForm2.setPatient("patient");
+        PRForm2.setRepresentative("patient2");
+        PRForm2.setComment("comment2");
+
+        mvc.perform(
+                        post("/api/v1/pr/declare")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(TestUtils.asJsonString(PRForm2)))
+                .andExpect(status().isOk());
+
+        
+        content =
+                mvc.perform(
+                                get("/api/v1/pr/mypatients")
+                                        .contentType(MediaType.APPLICATION_JSON))
+                        .andReturn()
+                        .getResponse()
+                        .getContentAsString();
+        List<PersonalRepresentative> prlist =
+                gson.fromJson(content, new TypeToken<ArrayList<PersonalRepresentative>>() {}.getType());
+        boolean flag = false;
+        long id=0;
+        for (final PersonalRepresentative pr : prlist) {
+            if (pr.getRepresentative().getUsername().equals(PRForm1.getRepresentative())) {
+                flag = true;
+                id = pr.getId();
+            }
+        }
+        assertTrue(flag);
+        mvc.perform(get("/api/v1/pr/logentries/patient2")).andExpect(status().isOk());
+        mvc.perform(get("/api/v1/pr/logentries/patient")).andExpect(status().is4xxClientError());
+        mvc.perform(get("/api/v1/pr/logentries/patient5")).andExpect(status().is4xxClientError());
+
+        mvc.perform(
+            delete("/api/v1/pr/undeclare/"+Long.toString(id))).andExpect(status().isOk());
+        mvc.perform(
+            delete("/api/v1/pr/undeclare/patient21")).andExpect(status().is4xxClientError());
+
+
+        LogEntryRequestBody LERB = new LogEntryRequestBody();
+        LERB.setStartDate(LocalDate.of(2022,6,30).toString());
+        LERB.setEndDate(LocalDate.of(2022,7,30).toString());
+        LERB.setPage(1);
+        LERB.setPageLength(10);
+
+        mvc.perform(post("/api/v1/logentries/range")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(TestUtils.asJsonString(LERB))).andExpect(status().isOk());
     }
 
 }

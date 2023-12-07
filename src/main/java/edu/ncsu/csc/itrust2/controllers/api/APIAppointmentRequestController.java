@@ -147,14 +147,14 @@ public class APIAppointmentRequestController extends APIController {
             @RequestBody final AppointmentRequestForm requestForm) {
         try {
             final AppointmentRequest request = service.build(requestForm);
-            if (null != service.findById(request.getId())) {
-                return new ResponseEntity(
-                        errorResponse(
-                                "AppointmentRequest with the id "
-                                        + request.getId()
-                                        + " already exists"),
-                        HttpStatus.CONFLICT);
-            }
+        //     if (null != service.findById(request.getId())) {
+        //         return new ResponseEntity(
+        //                 errorResponse(
+        //                         "AppointmentRequest with the id "
+        //                                 + request.getId()
+        //                                 + " already exists"),
+        //                 HttpStatus.CONFLICT);
+        //     }
             service.save(request);
             loggerUtil.log(
                     TransactionType.APPOINTMENT_REQUEST_SUBMITTED,
@@ -230,13 +230,13 @@ public class APIAppointmentRequestController extends APIController {
             final AppointmentRequest request = service.build(requestF);
             request.setId(id);
 
-            if (null != request.getId() && !id.equals(request.getId())) {
-                return new ResponseEntity(
-                        errorResponse(
-                                "The ID provided does not match the ID of the AppointmentRequest"
-                                        + " provided"),
-                        HttpStatus.CONFLICT);
-            }
+            // if (null != request.getId() && !id.equals(request.getId())) {
+            //     return new ResponseEntity(
+            //             errorResponse(
+            //                     "The ID provided does not match the ID of the AppointmentRequest"
+            //                             + " provided"),
+            //             HttpStatus.CONFLICT);
+            // }
 
             /* Patient can't look at anyone else's requests */
             final User self = userService.findByName(LoggerUtil.currentUser());

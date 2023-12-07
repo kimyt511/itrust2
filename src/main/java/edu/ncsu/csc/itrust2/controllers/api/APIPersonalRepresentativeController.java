@@ -157,14 +157,14 @@ public class APIPersonalRepresentativeController extends APIController {
         try {
             final PersonalRepresentative pr = (PersonalRepresentative) personalRepresentativeService.findById(Long.parseLong(id));
             /** Wrong ID value */
-            if (pr == null) {
-                loggerUtil.log(
-                    TransactionType.REMOVE_PR,
-                    LoggerUtil.currentUser(),
-                    "Could not find ID with " + id);
-                return new ResponseEntity(
-                    errorResponse("No ID with " + id), HttpStatus.NOT_FOUND);
-            }
+            // if (pr == null) {
+            //     loggerUtil.log(
+            //         TransactionType.REMOVE_PR,
+            //         LoggerUtil.currentUser(),
+            //         "Could not find ID with " + id);
+            //     return new ResponseEntity(
+            //         errorResponse("No ID with " + id), HttpStatus.NOT_FOUND);
+            // }
 
             /** Logging */
             TransactionType transactionType;
