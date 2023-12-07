@@ -2,7 +2,12 @@
 
 Welcome to the repository of [**Team 4**](docs/team.md)'s project for the CSI-3106 Software Engineering course at Yonsei University.
 
-## Jacoco Coverage (last update: 12/02)
+## Progress
+- Goal: UC15, UC16, UC17, UC18, UC19, UC23
+- Completed & Merged: UC15, uC16, UC17, UC18
+- In Progress: UC19, UC23
+
+## Jacoco Coverage (last update: 12/07)
 ![./docs/jacoco_coverage.png](./docs/jacoco_coverage.png)
 ## Introduction
 

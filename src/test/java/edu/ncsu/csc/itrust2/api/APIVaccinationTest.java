@@ -255,7 +255,7 @@ public class APIVaccinationTest {
     @Test
     @Transactional
     @WithMockUser(
-            username = "patient2",
+            username = "patient111",
             roles = {"PATIENT"})
     public void testVaccinations3() throws Exception {
         mvc.perform(get("/api/v1/vaccinations")).andExpect(status().isNotFound());
@@ -323,7 +323,7 @@ public class APIVaccinationTest {
         
         vf1.setVaccineCptCode("90001");
         mvc.perform(
-                        put("/api/v1/vaccinations/" + 1L)
+                        put("/api/v1/vaccinations/" + 1956L)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(TestUtils.asJsonString(vf1)))
                 .andExpect(status().isNotFound());

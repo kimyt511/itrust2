@@ -150,6 +150,6 @@ public class APIDrugTest {
                 .andExpect(status().isOk());
 
         mvc.perform(delete("/api/v1/drugs/"+drug2.getId())).andExpect(status().isOk());
-        mvc.perform(delete("/api/v1/drugs/"+1L)).andExpect(status().is4xxClientError());
+        mvc.perform(delete("/api/v1/drugs/"+1254663L)).andExpect(status().isNotFound());
     }
 }

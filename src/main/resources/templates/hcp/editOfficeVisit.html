@@ -1,7 +1,9 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
-<head th:include="layout :: head(title=~{::title},links=~{})">
+<head th:include="layout :: head(title=~{::title},links=~{::script})">
 <title>Edit office visits</title>
+<script th:src="@{/js/dateTimeService.js}"
+            src="../js/dateTimeService.js"></script>
 </head>
 
 <body th:include="layout :: body" th:with="content=~{::content}">
@@ -12,7 +14,7 @@
 		<script th:inline="javascript">
 			/* Otherwise Thymeleaf tries to parse Javascript as XML and breaks itself sometimes.  Sigh */
 			/*<![CDATA[*/
-			var app = angular.module("viewOfficeVisitHCPApp", []);
+			var app = angular.module("viewOfficeVisitHCPApp", ['dateTimeServices']);
 			
 			/**
 			 * A filter to humanize the text to be more user friendly.
@@ -25,7 +27,7 @@
 				}
             });
 
-			app.controller('viewOfficeVisitHCPCtrl', function ($scope, $http) {
+			app.controller('viewOfficeVisitHCPCtrl', function ($scope, $http, dateTimeService) {
 				$scope.selectedVisit = {};
 				$scope.visits = [];
 				$scope.loadVisits = function () {
@@ -99,6 +101,7 @@
 					$scope.visit.type = v.type;
 					$scope.visit.hcp = v.hcp;
 					$scope.visit.hospital = v.hospital;
+					$scope.visit.vaccinations = v.vaccinations;
                 }
 
                 $scope.deleteProcedure = function(p){
@@ -224,10 +227,10 @@
 								<h4>Diagnoses info</h4>
 							</div>
 							<div class="panel-body">
-								<div class="row" ng-repeat="d in diagnoses">
+								<div class="row" ng-repeat="d in visit.diagnoses">
 									<div class="col-xs-12">{{d.code.code}} - {{d.code.description}}</div>
 								</div>
-								<div class="row" ng-show="!diagnoses.length">
+								<div class="row" ng-show="!visit.diagnoses.length">
 									<div class="col-xs-12">No information about diagnoses found.</div>
 								</div>
 							</div>
@@ -237,7 +240,7 @@
 								<h4>Prescription info</h4>
 							</div>
 							<div class="panel-body">
-								<div class="row" ng-repeat="p in prescriptions">
+								<div class="row" ng-repeat="p in visit.prescriptions">
 									<div class="form-group row">
 										<div class="col-xs-6">
 											<label>Drug:</label>
@@ -269,8 +272,38 @@
 										<div class="col-xs-6"> {{p.renewals}}</div>
 									</div>
 								</div>
-								<div class="row" ng-show="!prescriptions.length">
+								<div class="row" ng-show="!visit.prescriptions.length">
 									<div class="col-xs-12">No information about prescriptions found.</div>
+								</div>
+							</div>
+						</div>
+						<div class="panel panel-info">
+							<div class="panel-heading">
+								<h4>Vaccination info</h4>
+							</div>
+							<div class="panel-body">
+								<div class="row" ng-repeat="v in visit.vaccinations">
+									<div class="form-group row">
+										<div class="col-xs-6">
+											<label>Vaccine:</label>
+										</div>
+										<div class="col-xs-6"> {{v.vaccine.name}}</div>
+									</div>
+									<div class="form-group row">
+										<div class="col-xs-6">
+											<label>Abbreviation:</label>
+										</div>
+										<div class="col-xs-6"> {{v.vaccine.abbreviation}}</div>
+									</div>
+									<div class="form-group row">
+										<div class="col-xs-6">
+											<label>CPT Code:</label>
+										</div>
+										<div class="col-xs-6"> {{v.vaccine.cptCode}}</div>
+									</div>	
+								</div>
+								<div class="row" ng-show="!visit.vaccinations.length">
+									<div class="col-xs-12">No information about vaccinations found.</div>
 								</div>
 							</div>
 						</div>

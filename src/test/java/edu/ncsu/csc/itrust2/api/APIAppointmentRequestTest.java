@@ -68,6 +68,8 @@ public class APIAppointmentRequestTest {
         final User hcp = new Personnel(new UserForm("hcp", "123456", Role.ROLE_HCP, 1));
 
         service.saveAll(List.of(patient, hcp));
+
+
     }
 
     /** Tests that getting an appointment that doesn't exist returns the proper status */
@@ -174,6 +176,26 @@ public class APIAppointmentRequestTest {
                                 .content(TestUtils.asJsonString(appointmentForm)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
+
+        mvc.perform(
+                        put("/api/v1/appointmentrequests/" + "12345642")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(TestUtils.asJsonString(appointmentForm)))
+                .andExpect(status().is4xxClientError());
+        
+        appointmentForm.setStatus(Status.APPROVED.toString());
+        mvc.perform(
+                        put("/api/v1/appointmentrequests/" + id)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(TestUtils.asJsonString(appointmentForm)))
+                .andExpect(status().isOk());
+        
+        AppointmentRequestForm af2 = new AppointmentRequestForm();
+        mvc.perform(
+                        put("/api/v1/appointmentrequests/" + id)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(TestUtils.asJsonString(af2)))
+                .andExpect(status().is4xxClientError());
 
         forPatient = (List<AppointmentRequest>) arService.findAll();
         Assert.assertEquals(1, forPatient.size());
