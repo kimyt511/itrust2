@@ -7,10 +7,10 @@ Welcome to the repository of [**Team 4**](docs/team.md)'s project for the CSI-31
 - [x] UC 16
 - [x] UC 17
 - [x] UC 18
-- [ ] UC 19
+- [x] UC 19
 - [ ] UC 23
 
-## Jacoco Coverage (last update: 12/07)
+## Jacoco Coverage (last update: 12/08)
 ![./docs/jacoco_coverage.png](./docs/jacoco_coverage.png)
 ## Introduction
 
