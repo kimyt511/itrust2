@@ -24,12 +24,7 @@
             $scope.declare = {id: "",patient: "", hcp: "", hospital: "", rate: "", comment: "" };
 
             ///////////////////////get current user(patient)//////////////////////////////////////////
-            $http.get("/iTrust2/api/v1/patient").then(function (response) {
-                    $scope.patient = response.data;
-                }, function (rejection) {
-                    console.error("Could not retrieve expected Patient record");
-                }
-            );
+            $scope.patient = /*[[${#httpServletRequest.remoteUser}]]*/null;
             ///////////////////////get current user(patient)//////////////////////////////////////////
 
             ///////////////////////get hospitals list///////////////////////////////////////////////
@@ -41,7 +36,7 @@
             ///////////////////////get hospitals list///////////////////////////////////////////////
 
             //////////////////////////Get hcps of current patient////////////////////////////////////////
-            $http.get("/iTrust2/api/v1/reviews/hcps/patient").then(
+            $http.get("/iTrust2/api/v1/reviews/hcps/" + $scope.patient).then(
                 function (response) {
                     //patient review
                     $scope.patientHCP = response.data;
@@ -53,7 +48,7 @@
             //////////////////////////Get hcps of current patient////////////////////////////////////////
 
             //////////////////////////Get hospitals of current patient////////////////////////////////////////
-            $http.get("/iTrust2/api/v1/reviews/hospitals/patient").then(
+            $http.get("/iTrust2/api/v1/reviews/hospitals/" + $scope.patient).then(
                 function (response) {
                     //patient review
                     $scope.patientHospital = response.data;
