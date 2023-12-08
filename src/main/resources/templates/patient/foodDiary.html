@@ -143,13 +143,13 @@
 
                 // Iterate through dayEntries and sum up the calories
                 angular.forEach($scope.dayEntries, function(entry) {
-                    $scope.totalCalories += entry.calories;
-                    $scope.totalFat += entry.fat;
-                    $scope.totalSodium += entry.sodium;
-                    $scope.totalCarb += entry.carb;
-                    $scope.totalSugar += entry.sugar;
-                    $scope.totalFiber += entry.fiber;
-                    $scope.totalProtein += entry.protein;
+                    $scope.totalCalories += entry.servings* entry.calories;
+                    $scope.totalFat += entry.servings*entry.fat;
+                    $scope.totalSodium += entry.servings*entry.sodium;
+                    $scope.totalCarb += entry.servings*entry.carb;
+                    $scope.totalSugar += entry.servings*entry.sugar;
+                    $scope.totalFiber += entry.servings*entry.fiber;
+                    $scope.totalProtein += entry.servings*entry.protein;
                 });
             }
             /////////////////////////Calculate total of the day ///////////////////////////
@@ -431,7 +431,7 @@
                                         ng-repeat="f in myDiary | sortByDate"
                                         ng-click="loadEntry(f); getDayEntries(f); calculateDayEntries()" style="cursor:pointer;">
                                         <td name="entryCell"><strong >{{f.foodName}}</strong>
-                                            &nbsp;({{f.date}})</td>
+                                            &nbsp;({{f.date | date : 'yyyy-MM-dd'}})</td>
                                     </tr>
                                     </tbody>
                                 </table>
