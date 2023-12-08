@@ -62,6 +62,7 @@ public class APIReviewTest {
 
         userService.saveAll(List.of(hcp, patient));
         hospitalService.save(hospital);
+        officeVisitService.deleteAll();
     }
 
     @Test
