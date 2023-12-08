@@ -173,6 +173,26 @@
   - Team 2: UCs merged into develop.
   - Team 3: UC17 finished and tested, UC23 needs help from other teams.
 
+### Meeting 11
+
+**Date**: 2023-12-07
+
+#### Discussion:
+
+- Discuss overall UC development of the project
+  - Team 1: UCs merged into develop.
+  - Team 2: UCs merged into develop.
+  - Team 3: UC17 merged into develop.
+- Test code progress
+  - Team 1: In progress.
+  - Team 2: Test code finished.
+  - Team 3: UC17 test code almost finished.
+- UC23 in progress
+- Allocation of workloads remaining
+  - Team 1 helping team 3 with UC23.
+  - Team 2 helping team 1 with test codes.
+- Identify and share bugs inspecting the merged develop branch.
+
 
 ---
 
@@ -229,6 +249,14 @@
   - Additional backend functionalities required.
 - Start writing test code for two UCs allocated.
 - Be prepared to merge the UCs to develop branch.
+
+### Meeting 8
+**Date**: 2023.12.5
+- UC16 finished.
+- Final preparation for merging.
+- Merge UC16, UC19 to develop branch before Wednesday 12.6.
+- Share merge conflicts if necessary.
+- Test code completion during the weekend.
 
 ---
 
