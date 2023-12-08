@@ -103,9 +103,9 @@ public class FoodDiary extends DomainObject {
      * @param servings
      */
     public void setServings(final Float servings) {
-        if (servings == null) {
-            return;
-        }
+        // if (servings == null) {
+        //     return;
+        // }
 
         if (servings <= 0) {
             throw new IllegalArgumentException(
@@ -120,9 +120,9 @@ public class FoodDiary extends DomainObject {
      * @param calories
      */
     public void setCalories(Float calories) {
-        if (calories == null) {
-            return;
-        }
+        // if (calories == null) {
+        //     return;
+        // }
 
         if (calories < 0) {
             throw new IllegalArgumentException(
@@ -137,9 +137,9 @@ public class FoodDiary extends DomainObject {
      * @param fat
      */
     public void setFat(Float fat) {
-        if (fat == null) {
-            return;
-        }
+        // if (fat == null) {
+        //     return;
+        // }
 
         if (fat < 0) {
             throw new IllegalArgumentException(
@@ -154,9 +154,9 @@ public class FoodDiary extends DomainObject {
      * @param sodium
      */
     public void setSodium(Float sodium) {
-        if (sodium == null) {
-            return;
-        }
+        // if (sodium == null) {
+        //     return;
+        // }
 
         if (sodium < 0) {
             throw new IllegalArgumentException(
@@ -171,9 +171,9 @@ public class FoodDiary extends DomainObject {
      * @param carb
      */
     public void setCarb(Float carb) {
-        if (carb == null) {
-            return;
-        }
+        // if (carb == null) {
+        //     return;
+        // }
 
         if (carb < 0) {
             throw new IllegalArgumentException(
@@ -188,9 +188,9 @@ public class FoodDiary extends DomainObject {
      * @param sugar
      */
     public void setSugar(Float sugar) {
-        if (sugar == null) {
-            return;
-        }
+        // if (sugar == null) {
+        //     return;
+        // }
 
         if (sugar < 0) {
             throw new IllegalArgumentException(
@@ -205,9 +205,9 @@ public class FoodDiary extends DomainObject {
      * @param fiber
      */
     public void setFiber(Float fiber) {
-        if (fiber == null) {
-            return;
-        }
+        // if (fiber == null) {
+        //     return;
+        // }
 
         if (fiber < 0) {
             throw new IllegalArgumentException(
@@ -222,9 +222,9 @@ public class FoodDiary extends DomainObject {
      * @param protein
      */
     public void setProtein(Float protein) {
-        if (protein == null) {
-            return;
-        }
+        // if (protein == null) {
+        //     return;
+        // }
 
         if (protein < 0) {
             throw new IllegalArgumentException(
