@@ -230,6 +230,14 @@
 - Start writing test code for two UCs allocated.
 - Be prepared to merge the UCs to develop branch.
 
+### Meeting *
+**Date**: 2023.12.5
+- UC16 finished.
+- Final preparation for merging.
+- Merge UC16, UC19 to develop branch before Wednesday 12.6.
+- Share merge conflicts if necessary.
+- Test code completion during the weekend.
+
 ---
 
 ## Team 2 Meetings
