@@ -7,6 +7,7 @@ import edu.ncsu.csc.itrust2.common.TestUtils;
 import edu.ncsu.csc.itrust2.forms.PatientForm;
 import edu.ncsu.csc.itrust2.forms.UserForm;
 import edu.ncsu.csc.itrust2.models.Patient;
+import edu.ncsu.csc.itrust2.models.Personnel;
 import edu.ncsu.csc.itrust2.models.User;
 import edu.ncsu.csc.itrust2.models.enums.BloodType;
 import edu.ncsu.csc.itrust2.models.enums.Ethnicity;
@@ -61,8 +62,10 @@ public class APIPatientTest {
     @Before
     public void setup() {
         mvc = MockMvcBuilders.webAppContextSetup(context).build();
-
         service.deleteAll();
+        final User hcp = new Personnel(new UserForm("hcp", "123456", Role.ROLE_HCP, 1));
+        final User er = new Personnel(new UserForm("er", "123456", Role.ROLE_ER, 1));
+        service.saveAll(List.of(hcp, er));
     }
 
     /** Tests that getting a patient that doesn't exist returns the proper status. */
@@ -200,11 +203,47 @@ public class APIPatientTest {
         Assert.assertNotNull(anttiRetrieved.getPreferredName());
 
         // Editing with the wrong username should fail.
+        
         mvc.perform(
                         put("/api/v1/patients/badusername")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(TestUtils.asJsonString(patient)))
                 .andExpect(status().is4xxClientError());
+
+        final PatientForm patient2 = new PatientForm();
+        mvc.perform(
+                        put("/api/v1/patients/antti")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(TestUtils.asJsonString(patient2)))
+                .andExpect(status().is4xxClientError());
+    }
+
+    @Test
+    @WithMockUser(
+            username = "er",
+            roles = {"ER"})
+    @Transactional
+    public void testEREHRAPI() throws Exception {
+        final PatientForm patient = new PatientForm();
+        patient.setAddress1("1 Test Street");
+        patient.setAddress2("Some Location");
+        patient.setBloodType(BloodType.APos.toString());
+        patient.setCity("Viipuri");
+        patient.setDateOfBirth("1977-06-15");
+        patient.setEmail("antti@itrust.fi");
+        patient.setEthnicity(Ethnicity.Caucasian.toString());
+        patient.setFirstName("Antti");
+        patient.setGender(Gender.Male.toString());
+        patient.setLastName("Walhelm");
+        patient.setPhone("123-456-7890");
+        patient.setUsername("antti");
+        patient.setState(State.NC.toString());
+        patient.setZip("27514");
+        final User antti = new Patient(new UserForm("antti", "123456", Role.ROLE_PATIENT, 1));
+
+        service.save(antti);
+        mvc.perform(get("/api/v1/patients/ehr/antti")).andExpect(status().isOk());
+
     }
 
     /** Test accessing the patient PUT request unauthenticated */

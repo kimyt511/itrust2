@@ -300,4 +300,34 @@ public class APIUserTest {
                 2,
                 retrieved.getRoles().size());
     }
+
+    @Test
+    @Transactional
+    public void testUpdateUsers2() throws Exception {
+
+        final UserForm uf = new UserForm(USER_1, PW, Role.ROLE_PATIENT, 1);
+
+        mvc.perform(
+                        MockMvcRequestBuilders.post("/api/v1/users")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(TestUtils.asJsonString(uf)))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
+        // uf.setPassword("000000");
+
+        mvc.perform(
+                        MockMvcRequestBuilders.put("/api/v1/users/" + uf.getUsername())
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(TestUtils.asJsonString(uf)))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
+        final User retrieved = service.findByName(USER_1);
+
+        uf.setPassword(null);
+        mvc.perform(
+                        MockMvcRequestBuilders.put("/api/v1/users/" + uf.getUsername())
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(TestUtils.asJsonString(uf)))
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError());
+    }
 }

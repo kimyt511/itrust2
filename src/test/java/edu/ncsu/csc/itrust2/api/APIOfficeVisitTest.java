@@ -1220,6 +1220,40 @@ public class APIOfficeVisitTest {
         visit.setWeight(175.2f);
         visit.setHeadCircumference(20.0f);
         v = officeVisitService.build(visit);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    @Transactional
+    @WithMockUser(
+            username = "hcp",
+            roles = {"HCP"})
+    public void testOfficeVisitAPIError332() throws Exception {
+        final OfficeVisitForm visit = new OfficeVisitForm();
+        visit.setDate("2030-11-19T04:50:00.000-05:00");
+        visit.setHcp("hcp");
+        visit.setPatient("patient");
+        visit.setNotes("Test office visit");
+        visit.setType(AppointmentType.GENERAL_CHECKUP.toString());
+        visit.setHospital("iTrust Test Hospital 2");
+
+        /* Test getForHCP and getForHCPAndPatient */
+        OfficeVisit v = officeVisitService.build(visit);
+
+        final Patient patient2 = buildPatient();
+        patient2.setDateOfBirth(LocalDate.of(2029, 7, 1));
+        userService.save(patient2);
+        visit.setPatient(patient2.getUsername());
+        visit.setDiastolic(-1);
+        visit.setHdl(70);
+        visit.setHeight(110.1f);
+        visit.setHouseSmokingStatus(HouseholdSmokingStatus.INDOOR);
+        visit.setLdl(30);
+        visit.setPatientSmokingStatus(PatientSmokingStatus.FORMER);
+        visit.setSystolic(102);
+        visit.setTri(150);
+        visit.setWeight(175.2f);
+        visit.setHeadCircumference(20.0f);
+        v = officeVisitService.build(visit);
 
         final BasicHealthMetrics bhm1 = bhmService.build(visit);
     }
@@ -1259,6 +1293,43 @@ public class APIOfficeVisitTest {
 
         final BasicHealthMetrics bhm1 = bhmService.build(visit);
     }
+
+    @Test(expected = IllegalArgumentException.class)
+    @Transactional
+    @WithMockUser(
+            username = "hcp",
+            roles = {"HCP"})
+    public void testOfficeVisitAPIError342() throws Exception {
+        final OfficeVisitForm visit = new OfficeVisitForm();
+        visit.setDate("2030-11-19T04:50:00.000-05:00");
+        visit.setHcp("hcp");
+        visit.setPatient("patient");
+        visit.setNotes("Test office visit");
+        visit.setType(AppointmentType.GENERAL_CHECKUP.toString());
+        visit.setHospital("iTrust Test Hospital 2");
+
+        /* Test getForHCP and getForHCPAndPatient */
+        OfficeVisit v = officeVisitService.build(visit);
+
+        final Patient patient2 = buildPatient();
+        patient2.setDateOfBirth(LocalDate.of(2029, 7, 1));
+        userService.save(patient2);
+        visit.setPatient(patient2.getUsername());
+        visit.setDiastolic(83);
+        visit.setHdl(70);
+        visit.setHeight(110.1f);
+        visit.setHouseSmokingStatus(HouseholdSmokingStatus.INDOOR);
+        visit.setLdl(30);
+        visit.setPatientSmokingStatus(PatientSmokingStatus.FORMER);
+        visit.setSystolic(-1);
+        visit.setTri(150);
+        visit.setWeight(175.2f);
+        visit.setHeadCircumference(20.0f);
+        v = officeVisitService.build(visit);
+
+        final BasicHealthMetrics bhm1 = bhmService.build(visit);
+    }
+
     @Test(expected = IllegalArgumentException.class)
     @Transactional
     @WithMockUser(
@@ -1294,6 +1365,43 @@ public class APIOfficeVisitTest {
 
         final BasicHealthMetrics bhm1 = bhmService.build(visit);
     }
+
+    @Test(expected = IllegalArgumentException.class)
+    @Transactional
+    @WithMockUser(
+            username = "hcp",
+            roles = {"HCP"})
+    public void testOfficeVisitAPIError352() throws Exception {
+        final OfficeVisitForm visit = new OfficeVisitForm();
+        visit.setDate("2030-11-19T04:50:00.000-05:00");
+        visit.setHcp("hcp");
+        visit.setPatient("patient");
+        visit.setNotes("Test office visit");
+        visit.setType(AppointmentType.GENERAL_CHECKUP.toString());
+        visit.setHospital("iTrust Test Hospital 2");
+
+        /* Test getForHCP and getForHCPAndPatient */
+        OfficeVisit v = officeVisitService.build(visit);
+
+        final Patient patient2 = buildPatient();
+        patient2.setDateOfBirth(LocalDate.of(2029, 7, 1));
+        userService.save(patient2);
+        visit.setPatient(patient2.getUsername());
+        visit.setDiastolic(83);
+        visit.setHdl(-1);
+        visit.setHeight(110.1f);
+        visit.setHouseSmokingStatus(HouseholdSmokingStatus.INDOOR);
+        visit.setLdl(30);
+        visit.setPatientSmokingStatus(PatientSmokingStatus.FORMER);
+        visit.setSystolic(102);
+        visit.setTri(150);
+        visit.setWeight(175.2f);
+        visit.setHeadCircumference(20.0f);
+        v = officeVisitService.build(visit);
+
+        final BasicHealthMetrics bhm1 = bhmService.build(visit);
+    }
+
     @Test(expected = IllegalArgumentException.class)
     @Transactional
     @WithMockUser(
@@ -1335,6 +1443,42 @@ public class APIOfficeVisitTest {
     @WithMockUser(
             username = "hcp",
             roles = {"HCP"})
+    public void testOfficeVisitAPIError362() throws Exception {
+        final OfficeVisitForm visit = new OfficeVisitForm();
+        visit.setDate("2030-11-19T04:50:00.000-05:00");
+        visit.setHcp("hcp");
+        visit.setPatient("patient");
+        visit.setNotes("Test office visit");
+        visit.setType(AppointmentType.GENERAL_CHECKUP.toString());
+        visit.setHospital("iTrust Test Hospital 2");
+
+        /* Test getForHCP and getForHCPAndPatient */
+        OfficeVisit v = officeVisitService.build(visit);
+
+        final Patient patient2 = buildPatient();
+        patient2.setDateOfBirth(LocalDate.of(2029, 7, 1));
+        userService.save(patient2);
+        visit.setPatient(patient2.getUsername());
+        visit.setDiastolic(83);
+        visit.setHdl(70);
+        visit.setHeight(110.1f);
+        visit.setHouseSmokingStatus(HouseholdSmokingStatus.INDOOR);
+        visit.setLdl(-1);
+        visit.setPatientSmokingStatus(PatientSmokingStatus.FORMER);
+        visit.setSystolic(102);
+        visit.setTri(150);
+        visit.setWeight(175.2f);
+        visit.setHeadCircumference(20.0f);
+        v = officeVisitService.build(visit);
+
+        final BasicHealthMetrics bhm1 = bhmService.build(visit);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    @Transactional
+    @WithMockUser(
+            username = "hcp",
+            roles = {"HCP"})
     public void testOfficeVisitAPIError37() throws Exception {
         final OfficeVisitForm visit = new OfficeVisitForm();
         visit.setDate("2030-11-19T04:50:00.000-05:00");
@@ -1359,6 +1503,42 @@ public class APIOfficeVisitTest {
         visit.setPatientSmokingStatus(PatientSmokingStatus.FORMER);
         visit.setSystolic(102);
         visit.setTri(11100000);
+        visit.setWeight(175.2f);
+        visit.setHeadCircumference(20.0f);
+        v = officeVisitService.build(visit);
+
+        final BasicHealthMetrics bhm1 = bhmService.build(visit);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    @Transactional
+    @WithMockUser(
+            username = "hcp",
+            roles = {"HCP"})
+    public void testOfficeVisitAPIError372() throws Exception {
+        final OfficeVisitForm visit = new OfficeVisitForm();
+        visit.setDate("2030-11-19T04:50:00.000-05:00");
+        visit.setHcp("hcp");
+        visit.setPatient("patient");
+        visit.setNotes("Test office visit");
+        visit.setType(AppointmentType.GENERAL_CHECKUP.toString());
+        visit.setHospital("iTrust Test Hospital 2");
+
+        /* Test getForHCP and getForHCPAndPatient */
+        OfficeVisit v = officeVisitService.build(visit);
+
+        final Patient patient2 = buildPatient();
+        patient2.setDateOfBirth(LocalDate.of(2029, 7, 1));
+        userService.save(patient2);
+        visit.setPatient(patient2.getUsername());
+        visit.setDiastolic(83);
+        visit.setHdl(70);
+        visit.setHeight(110.1f);
+        visit.setHouseSmokingStatus(HouseholdSmokingStatus.INDOOR);
+        visit.setLdl(30);
+        visit.setPatientSmokingStatus(PatientSmokingStatus.FORMER);
+        visit.setSystolic(102);
+        visit.setTri(-1);
         visit.setWeight(175.2f);
         visit.setHeadCircumference(20.0f);
         v = officeVisitService.build(visit);

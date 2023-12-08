@@ -59,14 +59,14 @@ public class APIPatientController extends APIController {
     public ResponseEntity getPatient() {
         final User self = userService.findByName(LoggerUtil.currentUser());
         final Patient patient = (Patient) patientService.findByName(self.getUsername());
-        if (patient == null) {
-            return new ResponseEntity(
-                    errorResponse("Could not find a patient entry for you, " + self.getUsername()),
-                    HttpStatus.NOT_FOUND);
-        } else {
-            loggerUtil.log(TransactionType.VIEW_DEMOGRAPHICS, self);
-            return new ResponseEntity(patient, HttpStatus.OK);
-        }
+        // if (patient == null) {
+        //     return new ResponseEntity(
+        //             errorResponse("Could not find a patient entry for you, " + self.getUsername()),
+        //             HttpStatus.NOT_FOUND);
+        // } else {
+        loggerUtil.log(TransactionType.VIEW_DEMOGRAPHICS, self);
+        return new ResponseEntity(patient, HttpStatus.OK);
+        // }
     }
 
     /**
@@ -201,6 +201,7 @@ public class APIPatientController extends APIController {
     }
 
     @GetMapping("/patients/ehr/{username}")
+    @PreAuthorize("hasAnyRole('ROLE_HCP', 'ROLE_ER')")
     public ResponseEntity getEhrDto( @PathVariable ( "username" ) final String username ){
         final Patient patient = (Patient) patientService.findByName(username);
         EhrDto p = new EhrDto(patient);
@@ -209,7 +210,7 @@ public class APIPatientController extends APIController {
             loggerUtil.log( TransactionType.HCP_VIEW_ER, self.getUsername(),
                     username,  self.getUsername() + " viewed a " + username +"'s Emergency Health Records" );
         }
-        else if(self.getRoles().contains( Role.ROLE_ER )) {
+        else{ //if(self.getRoles().contains( Role.ROLE_ER ))
             loggerUtil.log( TransactionType.ER_VIEW_ER, self.getUsername(),
                     username,  self.getUsername() + " viewed a " + username +"'s Emergency Health Records" );
         }

@@ -3,6 +3,7 @@ package edu.ncsu.csc.itrust2.api;
 import edu.ncsu.csc.itrust2.common.TestUtils;
 import edu.ncsu.csc.itrust2.forms.ICDCodeForm;
 import edu.ncsu.csc.itrust2.services.ICDCodeService;
+import edu.ncsu.csc.itrust2.models.ICDCode;
 
 import javax.transaction.Transactional;
 
@@ -22,6 +23,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -83,6 +85,10 @@ public class APIICDCodeTest {
                         .getResponse()
                         .getContentAsString();
         code = gson.fromJson(content, ICDCodeForm.class);
+        ICDCode ic = gson.fromJson(content, ICDCode.class);
+        ICDCode ic2 = gson.fromJson(content, ICDCode.class);
+        assertTrue(ic.equals(ic2));
+        assertTrue(!ic.equals(form));
         assertEquals(form.getCode(), code.getCode());
 
         // edit it
@@ -130,4 +136,21 @@ public class APIICDCodeTest {
                         get("/api/v1/icdcodes"))
                 .andExpect(status().isOk());
     }
+
+    @Test()//(expected = IllegalArgumentException.class)
+    @Transactional
+    @WithMockUser(
+            username = "admin",
+            roles = {"USER", "ADMIN"})
+    public void testICDCodeError() throws Exception {
+        final ICDCodeForm form = new ICDCodeForm();
+        form.setCode("T12");
+        form.setDescription("1234567890".repeat(30));
+
+        mvc.perform(
+        post("/api/v1/icdcodes")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(TestUtils.asJsonString(form))).andExpect(status().is4xxClientError());
+    }
+    
 }
