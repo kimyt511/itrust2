@@ -89,6 +89,14 @@
                 // Open a new window for the form
                 var $popup = $window.open(urlWithParams, windowName, "width=" + width + ",height=" + height + "," +
                     "left=" + left + ",top=" + top);
+
+                // Set up a listener for when the pop-up window is closed
+                if ($popup) {
+                    $popup.addEventListener('beforeunload', function () {
+                        // Reload the parent page when the pop-up is closed
+                        $window.location.reload();
+                    });
+                }
             };
             /////////////////////////////////// Open pop-up to Load reviews of selected hospital /////////////////////////////////////////////////
 
@@ -113,6 +121,14 @@
                 // Open a new window for the form
                 var $popup = $window.open(urlWithParams, windowName, "width=" + width + ",height=" + height + "," +
                     "left=" + left + ",top=" + top);
+
+                // Set up a listener for when the pop-up window is closed
+                if ($popup) {
+                    $popup.addEventListener('beforeunload', function () {
+                        // Reload the parent page when the pop-up is closed
+                        $window.location.reload();
+                    });
+                }
             };
             ///////////////////////////////////Open pop-up to Load reviews of selected HCP //////////////////////////////////////
 
