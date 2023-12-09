@@ -185,7 +185,7 @@ public class APIReviewController extends APIController {
      * @param id the id of the review to delete
      * @return the id of the deleted review
      */
-    @PreAuthorize("hasRole('ROLE_PATIENT')")
+    @PreAuthorize("hasRole('ROLE_PATIENT') or hasRole('ROLE_ADMIN')")
     @DeleteMapping("/reviews/hcp/{id}")
     public ResponseEntity deleteHcpReviews(@PathVariable final Long id) {
         try {
@@ -212,7 +212,7 @@ public class APIReviewController extends APIController {
      * @param id the id of the review to delete
      * @return the id of the deleted review
      */
-    @PreAuthorize("hasRole('ROLE_PATIENT')")
+    @PreAuthorize("hasRole('ROLE_PATIENT') or hasRole('ROLE_ADMIN')")
     @DeleteMapping("/reviews/hospital/{id}")
     public ResponseEntity deleteHospitalReviews(@PathVariable final Long id) {
         try {

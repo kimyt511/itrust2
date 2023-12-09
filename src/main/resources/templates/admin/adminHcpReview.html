@@ -53,7 +53,7 @@
         $scope.remove = function (reviewID) {
             $http.delete('/iTrust2/api/v1/reviews/hcp/' + reviewID).then(
                 function (response) {
-                    alert("Your review was successfully deleted.");
+                    alert("A review was successfully deleted.");
 
                     // Reload the current page
                     $window.location.reload();
@@ -111,6 +111,9 @@
                                     <button ng-click="remove(review.id)" style="float: right">
                                         remove
                                     </button>
+                                    <div>
+                                        rating: {{review.rate}}
+                                    </div>
                                     <div>
                                         {{review.comment}}
                                     </div>
