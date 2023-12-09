@@ -2,6 +2,16 @@
 
 Welcome to the repository of [**Team 4**](docs/team.md)'s project for the CSI-3106 Software Engineering course at Yonsei University.
 
+## Progress
+- [x] UC 15
+- [x] UC 16
+- [x] UC 17
+- [x] UC 18
+- [x] UC 19
+- [ ] UC 23
+
+## Jacoco Coverage (last update: 12/08)
+![./docs/jacoco_coverage.png](./docs/jacoco_coverage.png)
 ## Introduction
 
 ## Project Structure
@@ -32,16 +42,25 @@ Follow these steps to get started:
    ```
 
 3. **Configure Application Settings**:
-   Place the `application.yml` file in the `src/main/resources` directory. You can either use your own configuration or our provided `application-dev.yml` file for local Docker MySQL server setup.
+   Place the `application.yml` file in the `src/main/resources` directory. You can either use your own configuration or our provided `application.yml` file for local Docker MySQL server setup.
 
-4. **Start the Application**:
+4. **Start the Database**:
+   Use Docker Compose to start the MySQL database server.
+
+   ```bash
+   docker compose up -d
+   ```
+
+   Or you can use your own MySQL server. Make sure to update the `application.yml` file accordingly.
+
+5. **Start the Application**:
    Use the Gradle wrapper to run the application. For Windows, use `gradlew.bat` instead of `./gradlew`.
 
    ```bash
    ./gradlew bootRun
    ```
 
-5. **Access the Web Interface**:
+6. **Access the Web Interface**:
    Open your browser and visit `http://localhost:8080/iTrust2` to view the application.
 
 ## Quality Assurance
@@ -59,7 +78,12 @@ To run the style check and unit tests, use the Gradle wrapper.
   ```bash
   ./gradlew test
   ```
-
+- **Jacoco Report Creation**: This will run and create jacoco report
+   - Note: change `build.gradle.kts` file to change report type or coverage limit
+      - default: `build/reports/jacoco/test/html/index.html`
+  ```bash
+  ./gradlew testCoverage
+  ```
 ## Team Operation and Collaboration
 
 - **Iteration Phases**: The project is divided into three iterations - from iteration 1 to 3.

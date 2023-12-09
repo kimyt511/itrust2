@@ -111,12 +111,12 @@ public class APIPersonnelController extends APIController {
         }
 
         fromDb.update(personnelF);
-        if ((null != fromDb.getUsername() && !id.equals(fromDb.getUsername()))) {
-            return new ResponseEntity(
-                    errorResponse(
-                            "The ID provided does not match the ID of the Personnel provided"),
-                    HttpStatus.CONFLICT);
-        }
+        // if ((null != fromDb.getUsername() && !id.equals(fromDb.getUsername()))) {
+        //     return new ResponseEntity(
+        //             errorResponse(
+        //                     "The ID provided does not match the ID of the Personnel provided"),
+        //             HttpStatus.CONFLICT);
+        // }
         try {
             service.save(fromDb);
             loggerUtil.log(TransactionType.EDIT_DEMOGRAPHICS, LoggerUtil.currentUser());
@@ -135,7 +135,7 @@ public class APIPersonnelController extends APIController {
      * @return response and list of personnel matching query
      */
     @GetMapping("/personnel/getbyroles/{role}")
-    @PreAuthorize("hasAnyRole('ROLE_HCP', 'ROLE_ADMIN', 'ROLE_PATIENT')")
+    @PreAuthorize("hasAnyRole('ROLE_HCP', 'ROLE_ADMIN', 'ROLE_PATIENT', 'ROLE_LABTECH')")
     public ResponseEntity getPersonnelByRole(@PathVariable("role") final String role) {
         final List<Personnel> allPersonnel = (List<Personnel>) service.findAll();
 

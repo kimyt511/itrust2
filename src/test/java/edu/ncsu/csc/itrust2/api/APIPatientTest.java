@@ -1,9 +1,13 @@
 package edu.ncsu.csc.itrust2.api;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import edu.ncsu.csc.itrust2.common.TestUtils;
 import edu.ncsu.csc.itrust2.forms.PatientForm;
 import edu.ncsu.csc.itrust2.forms.UserForm;
 import edu.ncsu.csc.itrust2.models.Patient;
+import edu.ncsu.csc.itrust2.models.Personnel;
 import edu.ncsu.csc.itrust2.models.User;
 import edu.ncsu.csc.itrust2.models.enums.BloodType;
 import edu.ncsu.csc.itrust2.models.enums.Ethnicity;
@@ -11,8 +15,11 @@ import edu.ncsu.csc.itrust2.models.enums.Gender;
 import edu.ncsu.csc.itrust2.models.enums.Role;
 import edu.ncsu.csc.itrust2.models.enums.State;
 import edu.ncsu.csc.itrust2.services.PatientService;
+import edu.ncsu.csc.itrust2.dto.PatientDto;
+import edu.ncsu.csc.itrust2.dto.EhrDto;
 
 import javax.transaction.Transactional;
+import java.time.LocalDate;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -31,6 +38,9 @@ import org.springframework.web.context.WebApplicationContext;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Test for API functionality for interacting with Patients
@@ -52,8 +62,10 @@ public class APIPatientTest {
     @Before
     public void setup() {
         mvc = MockMvcBuilders.webAppContextSetup(context).build();
-
         service.deleteAll();
+        final User hcp = new Personnel(new UserForm("hcp", "123456", Role.ROLE_HCP, 1));
+        final User er = new Personnel(new UserForm("er", "123456", Role.ROLE_ER, 1));
+        service.saveAll(List.of(hcp, er));
     }
 
     /** Tests that getting a patient that doesn't exist returns the proper status. */
@@ -73,6 +85,8 @@ public class APIPatientTest {
             roles = {"HCP"})
     @Transactional
     public void testPatientAPI() throws Exception {
+        final Gson gson = new GsonBuilder().create();
+        String content;
 
         final PatientForm patient = new PatientForm();
         patient.setAddress1("1 Test Street");
@@ -104,6 +118,13 @@ public class APIPatientTest {
         // Creating a User should create the Patient record automatically
         mvc.perform(get("/api/v1/patients/antti")).andExpect(status().isOk());
 
+        // mvc.perform(get("/api/v1/patients/ehr/antti")).andExpect(status().isOk());
+        // get all patients
+        mvc.perform(get("/api/v1/patients")).andExpect(status().isOk());
+
+        // get wrong patients
+        mvc.perform(get("/api/v1/patients/bees")).andExpect(status().isNotFound());
+
         // Should also now be able to edit existing record with new information
         mvc.perform(
                         put("/api/v1/patients/antti")
@@ -111,12 +132,60 @@ public class APIPatientTest {
                                 .content(TestUtils.asJsonString(patient)))
                 .andExpect(status().isOk());
 
+        content =
+                mvc.perform(
+                                get("/api/v1/patients/ehr/antti"))
+                        .andReturn()
+                        .getResponse()
+                        .getContentAsString();
+        EhrDto ehrdto =
+                gson.fromJson(content, new TypeToken<EhrDto>() {}.getType());
+        Assert.assertEquals(ehrdto.getUsername(), "antti");
+        Assert.assertEquals(ehrdto.getFirstName(), "Antti");
+        Assert.assertEquals(ehrdto.getLastName(), "Walhelm");
+        Assert.assertTrue(ehrdto.getDateOfBirth().equals(LocalDate.of(1977,06,15)));
+        Assert.assertEquals(ehrdto.getGender(), Gender.Male);
+        Assert.assertEquals(ehrdto.getBloodType(), BloodType.APos);
+
         Patient anttiRetrieved = (Patient) service.findByName("antti");
+
 
         // Test a few fields to be reasonably confident things are working
         Assert.assertEquals("Walhelm", anttiRetrieved.getLastName());
         Assert.assertEquals(Gender.Male, anttiRetrieved.getGender());
         Assert.assertEquals("Viipuri", anttiRetrieved.getCity());
+
+        content =
+                mvc.perform(
+                                get("/api/v1/patients/search/" + "Walh"))
+                        .andReturn()
+                        .getResponse()
+                        .getContentAsString();
+        List<PatientDto> plist =
+                gson.fromJson(content, new TypeToken<ArrayList<PatientDto>>() {}.getType());
+        boolean flag = false;
+        for (final PatientDto pp : plist) {
+            if (pp.getUsername().equals("antti")) {
+                flag = true;
+            }
+        }
+        Assert.assertTrue(flag);
+
+        content =
+                mvc.perform(
+                                get("/api/v1/patients/searchmid/" + "an"))
+                        .andReturn()
+                        .getResponse()
+                        .getContentAsString();
+        plist =
+                gson.fromJson(content, new TypeToken<ArrayList<PatientDto>>() {}.getType());
+        flag = false;
+        for (final PatientDto pp : plist) {
+            if (pp.getUsername().equals("antti")) {
+                flag = true;
+            }
+        }
+        Assert.assertTrue(flag);
 
         // Also test a field we haven't set yet
         Assert.assertNull(anttiRetrieved.getPreferredName());
@@ -134,11 +203,47 @@ public class APIPatientTest {
         Assert.assertNotNull(anttiRetrieved.getPreferredName());
 
         // Editing with the wrong username should fail.
+        
         mvc.perform(
                         put("/api/v1/patients/badusername")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(TestUtils.asJsonString(patient)))
                 .andExpect(status().is4xxClientError());
+
+        final PatientForm patient2 = new PatientForm();
+        mvc.perform(
+                        put("/api/v1/patients/antti")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(TestUtils.asJsonString(patient2)))
+                .andExpect(status().is4xxClientError());
+    }
+
+    @Test
+    @WithMockUser(
+            username = "er",
+            roles = {"ER"})
+    @Transactional
+    public void testEREHRAPI() throws Exception {
+        final PatientForm patient = new PatientForm();
+        patient.setAddress1("1 Test Street");
+        patient.setAddress2("Some Location");
+        patient.setBloodType(BloodType.APos.toString());
+        patient.setCity("Viipuri");
+        patient.setDateOfBirth("1977-06-15");
+        patient.setEmail("antti@itrust.fi");
+        patient.setEthnicity(Ethnicity.Caucasian.toString());
+        patient.setFirstName("Antti");
+        patient.setGender(Gender.Male.toString());
+        patient.setLastName("Walhelm");
+        patient.setPhone("123-456-7890");
+        patient.setUsername("antti");
+        patient.setState(State.NC.toString());
+        patient.setZip("27514");
+        final User antti = new Patient(new UserForm("antti", "123456", Role.ROLE_PATIENT, 1));
+
+        service.save(antti);
+        mvc.perform(get("/api/v1/patients/ehr/antti")).andExpect(status().isOk());
+
     }
 
     /** Test accessing the patient PUT request unauthenticated */
@@ -183,6 +288,8 @@ public class APIPatientTest {
 
         service.save(antti);
 
+        mvc.perform(get("/api/v1/patient/findexperts/getzip")).andExpect(status().isNoContent());
+
         final PatientForm patient = new PatientForm();
         patient.setAddress1("1 Test Street");
         patient.setAddress2("Some Location");
@@ -226,5 +333,24 @@ public class APIPatientTest {
 
         // we should be able to update our record too
         mvc.perform(get("/api/v1/patient/")).andExpect(status().isOk());
+
+        mvc.perform(get("/api/v1/patient/findexperts/getzip")).andExpect(status().isOk());
+
+        PatientForm pf = new PatientForm(null);
+        pf = new PatientForm(anttiRetrieved);
+
+        anttiRetrieved.setDateOfDeath(LocalDate.of(2023,2,11));
+        anttiRetrieved.setDateOfBirth(null);
+        anttiRetrieved.setState(null);
+        anttiRetrieved.setBloodType(null);
+        anttiRetrieved.setEthnicity(null);
+        anttiRetrieved.setGender(null);
+
+        pf = new PatientForm(anttiRetrieved);
+
+        pf.setFastingLimit(100);
+        pf.setMealLimit(150);
+
     }
+
 }

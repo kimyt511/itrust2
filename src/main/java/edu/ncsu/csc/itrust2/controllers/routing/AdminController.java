@@ -109,4 +109,29 @@ public class AdminController {
     public String adminHospitalReview(final Model model) {
         return "/admin/adminHospitalReview";
     }
+
+     * Retrieves the form for the Vaccine action
+     *
+     * @param model
+     *            Data for front end
+     * @return The page to display
+     */
+    @RequestMapping ( value = "admin/vaccines" )
+    @PreAuthorize ( "hasRole('ROLE_ADMIN')" )
+    public String vaccines ( final Model model ) {
+        return "admin/vaccines";
+    }
+
+    /**
+     * Add or delete LOINC
+     *
+     * @param model
+     *            data for front end
+     * @return mapping
+     */
+    @RequestMapping ( value = "admin/manageLOINC" )
+    @PreAuthorize ( "hasRole('ROLE_ADMIN')" )
+    public String manageLOINC ( final Model model ) {
+        return "/admin/manageLOINC";
+    }
 }

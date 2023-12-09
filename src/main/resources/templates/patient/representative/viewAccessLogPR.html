@@ -1,0 +1,81 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="layout :: head(title=~{::title},links=~{})">
+  <title>View AccessLog</title>
+
+  <!-- Angular and Bootstrap files  -->
+  <link rel="stylesheet"
+        href="//netdna.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+  <script
+          src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+</head>
+
+<body>
+<div th:fragment="content">
+
+  <script th:inline="javascript">
+    /* Otherwise Thymeleaf tries to parse Javascript as XML and breaks itself sometimes.  Sigh */
+    /*<![CDATA[*/
+    const app = angular.module("viewAccessLogPR", []);
+    app.controller('controllerPR', function ($scope, $http) {
+
+      var queryString = window.location.search;
+      var urlParams = new URLSearchParams(queryString);
+      var Json = urlParams.get('data');
+      $scope.patient = JSON.parse(decodeURIComponent(Json));
+
+      $scope.displayName = function (p) {
+        return p.firstName + " " + p.lastName + " (" + p.id + ")";
+      };
+
+      // get all access logs of patient and display in table
+      $http.get("/iTrust2/api/v1/pr/logentries/" +  $scope.patient.username).then(
+        function (response) {
+          $scope.logs = response.data;
+          $scope.message = "";
+        }, function (rejection) {
+          $scope.logs = [];
+          $scope.message = "Unable to fetch access logs";
+      });
+    });
+  </script>
+
+  <div ng-app="viewAccessLogPR" ng-controller="controllerPR">
+
+    <!-- Info on tables from https://hello-angularjs.appspot.com/removetablerow -->
+    <div class="container">
+      <div class="panel panel-primary">
+        <div class="panel panel-heading">
+          <h2>Log History</h2>
+          <h4 style="color: red" ng-model="message"></h4>
+        </div>
+        <div class="panel panel-body">
+          <h3>{{displayName(patient)}}</h3>
+          <table style="width: 100%" class="table table-hover">
+            <thead>
+              <tr>
+                <th>Transaction Type</th>
+                <th>Primary User</th>
+                <th>Secondary User</th>
+                <th>Date & Time</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="l in logs" name="logs">
+                <td name="transactionType">{{l.transactionType}}</td>
+                <td name="hcp">{{l.primary}}</td>
+                <td name="code">{{l.secondary}}</td>
+                <td name="description">{{l.dateTime | date : 'EEE MMM dd
+                  h:mm:ss a yyyy'}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

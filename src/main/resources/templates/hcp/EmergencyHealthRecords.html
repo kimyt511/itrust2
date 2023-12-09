@@ -1,0 +1,249 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="layout :: head(title=~{::title},links=~{::script})">
+<title>HCP Emergency Health Records</title>
+<script th:src="@{/js/dateTimeService.js}"
+		src="../js/dateTimeService.js"></script>
+</head>
+<body th:include="layout :: body" th:with="content=~{::content}">
+	<div th:fragment="content">
+
+		<script th:inline="javascript">
+
+			var app = angular.module('hcpEHRApp', ['dateTimeServices']);
+			app.controller('HCPEmergencyHealthRecordsCtrl', function($scope, $http, dateTimeService) {
+				$scope.displayName = function(p) {
+					return p.firstName + " " + p.lastName + " (" + p.username + ")";
+				}
+
+				$scope.prescriptions = [];
+				$scope.diagnoses = [];
+				$scope.demographics = {};
+				
+				$scope.selectPatient = function(patient, override) {
+					$http.get("/iTrust2/api/v1/patients/ehr/"+patient.username).then(
+						function(response) {
+							$scope.demographics = response.data;
+							const dateOfBirth = new Date($scope.demographics.dateOfBirth);
+							const today = new Date();
+							$scope.demographics.age = today.getFullYear() - dateOfBirth.getFullYear();
+							const monthDiff = today.getMonth() - dateOfBirth.getMonth();
+							if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dateOfBirth.getDate())) {
+								$scope.demographics.age--;
+							}
+
+							$scope.message = "";
+						}, function(rejection) {
+							$scope.demographics = [];
+							$scope.message = "Unable to display demographics";
+					});
+
+					$http.get("/iTrust2/api/v1/diagnoses/ehr/search/"+patient.username).then(
+						function(response) {
+							$scope.diagnoses = response.data;
+							$scope.message = "";
+						}, function(rejection) {
+							$scope.diagnoses = [];
+							$scope.message = "Unable to display diagnoses";
+					});
+
+					$http.get("/iTrust2/api/v1/prescriptions/ehr/search/"+patient.username).then(
+						function (response) {
+							$scope.prescriptions = response.data;
+							$scope.message = "";
+						}, function (rejection) {
+							$scope.prescriptions = [];
+							$scope.message = "Could not display prescriptions";
+					});
+					
+				}
+
+				$scope.searchedMID = "";
+				$scope.searchedName = "";
+				$scope.searchedPatients = [];
+				$scope.searchFilter = "";
+
+				$scope.getUsersbyMID = function(){
+					$scope.searchedPatients = [];
+					var searchedMID = $scope.searchedMID;
+					if(searchedMID == ""){
+						$http.get("/iTrust2/api/v1/patients").then(
+							function (response) {
+								$scope.searchedPatients = response.data;
+							});
+					}
+					else{
+						$http.get("/iTrust2/api/v1/patients/searchmid/"+searchedMID).then(
+							function (response) {
+								$scope.searchedPatients = response.data;
+								$scope.sideMessage = "";
+							}, function (rejection) {
+								$scope.searchedPatients = [];
+								$scope.sideMessage = "No such username (MID)";
+							});
+					}
+				}
+
+				$scope.getUsersbyName = function(){
+					$scope.searchedPatients = [];
+					var searchedName = $scope.searchedName;
+					if(searchedName == ""){
+						$http.get("/iTrust2/api/v1/patients").then(
+							function (response) {
+								$scope.searchedPatients = response.data;
+							});
+					}
+					else{
+						$http.get("/iTrust2/api/v1/patients/search/"+searchedName).then(
+							function (response) {
+								$scope.searchedPatients = response.data;
+								$scope.sideMessage = "";
+							}, function (rejection) {
+								$scope.searchedPatients = [];
+								$scope.sideMessage = "No such first and last name";
+							});
+					}
+				}
+
+				$http.get("/iTrust2/api/v1/bloodtype").then(
+                        function (response) {
+                            $scope.bloodTypes = response.data;
+                        });
+
+				$http.get("/iTrust2/api/v1/gender").then(
+                        function (response) {
+                            $scope.genders = response.data;
+                        });
+			});
+
+			/*]]>*/
+		</script>
+
+		<div ng-app="hcpEHRApp" ng-controller="HCPEmergencyHealthRecordsCtrl">
+			<div style="float: left; width: 30%; height: 75%; overflow-y: auto">
+				<h2>Patients:</h2>
+				<!-- info on filtering taken from here: https://www.w3schools.com/angular/angular_filters.asp
+				and https://docs.angularjs.org/api/ng/filter/filter -->
+				<h4>
+					<!-- Name: <input type="text" name="searchName" ng-model="searchNameFilter" /> -->
+					Name: <input type="text" name="searchName" ng-model="searchedName"/>
+					<button ng-click="getUsersbyName()" name="searchbyName" >Search</button>
+					
+				</h4>
+				<h4>
+					<!-- MID: <input type="text" name="searchMID" ng-model="searchMIDFilter" /> -->
+					MID: <input type="text" name="searchMID" ng-model="searchedMID"/>
+					<button ng-click="getUsersbyMID()" name="searchbyMID">Search</button>
+				</h4>
+				<!-- Info on scrolling taken from here: https://www.w3schools.com/cssref/pr_pos_overflow.asp -->
+				<!-- and here: https://stackoverflow.com/questions/9560330/how-to-hide-a-vertical-scroll-bar-when-not-needed -->
+				<ul style="overflow: auto;height=90%;">
+					<!-- Information on how labels wor from here: https://stackoverflow.com/questions/7863251/clicking-the-text-to-select-corresponding-radio-button -->
+					<li ng-repeat="patient in searchedPatients"><h4>
+							<label> <input type="radio"
+								ng-model="$parent.selectedPatient" name="patientName"
+								value="{{patient.username}}"
+								ng-click='$parent.selectPatient(patient)' />{{$parent.displayName(patient)}}
+								<!-- &nbsp;{{$parent.displayName(patient)}} -->
+							</label>
+							<div name="side_success">{{sideMessage}}</div>
+						</h4></li>
+					<ul id="userList"></ul>
+				</ul>
+			</div>
+			<!-- information on vertical rule found here: https://stackoverflow.com/questions/571900/is-there-a-vr-vertical-rule-in-html  -->
+			<div
+				style="float: left; width: 70%; border-left: 1px solid #bbb; padding-left: 3%; height: 75%; overflow-y: auto">
+				<h2 id="header0">Emergency Health Records</h2>
+				<div ng-show="selectedPatient">
+					<div class="col-md-11">
+						<div class="panel panel-info">
+							<div class="panel-heading">
+								<h3>Demographics</h3>
+							</div>
+							<div class="panel-body">
+								<table style="width: 100%" class="table table-hover">
+									<thead>
+										<tr>
+											<th>First Name</th>
+											<th>Last Name</th>
+											<th>MID</th>
+											<th>Age</th>
+											<th>Date of Birth</th>
+											<th>Gender</th>
+											<th>Blood Type</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr name="demographics">
+											<td name="firstName">{{demographics.firstName}}</td>
+											<td name="lastName", ng-bind="demographics.lastName"></td>
+											<td name="username">{{demographics.username}}</td>
+											<td name="Age", ng-bind="demographics.age"></td>
+											<td name="dateOfBirth", ng-bind="demographics.dateOfBirth"></td>
+											<td name="gender", ng-bind="demographics.gender"></td>
+											<td name="bloodType", ng-bind="demographics.bloodType"></td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+
+							<div class="panel-heading">
+								<h3>Diagnoses</h3>
+							</div>
+							<div class="panel-body">
+								<table style="width: 100%" class="table table-hover">
+									<thead>
+										<tr>
+											<th>Date</th>
+											<th>ICD-10 Code</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr ng-repeat="d in diagnoses | orderBy: 'visit' " name="diagnosis">
+											<td name="date">{{d.date | date : 'yyyy-MM-dd'}}</td>
+											<td name="code">{{d.code.code}}</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+
+							<div class="panel-heading">
+								<h3>Prescriptions</h3>
+							</div>
+							<div class="panel-body">
+								<table class="table table-bordered">
+									<thead>
+										<tr>
+											<th>Drug</th>
+											<th>Dosage (mg)</th>
+											<th>Start Date</th>
+											<th>End Date</th>
+											<th>Renewals</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr name="prescriptionTableRow"
+											ng-repeat="p in prescriptions"
+											prescriptionId={{p.id}}>
+											<td name="drugCell">{{p.drug.name}}</td>
+											<td name="codeCell">{{p.dosage}}</td>
+											<td name="startCell">{{p.startDate | date :
+												'MM/dd/yyyy'}}</td>
+											<td name="endCell">{{p.endDate | date : 'MM/dd/yyyy'}}</td>
+											<td name="renewalsCell">{{p.renewals}}</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+					<br />
+					<!-- <button ng-click="submit()" name="submit">Submit</button> -->
+
+					<div name="success">{{message}}</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

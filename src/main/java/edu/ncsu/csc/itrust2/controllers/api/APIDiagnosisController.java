@@ -1,5 +1,6 @@
 package edu.ncsu.csc.itrust2.controllers.api;
 
+import edu.ncsu.csc.itrust2.dto.DiagnosisDto;
 import edu.ncsu.csc.itrust2.models.Diagnosis;
 import edu.ncsu.csc.itrust2.models.OfficeVisit;
 import edu.ncsu.csc.itrust2.models.User;
@@ -8,15 +9,15 @@ import edu.ncsu.csc.itrust2.services.DiagnosisService;
 import edu.ncsu.csc.itrust2.services.OfficeVisitService;
 import edu.ncsu.csc.itrust2.services.UserService;
 import edu.ncsu.csc.itrust2.utils.LoggerUtil;
-
-import java.util.List;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class that provided the REST endpoints for dealing with diagnoses. Diagnoses can either be
@@ -97,4 +98,52 @@ public class APIDiagnosisController extends APIController {
 
         return diagnosisService.findByPatient(self);
     }
+
+    @GetMapping ( "/diagnoses/dto" )
+    public List<DiagnosisDto> getDiagnosisDto () {
+        final User self = userService.findByName( LoggerUtil.currentUser() );
+        if ( self == null ) {
+            return null;
+        }
+
+        List <DiagnosisDto> dto_list = new ArrayList<DiagnosisDto>();
+        for(Diagnosis d: diagnosisService.findByPatient( self )) {
+            DiagnosisDto dto = new DiagnosisDto(d);
+            dto_list.add(dto);
+        }
+        return dto_list;
+    }
+
+    @GetMapping ( "/diagnoses/ehr/search/{username}" )
+    public List<DiagnosisDto> getEhrDiagnosisByName (@PathVariable final String username) {
+        final List<Long> diag_list = diagnosisService.findEhrByUserName(username);
+        List<Diagnosis> list = new ArrayList<Diagnosis>();
+        for(Long id:diag_list) {
+            list.add((Diagnosis) diagnosisService.findById(id));
+        }
+        List <DiagnosisDto> dto_list = new ArrayList<DiagnosisDto>();
+        for(Diagnosis d: list) {
+            DiagnosisDto dto = new DiagnosisDto(d);
+            dto_list.add(dto);
+        }
+
+        return dto_list;
+    }
+
+    @GetMapping ( "/diagnoses/search/{username}" )
+    public List<DiagnosisDto> getDiagnosisByName (@PathVariable final String username) {
+        final List<Long> diag_list = diagnosisService.findByUserName(username);
+        List<Diagnosis> list = new ArrayList<Diagnosis>();
+        for(Long id:diag_list) {
+            list.add((Diagnosis) diagnosisService.findById(id));
+        }
+        List <DiagnosisDto> dto_list = new ArrayList<DiagnosisDto>();
+        for(Diagnosis d: list) {
+            DiagnosisDto dto = new DiagnosisDto(d);
+            dto_list.add(dto);
+        }
+
+        return dto_list;
+    }
+
 }

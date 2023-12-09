@@ -90,7 +90,6 @@ public class PatientController {
         return "/patient/officeVisit/viewDiagnoses";
     }
 
-
     /**
      * Create a page for the patient to review HCP and Hospital
      *
@@ -159,5 +158,112 @@ public class PatientController {
     @GetMapping("/patient/myReviews")
     @PreAuthorize("hasRole('ROLE_PATIENT')")
     public String myReviews(final Model model) { return "/patient/myReviews";
+
+    /**
+     * Create a page for the patient to view all diagnoses
+     *
+     * @param model data for front end
+     * @return The page for the patient to view their diagnoses
+     */
+    @GetMapping(value = "patient/officeVisit/viewVaccinations")
+    @PreAuthorize("hasRole('ROLE_PATIENT')")
+    public String viewVaccinations(final Model model) {
+        return "/patient/officeVisit/viewVaccinations";
+    }
+
+    /**
+     * Create a page for the patient to view Personal Representatives
+     *
+     * @param model data for front end
+     * @return The page for the patient to view Personal Representatives
+     */
+    @GetMapping(value = "patient/representative/viewPersonalRepresentatives")
+    @PreAuthorize("hasRole('ROLE_PATIENT')")
+    public String viewPersonalRepresentatives(final Model model) {
+        return "/patient/representative/viewPersonalRepresentatives";
+    }
+
+    /**
+     * Create a page for the patient to view access logs of a patient in PR page
+     *
+     * @param model data for front end
+     * @return The page for the patient to view access logs of a patient in PR page
+     */
+    @GetMapping(value = "patient/representative/viewAccessLogPR")
+    @PreAuthorize("hasRole('ROLE_PATIENT')")
+    public String viewAccessLogPR(final Model model) {
+        return "/patient/representative/viewAccessLogPR";
+    }
+
+    /**
+     * Create a page for the patient to view Diagnoses of a patient in PR page
+     *
+     * @param model data for front end
+     * @return The page for the patient to view Diagnoses of a patient in PR page
+     */
+    @GetMapping(value = "patient/representative/viewDiagnosesPR")
+    @PreAuthorize("hasRole('ROLE_PATIENT')")
+    public String viewDiagnosesPR(final Model model) {
+        return "/patient/representative/viewDiagnosesPR";
+    }
+
+    /**
+     * Create a page for the patient to view medical records(OfficeVisit) of a patient in PR page
+     *
+     * @param model data for front end
+     * @return The page for the patient to view medical records of a patient in PR page
+     */
+    @GetMapping(value = "patient/representative/viewMedicalRecordsPR")
+    @PreAuthorize("hasRole('ROLE_PATIENT')")
+    public String viewMedicalRecordsPR(final Model model) {
+        return "/patient/representative/viewMedicalRecordsPR";
+    }
+
+    /**
+     * Create a page for the patient to view appointments of a patient in PR page
+     *
+     * @param model data for front end
+     * @return The page for the patient to view appointments of a patient in PR page
+     */
+    @GetMapping(value = "patient/representative/viewAppointmentPR")
+    @PreAuthorize("hasRole('ROLE_PATIENT')")
+    public String viewAppointmentPR(final Model model) {
+        return "/patient/representative/viewAppointmentPR";
+    }
+
+    /**
+     * Create a page for the patient to navigate to food diary page
+     *
+     * @param model data for front end
+     * @return The page for the patient to navigate to food diary page
+     */
+    @GetMapping(value = "patient/foodDiary")
+    @PreAuthorize("hasRole('ROLE_PATIENT')")
+    public String foodDiary(final Model model) {
+        return "/patient/foodDiary";
+    }
+
+    /**
+     * Create a page for the patient to add food diary
+     *
+     * @param model data for front end
+     * @return The page for the patient to add food diary
+     */
+    @GetMapping(value = "patient/addFoodDiary")
+    @PreAuthorize("hasRole('ROLE_PATIENT')")
+    public String addFoodDiary(final Model model) {
+        return "/patient/addFoodDiary";
+    }
+
+    /**
+     * Create a page for the patient to view selected food diary
+     *
+     * @param model data for front end
+     * @return The page for the patient to view selected food diary
+     */
+    @GetMapping(value = "patient/viewDiaryEntry")
+    @PreAuthorize("hasRole('ROLE_PATIENT')")
+    public String viewDiaryEntry(final Model model) {
+        return "/patient/viewDiaryEntry";
     }
 }

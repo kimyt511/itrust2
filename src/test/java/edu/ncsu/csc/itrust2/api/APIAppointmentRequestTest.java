@@ -68,6 +68,8 @@ public class APIAppointmentRequestTest {
         final User hcp = new Personnel(new UserForm("hcp", "123456", Role.ROLE_HCP, 1));
 
         service.saveAll(List.of(patient, hcp));
+
+
     }
 
     /** Tests that getting an appointment that doesn't exist returns the proper status */
@@ -88,6 +90,12 @@ public class APIAppointmentRequestTest {
     @Transactional
     public void testDeleteNonExistentAppointment() throws Exception {
         mvc.perform(delete("/api/v1/appointmentrequests/-1")).andExpect(status().isNotFound());
+
+        mvc.perform(get("/api/v1/appointmentrequests")).andExpect(status().isOk());
+
+        mvc.perform(get("/api/v1/appointmentrequestForHCP")).andExpect(status().isOk());
+
+        mvc.perform(get("/api/v1/viewAppointments")).andExpect(status().isOk());
     }
 
     /** Tests creating an appointment request with bad data. Should return a bad request. */
@@ -146,6 +154,9 @@ public class APIAppointmentRequestTest {
         List<AppointmentRequest> forPatient = (List<AppointmentRequest>) arService.findAll();
         Assert.assertEquals(1, forPatient.size());
 
+        final AppointmentRequestForm af1 = new AppointmentRequestForm(forPatient.get(0));
+        Assert.assertEquals(af1.getComments(), appointmentForm.getComments());
+
         /*
          * We need the ID of the appointment request that actually got _saved_
          * when calling the API above. This will get it
@@ -165,6 +176,26 @@ public class APIAppointmentRequestTest {
                                 .content(TestUtils.asJsonString(appointmentForm)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
+
+        mvc.perform(
+                        put("/api/v1/appointmentrequests/" + "12345642")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(TestUtils.asJsonString(appointmentForm)))
+                .andExpect(status().is4xxClientError());
+        
+        appointmentForm.setStatus(Status.APPROVED.toString());
+        mvc.perform(
+                        put("/api/v1/appointmentrequests/" + id)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(TestUtils.asJsonString(appointmentForm)))
+                .andExpect(status().isOk());
+        
+        AppointmentRequestForm af2 = new AppointmentRequestForm();
+        mvc.perform(
+                        put("/api/v1/appointmentrequests/" + id)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(TestUtils.asJsonString(af2)))
+                .andExpect(status().is4xxClientError());
 
         forPatient = (List<AppointmentRequest>) arService.findAll();
         Assert.assertEquals(1, forPatient.size());

@@ -192,6 +192,22 @@ public enum TransactionType {
     HCP_VIEW_PROCS(1710, "HCP Views Procedures", false),
     /** Patient views lab procedures. */
     PATIENT_VIEW_PROCS(1711, "Patient Views Procedures", false),
+    /** Administrator adds a vaccine. */
+    ADMIN_ADD_VACCINE(1801, "Administrator adds vaccine", false),
+    /** Administrator edits a vaccine. */
+    ADMIN_EDIT_VACCINE(1802, "Administrator edits vaccine", false),
+    /** Administrator deletes a vaccine. */
+    ADMIN_DELETE_VACCINE(1803, "Administrator deletes vaccine", false),
+    /** HCP adds vaccination record to a patient's record. */
+    HCP_ADD_VACCINATION_TO_PATIENT(1804, "HCP adds vaccinations to patient record", false),
+    /** Patient views their vaccination records. */
+    PATIENT_VIEW_VACCINATIONS(1805, "Patient views vaccinations", true),
+    /** HCP views a patient's vaccination records. */
+    HCP_VIEW_PATIENT_VACCINATIONS(1806, "HCP views patient's vaccinations", false),
+    /** HCP updates a vaccination record. */
+    HCP_EDIT_VACCINATION(1807, "HCP edits vaccination record", false),
+    /** HCP deletes a vaccination record. */
+    HCP_DELETE_VACCINATION(1808, "HCP deletes vaccination record", false),
     /** Food Diary Entry is created */
     CREATE_FOOD_DIARY_ENTRY(1901, "Create a Food Diary Entry", true),
     /** Patient views a food diary entry */
@@ -314,8 +330,28 @@ public enum TransactionType {
     /** Virologist searches for contact lists */
     VIROLOGIST_SEARCH_BY_DEPTH(2902, "Search for Contacts by Depth", false),
 
-    /** Virologist views R0 value */
-    VIROLOGIST_VIEW_RNAUGHT(3001, "Virologist views calculated R0 value", false);
+    /**
+     * Virologist views R0 value
+     */
+    VIROLOGIST_VIEW_RNAUGHT ( 3001, "Virologist views calculated R0 value", false ),
+
+    /**
+     * Admin created a new lab procedure
+     */
+    LABPROCEDURE_CREATE ( 904, "Admin created a new lab procedure", true ),
+    /**
+     * Admin edited an existing lab procedure
+     */
+    LABPROCEDURE_EDIT ( 905, "Admin edited an existing lab procedure", true ),
+    /**
+     * Admin deleted an existing lab procedure
+     */
+    LABPROCEDURE_DELETE ( 906, "Admin deleted an existing lab procedure", true ),
+    /**
+     * Admin views all lab procedures in the system
+     */
+    LABPROCEDURE_VIEW ( 907, "Admin views all lab procedures in the system", true );
+
 
     /**
      * Creates a TransactionType for logging events

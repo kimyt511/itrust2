@@ -1,0 +1,316 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="layout :: head(title=~{::title},links=~{::script})">
+    <title>Document Office Visit</title>
+    <script th:src="@{/js/dateTimeService.js}"
+            src="../js/dateTimeService.js"></script>
+</head>
+<body th:include="layout :: body" th:with="content=~{::content}">
+<div th:fragment="content">
+
+    <script th:inline="javascript">
+        /* Otherwise Thymeleaf tries to parse Javascript as XML and breaks itself sometimes.  Sigh */
+        /*<![CDATA[*/
+
+            var app = angular.module('myApp', []);
+            app.controller("manageProceduresCtrl", function ($scope, $http, $q) {
+
+                $scope.displayName = function (p) {
+                    return p.code + " (" + p.name + ")";
+                };
+
+                // documentation on Angular filters: https://docs.angularjs.org/api/ng/filter/filter
+                $scope.searchFilter = "";
+                $scope.filterProcedures = function (procedure) {
+                    return $scope
+                        .displayName(procedure)
+                        .toLowerCase()
+                        .match($scope.searchFilter.toLowerCase());
+                };
+
+                function formDifferent(current, original) {
+                    for (var field in original) {
+                        if (current[field] != original[field]) return true;
+                    }
+                    return false;
+                }
+
+                $scope.originalForm = {};
+                $scope.procedureForm = {};
+                $scope.selectProcedure = function (procedure, override) {
+                    if (!override && formDifferent($scope.procedureForm, $scope.originalForm)) {
+                        if (!confirm("You have made changes to this procedure. Would you like to continue? (changes will be lost)")) {
+                            $scope.selectedProcedure = "";
+                            $scope.selectedProcedure = $scope.procedureForm.id;
+                            return;
+                        }
+                    }
+
+                    var pf = $scope.procedureForm = {};
+                    var of = $scope.originalForm = {};
+
+                    // make a copy of the procedure
+                    for (var field in procedure) {
+                        if (field[0] == "$") continue; // don't mess with angular fields
+                        pf[field] = of[field] = procedure[field];
+                    }
+
+                    // swap out enum id's for names
+                    for (var i in $scope.priorities)
+                        if (procedure.priority == $scope.priorities[i].id) {
+                            pf.priority = of.priority = $scope.priorities[i].id;
+                            break;
+                        }
+                    for (var i in $scope.procedureStatuses)
+                        if (procedure.procedureStatus == $scope.procedureStatuses[i].id) {
+                            pf.procedureStatus = of.procedureStatus = $scope.procedureStatuses[i].name;
+                            break;
+                        }
+
+                    // Fill objects and visuals
+                    pf.hcp = of.hcp = procedure.hcp;
+                    $scope.hcp = procedure.hcp.username;
+
+                    pf.labtech = of.labtech = procedure.labtech;
+                    $scope.labtech = procedure.labtech.username;
+                    pf.patient = of.patient = procedure.patient;
+                    $scope.patient = procedure.patient.username;
+
+                    $scope.selectedProcedure = pf.id;
+                };
+
+                $http.get("/iTrust2/api/v1/procedureForLabtech").then(function (response) {
+                    $scope.procedures = response.data;
+                });
+
+                $http.get("/iTrust2/api/v1/priority").then(function (response) {
+                    $scope.priorities = response.data;
+                });
+
+                $http.get("/iTrust2/api/v1/procedureStatus").then(function (response) {
+                    let psMap = [];
+                    for(var i = 0; i < response.data.length; i++){
+                        psMap.push({name: response.data[i], id: i});
+                    }
+                    $scope.procedureStatuses = psMap;
+                });
+
+                $http.get("/iTrust2/api/v1/patients").then(function (response) {
+                    $scope.patients = response.data;
+                });
+
+                $http.get("/iTrust2/api/v1/personnel/getbyroles/ROLE_LABTECH").then(function (response) {
+                    $scope.labtechs = response.data;
+                });
+
+                $scope.submit = function () {
+                    if(
+                        $scope.procedureForm.procedureStatus !== "Completed"
+                        && $scope.procedureForm.comment !== $scope.originalForm.comment
+                        ){
+                        $scope.message = "You can't modify the comment if the procedure is not marked as 'Completed'";
+                        $scope.procedureForm.comment = $scope.originalForm.comment;
+                        return;
+                    }
+                    // Fill remnants
+                    var promises = [];
+
+					promises.push($http.get("/iTrust2/api/v1/users/" + $scope.hcp).then(
+						function (response) {
+							$scope.procedureForm.hcp = response.data;
+						}
+					));
+
+					promises.push($http.get("/iTrust2/api/v1/users/" + $scope.patient).then(
+						function (response) {
+							$scope.procedureForm.patient = response.data;
+						}
+					));
+
+					promises.push($http.get("/iTrust2/api/v1/officevisit/withprocedure/" + $scope.procedureForm.id).then(
+						function (response) {
+							$scope.procedureForm.visit = response.data.id;
+						}
+					));
+
+					console.log($scope.procedureForm);
+
+					$q.all(promises).then(function () {
+						var procedure = angular.copy($scope.procedureForm);
+
+                        $http({
+                            method: "PUT",
+                            url: "/iTrust2/api/v1/procedure",
+                            data: procedure,
+                        }).then(
+                            function (response) {
+                                $scope.message = "Procedure updated successfully.";
+
+                                // replace the procedure in session
+                                for (var i in $scope.procedures)
+                                    if ($scope.procedures[i].id == response.data.id) {
+                                        $scope.procedures[i] = response.data;
+                                        $scope.selectProcedure(response.data, true);
+                                    }
+                            },
+                            function (rejection) {
+                                if (rejection.data.msg) {
+                                    $scope.message = "Error: " + rejection.data.msg;
+                                } else {
+                                    $scope.message = "An error occured updating procedures.";
+                                }
+                            }
+                        );
+					});
+                };
+
+                $scope.reassignLabtech = function (lt) {
+                    if($scope.originalForm.labtech.username == lt) return;
+                    if(confirm(
+                        "Are you sure that you want to reassign this procedure to " + lt + "?"
+                        + "\nTHIS ACTION CANNOT BE UNDONE."
+                        )){
+                        // Check if the form has been changed
+                        if(formDifferent($scope.procedureForm, $scope.originalForm)){
+                            if(!confirm("You have made changes to this procedure. Would you like to continue? (changes will be lost)"))
+                                return;
+                        }
+
+                        var promises = [];
+                        promises.push($http.get("/iTrust2/api/v1/officevisit/withprocedure/" + $scope.procedureForm.id).then(
+                            function (response) {
+                                $scope.originalForm.visit = response.data.id;
+                            }
+                        ));
+
+                        $q.all(promises).then(function () {
+                            // You don't want to get $scope.procedureForm since it may have been altered by user without saving
+                            var procedure = angular.copy($scope.originalForm);
+
+                            $http({
+                                method : 'PUT',
+                                url : '/iTrust2/api/v1/procedureReassign/' + lt,
+                                data : procedure
+                            }).then(function(response) {
+                                $scope.message = "Procedure updated successfully.";
+
+                                // Alert and refresh
+                                alert("The procedure has been reassigned. Reloading the page.");
+                                location.reload();
+                                return;
+                            }, function(rejection) {
+                                if (rejection.data.msg) {
+                                    $scope.message = "Error: " + rejection.data.msg;
+                                } else {
+                                    $scope.message = "An error occured updating demographics.";
+                                }
+                            })
+                        });
+                    }
+                    $scope.labtech = $scope.procedureForm.labtech.username;
+                };
+        });
+
+
+        /*]]>*/
+    </script>
+
+
+
+    <div ng-app="myApp" ng-controller="manageProceduresCtrl">
+        <div style="float: left; width: 30%; height: 75%; overflow-y: auto">
+            <h2>Procedures:</h2>
+            <!-- info on filtering taken from here: https://www.w3schools.com/angular/angular_filters.asp
+            and https://docs.angularjs.org/api/ng/filter/filter -->
+            <h4>
+                Search: <input type="text" name="search" ng-model="searchFilter" />
+            </h4>
+            <!-- Info on scrolling taken from here: https://www.w3schools.com/cssref/pr_pos_overflow.asp -->
+            <!-- and here: https://stackoverflow.com/questions/9560330/how-to-hide-a-vertical-scroll-bar-when-not-needed -->
+            <ul style="overflow: auto;height=90%;">
+                <!-- Information on how labels wor from here: https://stackoverflow.com/questions/7863251/clicking-the-text-to-select-corresponding-radio-button -->
+                <li ng-repeat="procedure in procedures | filter:filterProcedures"><h4>
+                    <label> <input type="radio"
+                                   ng-model="$parent.selectedProcedure" name="procedure"
+                                   ng-value="{{procedure.id}}"
+                                   ng-click='$parent.selectProcedure(procedure)' />&nbsp;{{$parent.displayName(procedure)}}
+                    </label>
+                </h4></li>
+            </ul>
+        </div>
+        <!-- information on vertical rule found here: https://stackoverflow.com/questions/571900/is-there-a-vr-vertical-rule-in-html  -->
+        <div
+                style="float: left; width: 70%; border-left: 1px solid #bbb; padding-left: 3%; height: 75%; overflow-y: auto">
+            <h2 id="header0">Edit Procedures</h2>
+            <div ng-show="selectedProcedure">
+                <table>
+                    <tr>
+                        <td style="text-align: right; padding: 5px"><b>
+                            LOINC Code:</b></td>
+                        <td><input type="text" name="code"
+                                   ng-model="procedureForm.code" readonly/></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: right; padding: 5px"><b>
+                            Long Common Name:</b></td>
+                        <td><input type="text" name="name"
+                                   ng-model="procedureForm.name" readonly/></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: right; padding: 5px"><b>
+                            HCP In Charge (username):</b></td>
+                        <td><input type="text" name="hcp"
+                                   ng-model="hcp" readonly/></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: right; padding: 5px"><b>
+                            Target Patient (username):</b></td>
+                        <td><input type="text" name="patient"
+                                   ng-model="patient" readonly/></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: right; padding: 5px"><b>
+                            Priority:</b></td>
+                        <td><input type="text" name="priority"
+                                   ng-model="procedureForm.priority" readonly/></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: right; padding: 5px"><b>
+                            Status:</b></td>
+                        <td>
+                            <select name="procedureStatus" id="procedureStatus"
+                                    ng-model="procedureForm.procedureStatus">
+                                <option ng-repeat="ps in procedureStatuses">{{ps.name}}</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: right; padding: 5px"><b>
+                            Comment:</b></td>
+                        <td>
+                            <textarea class="form-control" rows="5" name="comment"
+                                      ng-model="procedureForm.comment" required ng-minlength="1"></textarea>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: right; padding: 5px"><b>
+                            Reassign Labtech:</b></td>
+                        <td>
+                            <select name="labtech"
+                                    ng-model="labtech"
+                                    ng-change="reassignLabtech(labtech)">
+                                <option ng-repeat="lt in labtechs">{{lt.username}}</option>
+                            </select>
+                        </td>
+                    </tr>
+                </table>
+
+                <br />
+                <button ng-click="submit()" name="submit">Submit</button>
+
+                <div name="success">{{message}}</div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

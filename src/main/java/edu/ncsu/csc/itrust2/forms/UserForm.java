@@ -80,11 +80,11 @@ public class UserForm {
      *
      * @param u User object to convert to a UserForm.
      */
-    public UserForm(@NotNull final User u) {
-        setUsername(u.getUsername());
-        setRoles(u.getRoles().stream().map(Enum::toString).collect(Collectors.toSet()));
-        setEnabled(u.getEnabled().toString());
-    }
+    // public UserForm(@NotNull final User u) {
+    //     setUsername(u.getUsername());
+    //     setRoles(u.getRoles().stream().map(Enum::toString).collect(Collectors.toSet()));
+    //     setEnabled(u.getEnabled().toString());
+    // }
 
     /**
      * Adds the provided Role to this User

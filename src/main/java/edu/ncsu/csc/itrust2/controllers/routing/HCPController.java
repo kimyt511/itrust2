@@ -90,6 +90,92 @@ public class HCPController {
     }
 
     /**
+     * Returns the page of EHR
+     *
+     * @param model
+     *            The data for the front end
+     * @return Page to display to the user
+     */
+    @GetMapping ( "/hcp/EmergencyHealthRecords" )
+    @PreAuthorize ( "hasRole('ROLE_HCP')" )
+    public String EmergencyHealthRecords ( final Model model ) {
+        return "/hcp/EmergencyHealthRecords";
+    }
+
+    /**
+     * Returns the page of EHR
+     *
+     * @param model
+     *            The data for the front end
+     * @return Page to display to the user
+     */
+    @GetMapping ( "/hcp/viewVaccinations" )
+    @PreAuthorize ( "hasRole('ROLE_HCP')" )
+    public String viewVaccinations ( final Model model ) {
+        return "/hcp/viewVaccinations";
+    }
+
+    /**
+     * Returns the form page for a HCP to document an editProcedures
+     *
+     * @param model The data for the front end
+     * @return Page to display to the user
+     */
+    @GetMapping("/hcp/editProcedures")
+    @PreAuthorize("hasRole('ROLE_HCP')")
+    public String editProcedures(final Model model) {
+        return "/hcp/editProcedures";
+    }
+
+    /**
+     * Returns the form page for a HCP to document an editOfficeVisit
+     *
+     * @param model The data for the front end
+     * @return Page to display to the user
+     */
+    @GetMapping("/hcp/editOfficeVisit")
+    @PreAuthorize("hasRole('ROLE_HCP')")
+    public String editOfficeVisit(final Model model) {
+        return "/hcp/editOfficeVisit";
+    }
+
+    /**
+     * Returns the form page for a HCP to view Personal Representatives
+     *
+     * @param model The data for the front end
+     * @return Page to display to the user
+     */
+    @GetMapping("/hcp/hcpPersonalRepresentatives")
+    @PreAuthorize("hasRole('ROLE_HCP')")
+    public String hcpPersonalRepresentatives(final Model model) {
+        return "/hcp/hcpPersonalRepresentatives";
+    }
+
+    /**
+     * Returns the form page for a HCP to view food diary
+     *
+     * @param model The data for the front end
+     * @return Page to display to the user
+     */
+    @GetMapping("/hcp/viewPatientFoodDiary")
+    @PreAuthorize("hasRole('ROLE_HCP')")
+    public String viewPatientFoodDiary(final Model model) {
+        return "/hcp/viewPatientFoodDiary";
+    }
+
+    /**
+     * Returns the form page for a HCP to view food diary entry
+     *
+     * @param model The data for the front end
+     * @return Page to display to the user
+     */
+    @GetMapping("/hcp/viewDiaryEntryHCP")
+    @PreAuthorize("hasRole('ROLE_HCP')")
+    public String viewDiaryEntryHCP(final Model model) {
+        return "/hcp/viewDiaryEntryHCP";
+    }
+
+    /**
      * Returns the form page for a HCP to the review page
      *
      * @param model The data for the front end

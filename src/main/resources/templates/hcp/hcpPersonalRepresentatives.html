@@ -1,0 +1,361 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="layout :: head(title=~{::title},links=~{::script})">
+    <title>Patient Personal Representatives</title>
+</head>
+<body th:include="layout :: body" th:with="content=~{::content}">
+<div th:fragment="content">
+
+    <script th:inline="javascript">
+        /* Otherwise Thymeleaf tries to parse Javascript as XML and breaks itself sometimes.  Sigh */
+        /*<![CDATA[*/
+
+        const app = angular.module('HCPPersonalRepresentativeApp', []);
+        app.controller('HCPPersonalRepresentativeCtrl', function ($scope, $http) {
+
+            $scope.displayName = function (p) {
+                return p.firstName + " " + p.lastName + " (" + p.username + ")";
+            };
+            $scope.displayName2 = function (p) {
+                return p.firstName + " " + p.lastName;
+            };
+
+            //////////////////////////////Search for patient, part 1/////////////////////////////////////
+             // documentation on Angular filters: https://docs.angularjs.org/api/ng/filter/filter
+            $scope.searchFilter = "";
+            $scope.filterPatients = function (patient) {
+                return ($scope.displayName(patient)).toLowerCase().match($scope.searchFilter.toLowerCase());
+            };
+
+            $http.get("/iTrust2/api/v1/patients").then(
+                function (response) {
+                    $scope.patients = response.data;
+                }
+            );
+
+            /////////////////////update search filter////////////////////////////////////
+            $scope.selectedPatient = null;
+
+            $scope.selectPatient = function(patient) {
+                $scope.selectedPatient = patient;
+                // Update the search filter to display the selected patient's name or MID in the search box
+                $scope.searchFilter = $scope.displayName2(patient);
+
+                // Toggle the visibility of the search section
+                if($scope.showSearchSection){
+                    $scope.showSearchSection = !$scope.showSearchSection;
+                    $scope.searchFilter2 = "";
+                }
+            };
+            //////////////////////////////Search for patient, part 1/////////////////////////////////////
+
+
+            ////////////////////////////My Representatives & patient data////////////////////////////////////////
+            $scope.loadTable = function () {
+                ////////////////////////////My Representatives data//////////////////////////////////////////////
+                // API endpoint connection to PRs of selected patient
+                $http.get("/iTrust2/api/v1/pr/"+$scope.selectedPatient.id).then(
+                    function (response) {
+                        $scope.PRofSelected = response.data;
+                        $scope.message = "";
+                    }, function (rejection) {
+                        $scope.representatives = [];
+                        $scope.message = "Could not display representatives";
+                    }
+                );
+                ////////////////////////////My Patients data//////////////////////////////////////////////
+                // API endpoint connection to patients of selected patient
+                //need to be changed here
+                $http.get("/iTrust2/api/v1/pr/declared/"+$scope.selectedPatient.id).then(
+                    function (response) {
+                        $scope.PofSelected = response.data;
+                        $scope.message = "";
+                    }, function (rejection) {
+                        $scope.representatives = [];
+                        $scope.message = "Could not display patients";
+                    }
+                );
+            };
+            ////////////////////////////My Representatives & patient data////////////////////////////////////////
+
+            ////////////////Refresh Function////////////////////////////////
+            $scope.refreshTable = function() {
+                // Reload the table
+                $scope.loadTable();
+            };
+            ////////////////Refresh Function////////////////////////////////
+
+            // Function to display the search section
+            $scope.showAssign = function () {
+                // Toggle the visibility of the search section
+                $scope.showSearchSection = !$scope.showSearchSection;
+                $scope.viewRepresentative = null;
+            };
+
+            //////////////////////////////Search for patient, part 2/////////////////////////////////////
+            $http.get("/iTrust2/api/v1/patients").then(
+                function (response) {
+                    $scope.patients2 = response.data;
+                }
+            );
+
+            $scope.selectedPatient2 = null;
+            $scope.declare = { patient: "", representative: "", comment: "" };
+            $scope.searchFilter2 = "";
+
+            $scope.selectPatient2 = function(patient2) {
+                $scope.selectedPatient2 = patient2;
+                $scope.declare.representative = $scope.selectedPatient2.username;
+                // Update the search filter to display the selected patient's name or MID in the search box
+                $scope.searchFilter2 = $scope.displayName2(patient2);
+                $scope.declare.patient = $scope.selectedPatient.username;
+            };
+
+            $scope.filterPatients2 = function (patient2) {
+                return ($scope.displayName(patient2)).toLowerCase().match($scope.searchFilter2.toLowerCase());
+            };
+            //////////////////////////////Search for patient, part 2/////////////////////////////////////
+
+            ////////////////////////////Confirm Representative////////////////////////////////////////////////////
+            // Function to declare a representative
+            $scope.confirmRepresentative = function() {
+                if ($scope.selectedPatient) {
+                    // Send the selected patient as a representative to the backend
+                    // need to be modified here.
+                    $http.post("/iTrust2/api/v1/pr/declare", $scope.declare)
+                        .then(
+                            function(response) {
+                                $scope.declareMessage = "Declaration confirmed successfully";
+                                $scope.refreshTable();
+
+                                //reset the selected patient2 and search filter after declaring
+                                $scope.selectedPatient2 = null;
+                                $scope.searchFilter2 = '';
+                                /////////////////////////////update Table/////////////////////////
+                            },
+                            function(rejection) {
+                                $scope.declareMessage = "Failed to confirm declaration: " + rejection.data.message;
+                            }
+                        );
+                } else {
+                    // Handle the case where no patient is selected
+                    $scope.message = "No patient selected for declaration";
+                }
+            };
+
+            // $scope.viewRepresentative = null;
+            $scope.showMore = function (patient) {
+                $scope.showSearchSection = false;
+                $scope.viewRepresentative = patient;
+            }
+            ////////////////////////////Confirm Representative////////////////////////////////////////////////////
+
+        });
+
+        /*]]>*/
+    </script>
+
+
+    <div ng-app="HCPPersonalRepresentativeApp" ng-controller="HCPPersonalRepresentativeCtrl">
+        <div style="float: left; width: 20%; height: 75%; overflow-y: auto">
+            <h3>Search Patients:</h3>
+            <!-- info on filtering taken from here: https://www.w3schools.com/angular/angular_filters.asp
+                and https://docs.angularjs.org/api/ng/filter/filter -->
+            <h4 style = "margin: 5% 5% 5% 0;">
+                <input class="form-control" type="text" name="search" ng-model="searchFilter" placeholder="Search by name or MID"/>
+            </h4>
+            <!-- Info on scrolling taken from here: https://www.w3schools.com/cssref/pr_pos_overflow.asp -->
+            <!-- and here: https://stackoverflow.com/questions/9560330/how-to-hide-a-vertical-scroll-bar-when-not-needed -->
+            <ul class="list-group" style="overflow: auto;height: 90%; margin-right: 5%">
+                <li class="list-group-item" ng-repeat="patient in patients | filter:filterPatients"
+                    style="width: 100%; height:40px;">
+                    <div>
+                        <label ng-click="$parent.selectPatient(patient); $parent.refreshTable()"
+                               style="font-size: 18px; cursor: pointer;">
+                            {{ $parent.displayName(patient) }}
+                        </label>
+                    </div>
+                </li>
+                <!-- Display "no matching patients" if there are no results -->
+                <li class="list-group-item" ng-if="(patients | filter:filterPatients).length === 0"
+                    style="width: 100%; height:40px;">
+                    <div>
+                        <label style="font-size: 14px; color: red;">
+                            No matching patients found.
+                        </label>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <!-- information on vertical rule found here: https://stackoverflow.com/questions/571900/is-there-a-vr-vertical-rule-in-html  -->
+        <div style="float: left; width: 50%; border-left: 1px solid #bbb;padding: 0 3% 0 3%; height: 100%; overflow-y: auto">
+            <h2 id="header0">Personal Representatives</h2>
+            <div ng-show="selectedPatient">
+                <h3>Username: {{selectedPatient.firstName ? displayName(selectedPatient) : selectedPatient.id}}</h3>
+                <h4>Representatives</h4>
+                <table border="1" style="width: 100%;" class="table table-hover table-bordered">
+                    <thead><tr>
+                        <!-- <td style="text-align: center; padding: 5px; width: 50px;"><b>No.</b></td> -->
+                        <th style="text-align: center; padding: 5px; width: 30%"><b>MID</b></td>
+                        <th style="text-align: center; padding: 5px; width: 35%"><b>First Name</b></td>
+                        <th style="text-align: center; padding: 5px; width: 35%"><b>Last Name</b></td>
+                    </tr></thead>
+
+                    <tbody><tr name="RepresentativesTableRow"
+                        ng-repeat="r in PRofSelected"
+                        ng-click="showMore(r.representative)"
+                        representativeId={{r.id}}>
+                        <td name="midCell" style="padding-left: 10px; height: 35px;">{{r.representative.id}}</td>
+                        <td name="firstNameCell" style="padding-left: 10px; height: 35px;">{{r.representative.firstName}}</td>
+                        <td name="lastNameCell" style="padding-left: 10px; height: 35px;">{{r.representative.lastName}}</td>
+                        <!-- <td name="nameCell">
+                            {{r.representative.firstName
+                            ? r.representative.firstName + " " + r.representative.lastName
+                            : r.representative.username}}</td> -->
+                    </tr></tbody>
+
+                </table>
+                <h4>Representative for</h4>
+                <table border="1" style="width: 100%;" class="table table-hover table-bordered">
+                    <thead><tr>
+                        <!-- <td style="text-align: center; padding: 5px; width: 50px;"><b>No.</b></td> -->
+                        <th style="text-align: center; padding: 5px; width: 30%"><b>MID</b></td>
+                        <th style="text-align: center; padding: 5px; width: 35%"><b>First Name</b></td>
+                        <th style="text-align: center; padding: 5px; width: 35%"><b>Last Name</b></td>
+                    </tr></thead>
+
+                    <tbody><tr name="patientsTableRow"
+                        ng-repeat="p in PofSelected"
+                        ng-click="showMore(p.patient)"
+                        patientId={{p.id}}>
+                        <!-- <td name="nameCell">
+                            {{p.patient.firstName
+                            ? p.patient.firstName + " " + p.patient.lastName
+                            : p.patient.username}}</td> -->
+                        <td name="midCell" style="padding-left: 10px; height: 35px;">{{p.patient.id}}</td>
+                        <td name="firstNameCell" style="padding-left: 10px; height: 35px;">{{p.patient.firstName}}</td>
+                        <td name="lastNameCell" style="padding-left: 10px; height: 35px;">{{p.patient.lastName}}</td>
+                    </tr></tbody>
+
+                </table>
+                <br/>
+
+                <div class="text-center">
+                    <button class="btn btn-primary" ng-click="showAssign()">Assign Patient Representative</button>
+                </div>
+            </div>
+
+            <!-- Search Section -->
+            <!-- <div ng-show="showSearchSection" class="search-section" style="display:flex; flex-direction: column; margin-top: 5%">
+                <div style="float: left;">
+                    <label style="font-size: 2.2rem;">Enter Name or MID:</label>
+                    <p style="color: red" ng-model="declareMessage">{{declareMessage}}</p>
+                </div>
+                <form>
+                    <div class="form-row align-items-center">
+                        <div style="float: left; width: 70%; margin-right: 2%;">
+                            <input class="form-control" type="text" ng-model="searchFilter2"  style="width:100%; height: 35px"
+                                       placeholder="Enter name or MID">
+                        </div>
+                        <div style="float: left; width: 28%;">
+                            <button class="btn btn-primary" ng-click="confirmRepresentative()" style="width: 100%;">
+                                Confirm Assignment
+                            </button>
+                        </div>
+                    </div>
+                </form>
+                <div style="clear: both;"></div>
+                <div>
+                    <ul class="list-group" style="overflow: auto;height: 90%; padding-left: 0%">
+                        <li class="list-group-item" ng-repeat="patient2 in patients2 | filter:filterPatients2"
+                            ng-if="selectedPatient.username !== patient2.username"
+                            style="width: 70%; height:35px;">
+                            <div >
+                                <label ng-click="$parent.selectPatient2(patient2)"
+                                       style="font-size: 16px; cursor: pointer;">
+                                    {{ $parent.displayName(patient2) }}
+                                </label>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div> -->
+        </div>
+        <div style="float: left; width: 30%; border-left: 1px solid #bbb;padding: 0 3% 0 3%; height: 100%; overflow-y: auto">
+            <!-- Search Section -->
+            <div ng-show="showSearchSection" class="search-section" style="display:flex; flex-direction: column; margin-top: 5%">
+                <!-- Search Form -->
+                <div style="float: left;">
+                    <h3 style="font-size: 2.2rem;">Enter Name or MID:</h3>
+                    <p ng-style="{'color': declareMessage ===
+                                        'Declaration confirmed successfully' ? 'green' : 'red'}">{{declareMessage}}</p>
+                </div>
+                <form>
+                    <div class="form-row align-items-center">
+                        <div style="float: left; width: 70%; margin-right: 2%;">
+                            <input class="form-control" type="text" ng-model="searchFilter2"  style="width:100%; height: 35px"
+                                    placeholder="Enter name or MID">
+                        </div>
+                        <div style="float: left; width: 28%;">
+                            <button class="btn btn-primary" ng-click="confirmRepresentative()" style="width: 100%;">
+                                Confirm
+                            </button>
+                        </div>
+                    </div>
+                </form>
+                <div style="clear: both;"></div>
+                <!-- Search Results -->
+                <div>
+                    <ul class="list-group" style="overflow: auto;height: 90%; padding-left: 0%">
+                        <li class="list-group-item" ng-repeat="patient2 in patients2 | filter:filterPatients2"
+                            ng-if="selectedPatient.username !== patient2.username"
+                            style="width: 70%; height:35px;">
+                            <!--Display labels if there are results-->
+                            <div >
+                                <label ng-click="$parent.selectPatient2(patient2)"
+                                    style="font-size: 16px; cursor: pointer;">
+                                    {{ $parent.displayName(patient2) }}
+                                </label>
+                            </div>
+                        </li>
+                        <!-- Display "no matching patients" if there are no results -->
+                        <li class="list-group-item" ng-if="(patients2 | filter:filterPatients2).length === 0"
+                            style="width: 70%; height:35px;">
+                            <div>
+                                <label style="font-size: 14px; color: red;">
+                                    No matching patients found.
+                                </label>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div ng-if="viewRepresentative">
+                <h3 style="margin: 20% 0 10% 0;">{{ displayName(viewRepresentative) }}</h3>
+                <table border="1" style="width: 100%;" class="table table-hover table-bordered">
+                    <tr>
+                        <td style="width: 40%;"><b>First Name</b></td>
+                        <td style="padding-left: 10px; height: 35px;">{{viewRepresentative.firstName}}</td>
+                    </tr>
+                    <tr>
+                        <td><b>Last Name</b></td>
+                        <td style="padding-left: 10px; height: 35px;">{{viewRepresentative.lastName}}</td>
+                    </tr>
+                    <tr>
+                        <td><b>Date of Birth</b></td>
+                        <td style="padding-left: 10px; height: 35px;">{{viewRepresentative.dateOfBirth}}</td>
+                    </tr>
+                    <tr>
+                        <td><b>Phone</b></td>
+                        <td style="padding-left: 10px; height: 35px;">{{viewRepresentative.phone}}</td>
+                    </tr>
+                    <tr>
+                        <td><b>Email</b></td>
+                        <td style="padding-left: 10px; height: 35px;">{{viewRepresentative.email}}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

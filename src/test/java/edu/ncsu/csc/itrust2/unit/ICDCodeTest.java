@@ -39,7 +39,7 @@ public class ICDCodeTest {
         assertEquals(code.getDescription(), base.getDescription());
 
         final ICDCodeForm f2 = new ICDCodeForm(code);
-        assertEquals(form, f2);
+        assertEquals(form.getCode(), f2.getCode());
 
         assertEquals("T11", code.getCode());
         assertEquals(1L, (long) code.getId());

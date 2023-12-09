@@ -2,6 +2,7 @@ package edu.ncsu.csc.itrust2.services;
 
 import edu.ncsu.csc.itrust2.forms.OfficeVisitForm;
 import edu.ncsu.csc.itrust2.forms.PrescriptionForm;
+import edu.ncsu.csc.itrust2.forms.VaccinationForm;
 import edu.ncsu.csc.itrust2.models.AppointmentRequest;
 import edu.ncsu.csc.itrust2.models.Diagnosis;
 import edu.ncsu.csc.itrust2.models.OfficeVisit;
@@ -10,9 +11,13 @@ import edu.ncsu.csc.itrust2.models.User;
 import edu.ncsu.csc.itrust2.models.enums.AppointmentType;
 import edu.ncsu.csc.itrust2.repositories.OfficeVisitRepository;
 
+import edu.ncsu.csc.itrust2.models.Procedure;
+import edu.ncsu.csc.itrust2.forms.ProcedureForm;
+
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 
@@ -39,6 +44,11 @@ public class OfficeVisitService extends Service {
 
     private final DiagnosisService diagnosisService;
 
+    private final VaccinationService vaccinationService;
+
+    // added procedure service
+    private final ProcedureService procedureService;
+
     @Override
     protected JpaRepository getRepository() {
         return officeVisitRepository;
@@ -54,6 +64,11 @@ public class OfficeVisitService extends Service {
 
     public List<OfficeVisit> findByHcpAndPatient(final User hcp, final User patient) {
         return officeVisitRepository.findByHcpAndPatient(hcp, patient);
+    }
+
+    public OfficeVisit findById(Long id) {
+        Optional<OfficeVisit> result = officeVisitRepository.findById(id);
+        return result.orElse(null);
     }
 
     public OfficeVisit build(final OfficeVisitForm ovf) {
@@ -75,10 +90,10 @@ public class OfficeVisitService extends Service {
             at = AppointmentType.valueOf(ovf.getType());
         } catch (final NullPointerException npe) {
             at = AppointmentType.GENERAL_CHECKUP; /*
-                                                   * If for some reason we don't
-                                                   * have a type, default to
-                                                   * general checkup
-                                                   */
+             * If for some reason we don't
+             * have a type, default to
+             * general checkup
+             */
         }
         ov.setType(at);
 
@@ -91,10 +106,10 @@ public class OfficeVisitService extends Service {
                                 .filter(e -> e.getDate().equals(ov.getDate()))
                                 .collect(Collectors.toList())
                                 .get(0); /*
-                                    * We should have one and only one
-                                    * appointment for the provided HCP & patient
-                                    * and the time specified
-                                    */
+                 * We should have one and only one
+                 * appointment for the provided HCP & patient
+                 * and the time specified
+                 */
                 ov.setAppointment(match);
             } catch (final Exception e) {
                 throw new IllegalArgumentException(
@@ -121,6 +136,23 @@ public class OfficeVisitService extends Service {
         if (ps != null) {
             ov.setPrescriptions(
                     ps.stream().map(prescriptionService::build).collect(Collectors.toList()));
+        }
+
+        final List<VaccinationForm> vs = ovf.getVaccinations();
+        if (vs != null) {
+            ov.setVaccinations(
+                    vs.stream().map(vaccinationService::build).collect(Collectors.toList()));
+        }
+
+        // Tried to copy above method.
+        final List<ProcedureForm> pr = ovf.getProcedures();
+        if (pr != null) {
+            ov.setProcedures(
+                    pr.stream().map(procedureService::build).collect(Collectors.toList()));
+
+            for(final Procedure p : ov.getProcedures()){
+                p.setVisit(ov);
+            }
         }
 
         final Patient p = (Patient) ov.getPatient();

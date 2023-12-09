@@ -6,6 +6,9 @@ import edu.ncsu.csc.itrust2.models.Personnel;
 import edu.ncsu.csc.itrust2.models.User;
 import edu.ncsu.csc.itrust2.models.enums.Role;
 import edu.ncsu.csc.itrust2.services.UserService;
+import org.springframework.security.test.context.support.WithMockUser;
+
+import java.util.Set;
 
 import javax.transaction.Transactional;
 
@@ -56,6 +59,7 @@ public class APIUserTest {
         Assert.assertEquals("There should be no Users in the system", 0, service.count());
 
         final UserForm u = new UserForm(USER_1, PW, Role.ROLE_PATIENT, 1);
+        final UserForm uuuuu = new UserForm(USER_1, PW, Role.ROLE_PATIENT, 0);
 
         mvc.perform(
                         MockMvcRequestBuilders.post("/api/v1/users")
@@ -66,8 +70,10 @@ public class APIUserTest {
         Assert.assertEquals(
                 "There should be one user in the system after creating a User", 1, service.count());
 
+        // final User u_tmp = new User(USER_2, PW, Role.ROLE_HCP, 1);
         final UserForm u2 = new UserForm(USER_2, PW, Role.ROLE_HCP, 1);
-
+        final User uu2 = new Personnel(u2);
+        
         u2.addRole(Role.ROLE_VIROLOGIST.toString());
         u2.addRole(Role.ROLE_OPH.toString());
 
@@ -81,6 +87,60 @@ public class APIUserTest {
                 "It should be possible to create a user with multiple roles", 2, service.count());
 
         final User retrieved = service.findByName(USER_2);
+        Assert.assertEquals(uu2.equals(retrieved), false);
+        Assert.assertEquals(retrieved.equals(u2), false);
+
+        final String USER_3 = "API_USER_3";
+        final User retrieved2 = service.findByName(USER_3);
+        Assert.assertEquals(retrieved.equals(retrieved2), false);
+
+        final UserForm u3 = new UserForm(USER_3, PW, Role.ROLE_HCP, 1);
+        final UserForm u4 = new UserForm(USER_3, PW, Role.ROLE_HCP, 1);
+        final User uu3 = new Personnel(u3);
+        final User uu4 = new Personnel(u4);
+        uu4.setUsername(uu3.getUsername());
+        uu4.setPassword(uu3.getPassword());
+        uu4.setRoles(uu3.getRoles());
+        uu4.setEnabled(uu3.getEnabled());
+
+        Assert.assertEquals(uu4.equals(uu3), true);
+        Assert.assertEquals(uu3.equals(uu2), false);
+
+        uu4.setEnabled(null);
+        int hc = uu4.hashCode();
+        Assert.assertEquals(uu3.equals(uu4), false);
+        Assert.assertEquals(uu4.equals(uu3), false);
+        
+
+        uu4.setEnabled(uu3.getEnabled());
+        uu4.setUsername(null);
+        hc = uu4.hashCode();
+        Assert.assertEquals(uu3.equals(uu4), false);
+        Assert.assertEquals(uu4.equals(uu3), false);
+
+        uu4.setUsername("API_USER_00");
+        hc = uu4.hashCode();
+        Assert.assertEquals(uu3.equals(uu4), false);
+        Assert.assertEquals(uu4.equals(uu3), false);
+
+        uu4.setUsername(uu3.getUsername());
+        uu4.setPassword(null);
+        hc = uu4.hashCode();
+        Assert.assertEquals(uu3.equals(uu4), false);
+        Assert.assertEquals(uu4.equals(uu3), false);
+
+        uu4.setPassword("000000");
+        hc = uu4.hashCode();
+        Assert.assertEquals(uu3.equals(uu4), false);
+        Assert.assertEquals(uu4.equals(uu3), false);
+
+        uu4.setPassword(uu3.getPassword());
+        uu4.setRoles(Set.of(Role.ROLE_ER));
+        hc = uu4.hashCode();
+        Assert.assertEquals(uu3.equals(uu4), false);
+        Assert.assertEquals(uu4.equals(uu3), false);
+
+
 
         Assert.assertNotNull("The created user should be retrievable from the database", retrieved);
 
@@ -90,6 +150,84 @@ public class APIUserTest {
         Assert.assertEquals(
                 "The retrieved user should have 3 roles", 3, retrieved.getRoles().size());
     }
+
+    @Test
+    @Transactional
+    public void testCreateUsers2() throws Exception {
+        mvc.perform(MockMvcRequestBuilders.post("/api/v1/generateUsers"))
+        .andExpect(MockMvcResultMatchers.status().isOk());
+
+        mvc.perform(MockMvcRequestBuilders.get("/api/v1/users/patient"))
+        .andExpect(MockMvcResultMatchers.status().isOk());
+
+        final UserForm uf = new UserForm("patient", "123456", Role.ROLE_HCP, 1);
+        mvc.perform(
+                        MockMvcRequestBuilders.post("/api/v1/users")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(TestUtils.asJsonString(uf)))
+                .andExpect(MockMvcResultMatchers.status().isConflict());
+    }
+
+    @Test
+    @Transactional
+    @WithMockUser(
+            username = "admin",
+            roles = {"ADMIN"})
+    public void testeditUser() throws Exception {
+        mvc.perform(MockMvcRequestBuilders.post("/api/v1/generateUsers"))
+        .andExpect(MockMvcResultMatchers.status().isOk());
+
+        final UserForm uf = new UserForm("patient2", "123456", Role.ROLE_HCP, 1);
+        mvc.perform(
+                MockMvcRequestBuilders.put("/api/v1/users/patient")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(TestUtils.asJsonString(uf)))
+        .andExpect(MockMvcResultMatchers.status().isConflict());
+    }
+
+    @Test
+    @Transactional
+    @WithMockUser(
+            username = "admin",
+            roles = {"ADMIN"})
+    public void testDelete() throws Exception {
+        mvc.perform(MockMvcRequestBuilders.post("/api/v1/generateUsers"))
+        .andExpect(MockMvcResultMatchers.status().isOk());
+
+        mvc.perform(MockMvcRequestBuilders.delete("/api/v1/users/1"))
+        .andExpect(MockMvcResultMatchers.status().isNotFound());
+
+        mvc.perform(MockMvcRequestBuilders.delete("/api/v1/users/patient"))
+        .andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
+    @Transactional
+    @WithMockUser(
+            username = "hcp",
+            roles = {"HCP"})
+    public void testRole() throws Exception {
+        mvc.perform(MockMvcRequestBuilders.get("/api/v1/role"))
+        .andExpect(MockMvcResultMatchers.status().isOk());
+
+        mvc.perform(MockMvcRequestBuilders.get("/api/v1/users"))
+        .andExpect(MockMvcResultMatchers.status().isOk());
+
+        mvc.perform(MockMvcRequestBuilders.get("/api/v1/users/1"))
+        .andExpect(MockMvcResultMatchers.status().isNotFound());
+    }
+
+    @Test
+    @Transactional
+    @WithMockUser(
+            username = "test",
+            roles = {"TEST"})
+    public void testWrongRole() throws Exception {
+        mvc.perform(MockMvcRequestBuilders.get("/api/v1/role"))
+        .andExpect(MockMvcResultMatchers.status().isUnauthorized());
+    }
+
+    
 
     @Test
     @Transactional
@@ -124,6 +262,15 @@ public class APIUserTest {
                 "Trying to create an invalid user should not create any User record",
                 0,
                 service.count());
+
+        final String USER_4 = "API_USER_4";
+        final UserForm u4 = new UserForm(USER_4, PW, Role.ROLE_HCP, 1);
+        u4.setPassword2("0");
+        mvc.perform(
+                        MockMvcRequestBuilders.post("/api/v1/users")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(TestUtils.asJsonString(u4)))
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError());
     }
 
     @Test
@@ -152,5 +299,35 @@ public class APIUserTest {
                 "Updating a user should give them additional Roles",
                 2,
                 retrieved.getRoles().size());
+    }
+
+    @Test
+    @Transactional
+    public void testUpdateUsers2() throws Exception {
+
+        final UserForm uf = new UserForm(USER_1, PW, Role.ROLE_PATIENT, 1);
+
+        mvc.perform(
+                        MockMvcRequestBuilders.post("/api/v1/users")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(TestUtils.asJsonString(uf)))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
+        // uf.setPassword("000000");
+
+        mvc.perform(
+                        MockMvcRequestBuilders.put("/api/v1/users/" + uf.getUsername())
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(TestUtils.asJsonString(uf)))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
+        final User retrieved = service.findByName(USER_1);
+
+        uf.setPassword(null);
+        mvc.perform(
+                        MockMvcRequestBuilders.put("/api/v1/users/" + uf.getUsername())
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(TestUtils.asJsonString(uf)))
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError());
     }
 }

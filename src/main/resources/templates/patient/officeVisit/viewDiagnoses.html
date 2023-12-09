@@ -21,7 +21,7 @@
         const app = angular.module("viewDiagnoses", []);
         app.controller('controller', function ($scope, $http) {
             // get all diagnoses of patient and display in table
-            $http.get("/iTrust2/api/v1/diagnoses").then(
+            $http.get("/iTrust2/api/v1/diagnoses/dto").then(
                 function (response) {
                     $scope.diagnoses = response.data;
                     $scope.message = "";
@@ -29,22 +29,6 @@
                     $scope.diagoses = [];
                     $scope.message = "Unable to display diagnoses";
                 });
-
-
-            // Helper method to create 2-digit version of a value -- from documentOfficeVisit.html
-            function twoDigit(num) {
-                if (num < 10) {
-                    return "0" + num;
-                }
-                return num;
-            }
-
-            // Format a date from given json
-            $scope.getDate = function getDate(date) {
-                /* The months start at 0... only the months.  So we have to add 1 to get the correct input.*/
-                month = date.month + 1;
-                return twoDigit(month) + "/" + twoDigit(date.dayOfMonth) + "/" + date.year;
-            }
         });
     </script>
 
@@ -67,8 +51,8 @@
                 </thead>
                 <tbody>
                 <tr ng-repeat="d in diagnoses" name="diagnosis">
-                    <td name="date">{{getDate(d.visit.date)}}</td>
-                    <td name="hcp">{{d.visit.hcp.username}}</td>
+                    <td name="date">{{d.date | date : 'yyyy-MM-dd'}}</td>
+                    <td name="hcp">{{d.hcp.username}}</td>
                     <td name="code">{{d.code.code}}</td>
                     <td name="description">{{d.code.description}}</td>
                     <td name="note">{{d.note}}</td>

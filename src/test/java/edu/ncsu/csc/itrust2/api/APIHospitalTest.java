@@ -2,6 +2,7 @@ package edu.ncsu.csc.itrust2.api;
 
 import edu.ncsu.csc.itrust2.common.TestUtils;
 import edu.ncsu.csc.itrust2.models.Hospital;
+import edu.ncsu.csc.itrust2.forms.HospitalForm;
 import edu.ncsu.csc.itrust2.services.HospitalService;
 
 import javax.transaction.Transactional;
@@ -25,7 +26,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 /**
  * Test for API functionality for interacting with Hospitals
  *
@@ -108,6 +109,18 @@ public class APIHospitalTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(TestUtils.asJsonString(hospital)))
                 .andExpect(status().isNotFound());
+        
+        mvc.perform(
+                get("/api/v1/hospitals")
+        ).andExpect(status().isOk());
+
+        mvc.perform(
+                delete("/api/v1/hospitals/iTrust Test Hospital 3")
+        ).andExpect(status().isNotFound());
+
+        mvc.perform(
+                delete("/api/v1/hospitals/iTrust Test Hospital 2")
+        ).andExpect(status().isOk());
     }
 
     @Test
@@ -146,4 +159,20 @@ public class APIHospitalTest {
             // likewise, exception is OK too
         }
     }
+
+    @Test
+    @Transactional
+    @WithMockUser(
+            username = "admin",
+            roles = {"ADMIN"})
+    public void testHospitalForm() throws Exception {
+        final Hospital hospital =
+                new Hospital("iTrust Test Hospital 2", "1 iTrust Test Street", "27607", "NC");
+        boolean flag = false;
+        final HospitalForm hf = new HospitalForm(hospital);
+        flag = true;
+
+        Assert.assertTrue(flag);
+    }
+
 }

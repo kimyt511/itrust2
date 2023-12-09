@@ -4,7 +4,8 @@ import edu.ncsu.csc.itrust2.models.ICDCode;
 
 import javax.validation.constraints.NotNull;
 
-import lombok.Data;
+import lombok.Setter;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
@@ -13,7 +14,9 @@ import lombok.NoArgsConstructor;
  * @author Thomas
  * @author Kai Presler-Marshall
  */
-@Data
+// @Data
+@Getter
+@Setter
 @NoArgsConstructor
 public class ICDCodeForm {
 

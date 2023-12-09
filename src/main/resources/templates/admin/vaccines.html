@@ -1,0 +1,250 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:include="layout :: head(title=~{::title},links=~{})">
+<title>Admin Vaccines</title>
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<script
+	src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+</head>
+
+<body th:include="layout :: body" th:with="content=~{::content}">
+	<div th:fragment="content">
+
+
+		<script th:inline="javascript">
+      /* Otherwise Thymeleaf tries to parse Javascript as XML and breaks itself sometimes.  Sigh */
+      /*<![CDATA[*/
+      const app = angular.module("vaccinesApp", []);
+      app.controller('vaccinesCtrl', function ($scope, $http) {
+    	  
+    	const checkValidVaccine = function(vaccine) {
+    		const err = [];
+            const pattern = /^[A-Za-z0-9\-]+$/;
+    		if (vaccine.comments.length > 500) {
+    			err.push("Comments exceeds character limit of 500");
+    		}
+    		if (vaccine.name.length > 250) {
+    			err.push("Name exceeds the character limit of 250");
+    		}
+            if (!/^90\d{3}$/.test(vaccine.cptCode)) {
+                    err.push("CPT Code must be in the format 90XXX");
+                }
+            if (vaccine.abbreviation.length > 10) {
+                    err.push("Abbreviation exceeds the character limit of 10");
+                }
+            if (!pattern.test(vaccine.name)){
+            err.push("Name must only include alphanumeric characters and '-'");
+            }
+            if (!pattern.test(vaccine.abbreviation)){
+            err.push("Abbreviation must only include alphanumeric characters and '-'");
+            } 
+
+    		return err.join(". ");
+    	}
+
+        $scope.vaccines = [];
+        $scope.errorAdding = "";
+        $scope.loadTable = function () {
+          $http.get("/iTrust2/api/v1/vaccine").then(
+            function (response) {
+              $scope.vaccines = response.data;
+              $scope.message = "";
+            }, function (rejection) {
+              $scope.vaccines = [];
+              $scope.message = "Could not display vaccines";
+            });
+        }
+
+        $scope.addVaccine = function () {
+          var err = checkValidVaccine($scope.vaccine);
+          if (err) {
+            $scope.errorAdding = err;
+          } else {
+            $http.post("/iTrust2/api/v1/vaccine", $scope.vaccine).then(
+              function (response) {
+                $scope.loadTable();
+                $scope.vaccine.name = "";
+                $scope.vaccine.abbreviation = "";
+                $scope.vaccine.cptCode = "";
+                $scope.vaccine.comments = "";
+                $scope.errorAdding = "";
+              }, function (rejection) {
+                $scope.errorAdding = "Could not add vaccine";
+              });
+          }
+
+        }
+
+        $scope.deleteVaccine = function (vaccine) {
+          $http.delete('/iTrust2/api/v1/vaccine/' + vaccine.id).then(
+            function (response) {
+              $scope.loadTable();
+              $scope.message = "";
+            }, function (rejection) {
+              $scope.message = "Could not remove vaccine";
+            })
+        }
+
+        // gets the template to ng-include for a table row / item
+        $scope.selectedVaccine = {};
+
+        $scope.getTemplate = function (vaccine) {
+          if (vaccine.id === $scope.selectedVaccine.id) return 'edit';
+          else return 'view';
+        };
+
+        $scope.editVaccine = function (vaccine) {
+          $scope.selectedVaccine = angular.copy(vaccine);
+        };
+        $scope.saveVaccine = function () {
+            const err = checkValidVaccine($scope.selectedVaccine);
+          if (err) {
+            $scope.errorAdding = err;
+          } else {
+            $http.put("/iTrust2/api/v1/vaccine", $scope.selectedVaccine).then(
+              function (response) {
+                $scope.loadTable();
+                $scope.resetSelected();         
+              }, function (rejection) {
+                $scope.errorAdding = "Failed to edit vaccine";
+              });
+          }
+        };
+
+        $scope.resetSelected = function () {
+          $scope.selectedVaccine = {};
+        };
+
+        // load table initially
+        $scope.loadTable();
+      });
+			/*]]>*/
+    </script>
+
+		<div ng-app="vaccinesApp" ng-controller="vaccinesCtrl">
+			<div class="container">
+				<div class="row">
+					<div class="col-md-12">
+						<div class="panel panel-primary">
+							<div class="panel-heading">
+								<h3>Admin Manage Vaccines</h3>
+							</div>
+							<div class="panel-body">
+								<table class="table table-bordered">
+									<caption>Existing Vaccines:</caption>
+									<thead>
+										<tr>
+											<th>Name</th>
+											<th>Abbreviation</th>
+											<th>CPT Code</th>
+											<th>Comments</th>
+                                            <th>Action</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr name="vaccineTableRow"
+											ng-repeat="v in vaccines | orderBy: 'name'"
+											ng-include="getTemplate(v)" vaccineId={{v.id}}>
+										</tr>
+									</tbody>
+								</table>
+								<!-- table in view mode -->
+								<script type="text/ng-template" id="view">
+                                    <td name="nameCell">{{v.name}}</td>
+                                    <td name="abbreCell">{{v.abbreviation}}</td>
+                                    <td name="cptCell">{{v.cptCode}}</td>
+                                    <td name="commentsCell">{{v.comments}}</td>
+                                <td>
+                                    <div class="row text-center">
+                                        <div class="col-md-6">
+                                            <input type="button" value="Edit" class="btn btn-primary" name="editVaccine" ng-click="editVaccine(v)" />                         
+                                    </div>
+                                    <div class="col-md-6">
+                                        <input type="button" value="Delete" class="btn btn-danger" name="deleteVaccine" ng-click="deleteVaccine(v)" />                          
+                                    </div>
+                                </div>
+                            </td>
+                        </script>
+
+                <!-- table in edit mode -->
+                <script type="text/ng-template" id="edit">
+                  <td name="editNameCell">
+                    <input type="text" class="form-control" ng-model="selectedVaccine.name" />
+                  </td>
+                  <td name="editAbbreCell">
+                    <input type="text" class="form-control" ng-model="selectedVaccine.abbreviation" />
+                  </td>
+                  <td name="editCptCell">
+                    <input type="text" class="form-control" ng-model="selectedVaccine.cptCode" />
+                  </td>
+                  <td name="editCommentsCell">
+                    <input type="text" class="form-control" ng-model="selectedVaccine.comments" />
+                  </td>
+                  <td>
+                    <div class="row text-center">
+                      <div class="col-md-6">
+                          <input type="button" value="Save" class="btn btn-success" name="saveVaccine" ng-click="saveVaccine()" />                          
+                      </div>
+                      <div class="col-md-6">
+                          <input type="button" value="Cancel" class="btn btn-danger" name="cancelEdit" ng-click="resetSelected()" />                            
+                      </div>
+                    </div>
+                  </td>
+                </script>
+
+								<br>
+								<div class="row">
+									<div class="col-md-12">
+										<div class="panel panel-default">
+											<div class="panel-heading ">Add a Vaccine</div>
+											<div class="panel-body">
+												<form class="form-horizontal" role="form" name="addVaccineForm"
+													ng-submit="addVaccine(addVaccineForm.$valid)">
+													<div class="row">
+														<div class="col-md-4">
+															<label>Name</label> <input type="text"
+																class="form-control" name="vaccine" ng-model="vaccine.name"
+																required />
+														</div>
+                            <div class="col-md-4">
+															<label>Abbreviation</label> <input type="text"
+																class="form-control" placeholder="only alphabets and - are allowed"
+                                name="abbre" ng-model="vaccine.abbreviation"
+																required />
+														</div>
+														<div class="col-md-4">
+															<label>CPT Code</label> <input type="text"
+																class="form-control" placeholder="90xxx"
+																name="cpt" ng-model="vaccine.cptCode" required />
+														</div>
+														<div class="col-md-4">
+															<label>Comments</label>
+															<textarea class="form-control" rows="5"
+																name="comments" ng-model="vaccine.comments" required
+																ng-minlength="1"></textarea>
+														</div>
+													</div>
+													<div class="row">
+														<div class="col-md-12 text-right">
+															<button type="submit" class="btn btn-success"
+																name="submit">Submit</button>
+														</div>
+													</div>
+												</form>
+												<div>
+													<p style="color: red" ng-model="errorAdding" id="errP">{{errorAdding}}</p>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+</body>
+
+</html>
+
+<!-- still here? -->

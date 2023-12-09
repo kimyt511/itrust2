@@ -28,6 +28,7 @@ import static org.junit.Assert.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -66,10 +67,8 @@ public class APIDrugTest {
         form1.setName("TEST1");
         form1.setDescription("DESC1");
 
-        final DrugForm form2 = new DrugForm();
-        form2.setCode("0000-0000-01");
-        form2.setName("TEST2");
-        form2.setDescription("Desc2");
+        final Drug drug_tmp = new Drug("0000-0000-01", "TEST2", "Desc2");
+        final DrugForm form2 = new DrugForm(drug_tmp);
 
         // Add drug1 to system
         final String content1 =
@@ -149,5 +148,8 @@ public class APIDrugTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(TestUtils.asJsonString(drug2)))
                 .andExpect(status().isOk());
+
+        mvc.perform(delete("/api/v1/drugs/"+drug2.getId())).andExpect(status().isOk());
+        mvc.perform(delete("/api/v1/drugs/"+1254663L)).andExpect(status().isNotFound());
     }
 }
