@@ -134,7 +134,7 @@ public class PatientController {
      * @return The page for the patient to view reviews of a hospital
      */
     @GetMapping("/patient/viewHospitalReview")
-    @PreAuthorize("hasRole('ROLE_PATIENT')")
+    @PreAuthorize("hasAnyRole('ROLE_PATIENT','ROLE_HCP')")
     public String viewHospitalReview(final Model model) {
         return "/patient/viewHospitalReview";
     }
@@ -146,7 +146,7 @@ public class PatientController {
      * @return The page for the patient to view reviews of an HCP
      */
     @GetMapping("/patient/viewHcpReview")
-    @PreAuthorize("hasRole('ROLE_PATIENT')")
+    @PreAuthorize("hasAnyRole('ROLE_PATIENT','ROLE_HCP')")
     public String viewHcpReview(final Model model) { return "/patient/viewHcpReview";
     }
 
