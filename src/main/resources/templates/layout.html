@@ -152,6 +152,12 @@
                             Drugs</a></li>
                         <li><a href="/iTrust2/admin/manageICDCodes"
                                id="manageICDCodes">Manage ICD-10 Codes</a></li>
+                        <li><a href="/iTrust2/admin/manageReviews"
+                               id="manageReviews">Manage Reviews</a></li>
+                        <li style="display: none;"><a href="/iTrust2/admin/adminHcpReview"
+                                                      id="adminHcpReview">viewHcpReview</a></li>
+                        <li style="display: none;"><a href="/iTrust2/admin/adminHospitalReview"
+                                                      id="adminHospitalReview">viewHospitalReview</a></li>
                         <li><a href="/iTrust2/admin/vaccines"
                             id="vaccines">Manage Vaccines</a></li>
                         <li><a href="/iTrust2/admin/manageLOINC" id="loinc">Manage
@@ -213,6 +219,12 @@
                                id="editProcedures">Edit Procedures</a></li>
                     </ul>
                 </li>
+                <li><a href="/iTrust2/hcp/hcpReview"
+                       id="hcpReview">Reviews</a></li>
+                <li style="display: none;"><a href="/iTrust2/patient/viewHospitalReview"
+                                              id="viewHospitalReview2">viewHospitalReview</a></li>
+                <li style="display: none;"><a href="/iTrust2/patient/viewHcpReview"
+                                              id="viewHcpReview2">viewHcpReview</a></li>
             </ul>
             <!-- ER navbar -->
             <ul id="er-dropdown" class="nav navbar-nav">
@@ -230,7 +242,14 @@
                 <li class="dropdown"><a class="dropdown-toggle"
                                         data-toggle="dropdown" href="#">Patient<span class="caret"></span></a>
                     <ul class="dropdown-menu">
-
+                        <li style="display: none;"><a href="/iTrust2/patient/writeReview"
+                               id="writeReview">writeReview</a></li>
+                        <li style="display: none;"><a href="/iTrust2/patient/viewHospitalReview"
+                                                      id="viewHospitalReview">viewHospitalReview</a></li>
+                        <li style="display: none;"><a href="/iTrust2/patient/viewHcpReview"
+                                                      id="viewHcpReview">viewHcpReview</a></li>
+                        <li style="display: none;"><a href="/iTrust2/patient/myReviews"
+                                                      id="myReviews">my Review</a></li>
                         <!-- modified part -->
                         <li><a href="/iTrust2/patient/foodDiary"
                                id="foodDiary">Food Diary</a></li>
@@ -273,6 +292,8 @@
 
                     </ul>
                 </li>
+                <li><a href="/iTrust2/patient/reviewPage"
+                       id="reviewPage">Reviews</a></li>
             </ul>
 
             <!-- Labtech navbar -->

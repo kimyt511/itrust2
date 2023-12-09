@@ -78,6 +78,38 @@ public class AdminController {
     }
 
     /**
+     *
+     * @param model data for front end
+     * @return mapping
+     */
+    @RequestMapping(value = "admin/manageReviews")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public String manageReviews(final Model model) {
+        return "/admin/manageReviews";
+    }
+
+    /**
+     *
+     * @param model data for front end
+     * @return mapping
+     */
+    @RequestMapping(value = "admin/adminHcpReview")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public String adminHcpReview(final Model model) {
+        return "/admin/adminHcpReview";
+    }
+
+    /**
+     *
+     * @param model data for front end
+     * @return mapping
+     */
+    @RequestMapping(value = "admin/adminHospitalReview")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public String adminHospitalReview(final Model model) {
+        return "/admin/adminHospitalReview";
+    }
+
      * Retrieves the form for the Vaccine action
      *
      * @param model
@@ -102,5 +134,4 @@ public class AdminController {
     public String manageLOINC ( final Model model ) {
         return "/admin/manageLOINC";
     }
-
 }
