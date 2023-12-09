@@ -149,4 +149,15 @@ public class PatientController {
     @PreAuthorize("hasRole('ROLE_PATIENT')")
     public String viewHcpReview(final Model model) { return "/patient/viewHcpReview";
     }
+
+    /**
+     * Create a page for the patient to view reviews of an HCP
+     *
+     * @param model data for front end
+     * @return The page for the patient to view reviews of an HCP
+     */
+    @GetMapping("/patient/myReviews")
+    @PreAuthorize("hasRole('ROLE_PATIENT')")
+    public String myReviews(final Model model) { return "/patient/myReviews";
+    }
 }
