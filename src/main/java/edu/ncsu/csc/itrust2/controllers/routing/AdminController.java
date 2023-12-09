@@ -110,6 +110,7 @@ public class AdminController {
         return "/admin/adminHospitalReview";
     }
 
+    /*
      * Retrieves the form for the Vaccine action
      *
      * @param model

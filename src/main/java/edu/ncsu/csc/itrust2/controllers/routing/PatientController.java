@@ -157,7 +157,9 @@ public class PatientController {
      */
     @GetMapping("/patient/myReviews")
     @PreAuthorize("hasRole('ROLE_PATIENT')")
-    public String myReviews(final Model model) { return "/patient/myReviews";
+    public String myReviews(final Model model) {
+        return "/patient/myReviews";
+    }
 
     /**
      * Create a page for the patient to view all diagnoses
