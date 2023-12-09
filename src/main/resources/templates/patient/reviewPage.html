@@ -150,46 +150,43 @@
             ///////////////////////////////////Open pop-up to Load reviews of selected HCP //////////////////////////////////////
 
             ///////////////////////////////////Load average rating for ONE HCP/////////////////////////////////////////////////
+            $scope.hcpRatings = {}
             $scope.loadHcpRating = function (entry) {
                 $http.get("/iTrust2/api/v1/reviews/average/hcp/" + entry.username).then(
                     function (response) {
                         //todo
-                        return response.data
-                        //todo
+                        var hcpRating = response.data;
+                        if(isNaN(hcpRating)){hcpRating = 0.0;}
+                        //store in the dictionary
+                        $scope.hcpRatings[entry.username] = hcpRating;
+
                     }, function (rejection) {
                         $scope.message = "Could not load average for HCP";
                     }
                 );
             };
-            ///////////////////////////////////Load average rating for ONE HCP/////////////////////////////////////////////////
 
             ///////////////////////////////////Load average rating for ONE HCP/////////////////////////////////////////////////
+
+            ///////////////////////////////////Load average rating for ONE Hospital/////////////////////////////////////////////////
+            $scope.hospitalRatings = {}
             $scope.loadHospitalRating = function (entry) {
                 $http.get("/iTrust2/api/v1/reviews/average/hospital/" + entry.name).then(
                     function (response) {
-                        var rating = parseFloat(response.data);
+                        //todo
+                        var hospitalRating = response.data;
+                        if(isNaN(hospitalRating)){hospitalRating = 0.0;}
 
-                        // Check if parsing was successful, otherwise return 0 or handle it as needed
-                        if (isNaN(rating)) {
-                            rating = 0;
-                        }
-                        return rating;
+                        //store in a dictionary
+                        $scope.hospitalRatings[entry.name] = hospitalRating;
+
                     }, function (rejection) {
                         $scope.message = "Could not load average for Hospital";
                     }
                 );
             };
-            ///////////////////////////////////Load average rating for ONE HCP/////////////////////////////////////////////////
+            ///////////////////////////////////Load average rating for one hospital/////////////////////////////////////////////////
 
-            //todo
-            $scope.hcpRatingsMap = {};
-            $scope.loadHcpRatings = function () {
-                // Assuming hcps is an array of objects with a 'username' property for each HCP
-                angular.forEach($scope.hcps, function (hcp) {
-                    $scope.hcpRatingsMap[hcp.username] = $scope.loadHcpRating(hcp);
-                });
-            };
-            $scope.loadHcpRatings();
         });
         /*]]>*/
     </script>
@@ -296,10 +293,13 @@
                                     <tbody>
                                     <tr name="hospitalsTableRow"
                                         ng-repeat="hospital in Hospitals "
-                                        ng-click="loadHospital(hospital)" style="cursor:pointer;">
+                                        ng-click="loadHospital(hospital)"
+                                        ng-init="loadHospitalRating(hospital)"
+                                        style="cursor:pointer;">
                                         <td name="entryCell"><strong >{{hospital.name}}</strong>
                                             <!--rating-->
-                                            &nbsp;({{hospital.address}})</td>
+                                            &nbsp;&nbsp;&nbsp;&nbsp;
+                                            <span style="float: right;"> {{hospitalRatings[hospital.name]}}&nbsp;/&nbsp;5.0 </span>
                                             <!--rating-->
                                     </tr>
                                     </tbody>
@@ -321,10 +321,13 @@
                                     <tbody>
                                     <tr name="hcpsTableRow"
                                         ng-repeat="hcp in Hcps "
-                                        ng-click="loadHcp(hcp)" style="cursor:pointer;">
+                                        ng-click="loadHcp(hcp)"
+                                        ng-init="loadHcpRating(hcp)"
+                                        style="cursor:pointer;">
                                         <td name="entryCell"><strong >{{hcp.username}}</strong>
                                             <!--rating-->
-                                            &nbsp;({{hcpRatingsMap[hcp.username]}})</td>
+                                            &nbsp;&nbsp;&nbsp;&nbsp;
+                                            <span style="float: right;"> {{hcpRatings[hcp.username]}}&nbsp;/&nbsp;5.0 </span>
                                             <!--rating-->
                                     </tr>
                                     </tbody>
