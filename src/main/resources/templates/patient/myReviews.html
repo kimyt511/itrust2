@@ -11,7 +11,7 @@
     const app = angular.module("myReviewsApp",[]);
 
     // API name to need to be adjusted
-    app.controller('myReviewsCtrl', function ($scope, $http) {
+    app.controller('myReviewsCtrl', function ($scope, $http, $window) {
 
         ///////////////////////get current user(patient)//////////////////////////////////////////
         $scope.patient = /*[[${#httpServletRequest.remoteUser}]]*/null;
@@ -35,6 +35,20 @@
 
         );
         ///////////////////////get my Reviews///////////////////////////////////////////////
+
+        ///////////////////////Delete function for Write Review///////////////////////////////////////////////
+        $scope.remove = function (reviewID) {
+            $http.delete('/iTrust2/api/v1/reviews/hcp/' + reviewID).then(
+                function (response) {
+                    alert("Your review was successfully deleted.");
+
+                    // Reload the current page
+                    $window.location.reload();
+                }, function (rejection) {
+                    alert("Could not remove review");
+                })
+        }
+        ///////////////////////Delete function for Write Review///////////////////////////////////////////////
 
     });
     /*]]>*/
@@ -80,6 +94,9 @@
                                 <td name="entryCell">
                                     <div>
                                         <strong>{{review.hospital.name}} {{review.hcp.username}}</strong>
+                                        <button ng-click="remove(review.id)" style="float: right">
+                                            remove
+                                        </button>
                                     </div>
                                     <div>
                                         {{review.comment}}

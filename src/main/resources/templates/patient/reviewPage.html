@@ -97,6 +97,14 @@
                 var $popup = $window.open(url, windowName, "width=" + width + ",height=" + height + "," +
                     "left=" + left + ",top=" + top);
 
+                // Set up a listener for when the pop-up window is closed
+                if ($popup) {
+                    $popup.addEventListener('beforeunload', function () {
+                        // Reload the parent page when the pop-up is closed
+                        $window.location.reload();
+                    });
+                }
+
             };
             ///////////////////////////////////Write Pop-up/////////////////////////////////////////////////
 
@@ -114,6 +122,13 @@
                 var $popup = $window.open(url, windowName, "width=" + width + ",height=" + height + "," +
                     "left=" + left + ",top=" + top);
 
+                // Set up a listener for when the pop-up window is closed
+                if ($popup) {
+                    $popup.addEventListener('beforeunload', function () {
+                        // Reload the parent page when the pop-up is closed
+                        $window.location.reload();
+                    });
+                }
             };
             ///////////////////////////////////Write Pop-up/////////////////////////////////////////////////
 
