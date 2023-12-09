@@ -1,40 +1,53 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <head th:include="layout :: head(title=~{::title},links=~{})">
-    <title>View HCP Review</title>
+    <title>View Hospital Review</title>
 </head>
 
 <script th:inline="javascript">
     /* Otherwise Thymeleaf tries to parse Javascript as XML and breaks itself sometimes.  Sigh */
     /*![CDATA[*/
 
-    const app = angular.module("myReviewsApp",[]);
+    const app = angular.module("viewHospitalEntryApp",[]);
 
     // API name to need to be adjusted
-    app.controller('myReviewsCtrl', function ($scope, $http, $window) {
+    app.controller('viewHospitalEntryCtrl', function ($scope, $http, $window) {
 
-        ///////////////////////get current user(patient)//////////////////////////////////////////
-        $scope.patient = /*[[${#httpServletRequest.remoteUser}]]*/null;
-        $http.get("/iTrust2/api/v1/patient").then(function (response) {
-                $scope.patient = response.data;
-            }, function (rejection) {
-                console.error("Could not retrieve expected Patient record");
-            }
-        );
+        ////////////////////Get the Selected Hospital////////////////////////
+        var queryString = window.location.search;
+        var urlParams = new URLSearchParams(queryString);
+        var hospitalEntryJson = urlParams.get('data');
+        $scope.hospital = JSON.parse(decodeURIComponent(hospitalEntryJson));
+        ////////////////////Get the Selected Hospital////////////////////////
 
-        ///////////////////////get current user(patient)//////////////////////////////////////////
+        ///////////////////////////////////Load Hospital list /////////////////////////////////////////////////
+        $scope.loadReviews = function () {
+            $http.get("/iTrust2/api/v1/reviews/hospital/"+ $scope.hospital.name).then(
+                function (response) {
+                    // console.log(response.data);
+                    $scope.reviews = response.data;
+                    $scope.message = "";
+                }, function (rejection) {
+                    $scope.message = "Could not load reviews";
+                }
+            );
+        };
+        $scope.loadReviews();
+        ///////////////////////////////////Load Hospital list/////////////////////////////////////////////////
 
-        ///////////////////////get my Reviews///////////////////////////////////////////////
-        $http.get("/iTrust2/api/v1/reviews/patient/" + $scope.patient).then(
-            function (response) {
-                $scope.myReviews = response.data;
-            },function (rejection) {
-            console.error('Error: Could not get my Reviews');
-            $scope.errorMsg += "Could not get my Reviews"
-        }
-
-        );
-        ///////////////////////get my Reviews///////////////////////////////////////////////
+        ///////////////////////////////////Load average hospital rating /////////////////////////////////////////////////
+        $scope.loadHcpRating = function () {
+            $http.get("/iTrust2/api/v1/reviews/average/hospital/" + $scope.hospital.name).then(
+                function (response) {
+                    $scope.rating =  response.data;
+                    if(isNaN($scope.rating)){ $scope.rating = 0.0;}
+                }, function (rejection) {
+                    $scope.message = "Could not load Hcps";
+                }
+            );
+        };
+        $scope.loadHcpRating();
+        ///////////////////////////////////Load average hospital rating/////////////////////////////////////////////////
 
         ///////////////////////Delete function for Review///////////////////////////////////////////////
         $scope.remove = function (reviewID) {
@@ -49,14 +62,12 @@
                 })
         }
         ///////////////////////Delete function for Review///////////////////////////////////////////////
-
     });
     /*]]>*/
 </script>
 
 <!---------------------------------------------Style CSS------------------------------------------------------>
 <style>
-
     .entry-table td[name="entryCell"] {
         height: 30px;
         width: 700px;
@@ -73,31 +84,31 @@
 <!---------------------------------------------Style CSS------------------------------------------------------>
 
 <!-- Contents -->
-<div ng-app="myReviewsApp" ng-controller="myReviewsCtrl">
+<div ng-app="viewHospitalEntryApp" ng-controller="viewHospitalEntryCtrl">
     <div class="container">
         <div class="row">
             <div class="col-md-12">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
-                        <h3>My Reviews</h3>
+                        <h3>{{hospital.name}} &nbsp;&nbsp;&nbsp;{{rating}}/5.0</h3>
                     </div>
                     <div class="panel-body">
                         <!--Display message if there is no entry-->
-                        <div ng-if="myReviews.length === 0">
+                        <div ng-if="reviews.length === 0">
                             <p>No reviews, yet.</p>
                         </div>
                         <!--Display message if there is no entry-->
                         <!------------------------------table------------------------------------------------>
                         <table class="entry-table table-bordered">
                             <tbody>
-                            <tr name="reviewTableRow" ng-repeat="review in myReviews ">
+                            <tr name="reviewTableRow" ng-repeat="review in reviews ">
                                 <td name="entryCell">
                                     <div>
-                                        <strong>{{review.hospital.name}} {{review.hcp.username}}</strong>
-                                        <button ng-click="remove(review.id)" style="float: right">
-                                            remove
-                                        </button>
+                                        <strong>{{review.patient.username}}</strong>
                                     </div>
+                                    <button ng-click="remove(review.id)" style="float: right">
+                                        remove
+                                    </button>
                                     <div>
                                         {{review.comment}}
                                     </div>
