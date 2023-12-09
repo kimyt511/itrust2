@@ -1,0 +1,134 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:include="layout :: head(title=~{::title},links=~{})">
+    <title>View HCP Review</title>
+</head>
+
+<script th:inline="javascript">
+    /* Otherwise Thymeleaf tries to parse Javascript as XML and breaks itself sometimes.  Sigh */
+    /*![CDATA[*/
+
+    const app = angular.module("viewHcpEntryApp",[]);
+
+    // API name to need to be adjusted
+    app.controller('viewHcpEntryCtrl', function ($scope, $http, $window) {
+
+        ////////////////////Get the Selected Hospital////////////////////////
+        var queryString = window.location.search;
+        var urlParams = new URLSearchParams(queryString);
+        var hcpEntryJson = urlParams.get('data');
+        $scope.hcp = JSON.parse(decodeURIComponent(hcpEntryJson));
+        ////////////////////Get the Selected Hospital////////////////////////
+
+        ///////////////////////////////////Load HCP reviews /////////////////////////////////////////////////
+        $scope.loadReviews = function () {
+            $http.get("/iTrust2/api/v1/reviews/hcp/"+ $scope.hcp.username).then(
+                function (response) {
+                    // console.log(response.data);
+                    $scope.reviews = response.data;
+                    $scope.message = "";
+                }, function (rejection) {
+                    $scope.message = "Could not load reviews";
+                }
+            );
+        };
+        $scope.loadReviews();
+        ///////////////////////////////////Load HCP reviews/////////////////////////////////////////////////
+
+        ///////////////////////////////////Load average HCP rating /////////////////////////////////////////////////
+        $scope.loadHcpRating = function () {
+            $http.get("/iTrust2/api/v1/reviews/average/hcp/" + $scope.hcp.username).then(
+                function (response) {
+                    $scope.rating =  response.data;
+                    if(isNaN($scope.rating)){$scope.rating = 0.0;}
+                }, function (rejection) {
+                    $scope.message = "Could not load Hcps";
+                }
+            );
+        };
+        $scope.loadHcpRating();
+        ///////////////////////////////////Load average HCP rating/////////////////////////////////////////////////
+
+        ///////////////////////Delete function for Review///////////////////////////////////////////////
+        $scope.remove = function (reviewID) {
+            $http.delete('/iTrust2/api/v1/reviews/hcp/' + reviewID).then(
+                function (response) {
+                    alert("A review was successfully deleted.");
+
+                    // Reload the current page
+                    $window.location.reload();
+                }, function (rejection) {
+                    alert("Could not remove review");
+                })
+        }
+        ///////////////////////Delete function for Review///////////////////////////////////////////////
+
+    });
+    /*]]>*/
+</script>
+
+<!---------------------------------------------Style CSS------------------------------------------------------>
+<style>
+
+    .entry-table td[name="entryCell"] {
+        height: 30px;
+        width: 700px;
+        padding: 5%;
+        text-align: left;
+        font-size: 1.7rem;
+        font-family: 'Questrial', sans-serif;
+        background-color: #FFFFFF;
+    }
+    .entry-table td[name="entryCell"]:hover {
+        background: #eee;
+    }
+</style>
+<!---------------------------------------------Style CSS------------------------------------------------------>
+
+<!-- Contents -->
+<div ng-app="viewHcpEntryApp" ng-controller="viewHcpEntryCtrl">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h3>{{hcp.username}} &nbsp;&nbsp;&nbsp;{{rating}}/5.0</h3>
+                    </div>
+                    <div class="panel-body">
+                        <!--Display message if there is no entry-->
+                        <div ng-if="reviews.length === 0">
+                            <p>No reviews, yet.</p>
+                        </div>
+                        <!--Display message if there is no entry-->
+                        <!------------------------------table------------------------------------------------>
+                        <table class="entry-table table-bordered">
+                            <tbody>
+                            <tr name="reviewTableRow" ng-repeat="review in reviews ">
+                                <td name="entryCell">
+                                    <div>
+                                        <strong>{{review.patient.username}}</strong>
+                                    </div>
+                                    <button ng-click="remove(review.id)" style="float: right">
+                                        remove
+                                    </button>
+                                    <div>
+                                        rating: {{review.rate}}
+                                    </div>
+                                    <div>
+                                        {{review.comment}}
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <!------------------------------table------------------------------------------------>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+</body>
+
+</html>

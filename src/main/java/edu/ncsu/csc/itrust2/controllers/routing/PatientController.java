@@ -91,6 +91,75 @@ public class PatientController {
     }
 
     /**
+     * Create a page for the patient to review HCP and Hospital
+     *
+     * @param model data for front end
+     * @return The page for the patient to review HCP and Hospital
+     */
+    @GetMapping("/patient/reviewHCPandHospital")
+    @PreAuthorize("hasRole('ROLE_PATIENT')")
+    public String reviewHCPandHospital(final Model model) {
+        return "/patient/reviewHCPandHospital";
+    }
+
+    /**
+     * Create a page for the patient to review page
+     *
+     * @param model data for front end
+     * @return The page for the patient to review page
+     */
+    @GetMapping("/patient/reviewPage")
+    @PreAuthorize("hasRole('ROLE_PATIENT')")
+    public String reviewPage(final Model model) {
+        return "/patient/reviewPage";
+    }
+
+    /**
+     * Create a page for the patient to review page
+     *
+     * @param model data for front end
+     * @return The page for the patient to review page
+     */
+    @GetMapping("/patient/writeReview")
+    @PreAuthorize("hasRole('ROLE_PATIENT')")
+    public String writeReview(final Model model) {
+        return "/patient/writeReview";
+    }
+
+    /**
+     * Create a page for the patient to view reviews of a hospital
+     *
+     * @param model data for front end
+     * @return The page for the patient to view reviews of a hospital
+     */
+    @GetMapping("/patient/viewHospitalReview")
+    @PreAuthorize("hasAnyRole('ROLE_PATIENT','ROLE_HCP')")
+    public String viewHospitalReview(final Model model) {
+        return "/patient/viewHospitalReview";
+    }
+
+    /**
+     * Create a page for the patient to view reviews of an HCP
+     *
+     * @param model data for front end
+     * @return The page for the patient to view reviews of an HCP
+     */
+    @GetMapping("/patient/viewHcpReview")
+    @PreAuthorize("hasAnyRole('ROLE_PATIENT','ROLE_HCP')")
+    public String viewHcpReview(final Model model) { return "/patient/viewHcpReview";
+    }
+
+    /**
+     * Create a page for the patient to view reviews of an HCP
+     *
+     * @param model data for front end
+     * @return The page for the patient to view reviews of an HCP
+     */
+    @GetMapping("/patient/myReviews")
+    @PreAuthorize("hasRole('ROLE_PATIENT')")
+    public String myReviews(final Model model) { return "/patient/myReviews";
+
+    /**
      * Create a page for the patient to view all diagnoses
      *
      * @param model data for front end

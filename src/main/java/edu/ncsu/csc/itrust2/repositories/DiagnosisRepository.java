@@ -28,3 +28,4 @@ public interface DiagnosisRepository extends JpaRepository<Diagnosis, Long> {
     List<Long> findDiagnosisIdsForPatient(@Param("patientId") String patientId);
 
 }
+

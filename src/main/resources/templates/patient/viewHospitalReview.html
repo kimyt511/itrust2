@@ -1,0 +1,116 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:include="layout :: head(title=~{::title},links=~{})">
+    <title>View Hospital Review</title>
+</head>
+
+    <script th:inline="javascript">
+        /* Otherwise Thymeleaf tries to parse Javascript as XML and breaks itself sometimes.  Sigh */
+        /*![CDATA[*/
+
+        const app = angular.module("viewHospitalEntryApp",[]);
+
+        // API name to need to be adjusted
+        app.controller('viewHospitalEntryCtrl', function ($scope, $http) {
+
+            ////////////////////Get the Selected Hospital////////////////////////
+            var queryString = window.location.search;
+            var urlParams = new URLSearchParams(queryString);
+            var hospitalEntryJson = urlParams.get('data');
+            $scope.hospital = JSON.parse(decodeURIComponent(hospitalEntryJson));
+            ////////////////////Get the Selected Hospital////////////////////////
+
+            ///////////////////////////////////Load HCP list /////////////////////////////////////////////////
+            $scope.loadReviews = function () {
+                $http.get("/iTrust2/api/v1/reviews/hospital/"+ $scope.hospital.name).then(
+                    function (response) {
+                        // console.log(response.data);
+                        $scope.reviews = response.data;
+                        $scope.message = "";
+                    }, function (rejection) {
+                        $scope.message = "Could not load reviews";
+                    }
+                );
+            };
+            $scope.loadReviews();
+            ///////////////////////////////////Load HCP list/////////////////////////////////////////////////
+
+            ///////////////////////////////////Load average HCP rating /////////////////////////////////////////////////
+            $scope.loadHcpRating = function () {
+                $http.get("/iTrust2/api/v1/reviews/average/hospital/" + $scope.hospital.name).then(
+                    function (response) {
+                        $scope.rating =  response.data;
+                        if(isNaN($scope.rating)){ $scope.rating = 0.0;}
+                    }, function (rejection) {
+                        $scope.message = "Could not load Hcps";
+                    }
+                );
+            };
+            $scope.loadHcpRating();
+            ///////////////////////////////////Load average HCP rating/////////////////////////////////////////////////
+
+        });
+        /*]]>*/
+    </script>
+
+<!---------------------------------------------Style CSS------------------------------------------------------>
+<style>
+    .entry-table td[name="entryCell"] {
+        height: 30px;
+        width: 700px;
+        padding: 5%;
+        text-align: left;
+        font-size: 1.7rem;
+        font-family: 'Questrial', sans-serif;
+        background-color: #FFFFFF;
+    }
+    .entry-table td[name="entryCell"]:hover {
+        background: #eee;
+    }
+</style>
+<!---------------------------------------------Style CSS------------------------------------------------------>
+
+    <!-- Contents -->
+    <div ng-app="viewHospitalEntryApp" ng-controller="viewHospitalEntryCtrl">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <h3>{{hospital.name}} &nbsp;&nbsp;&nbsp;{{rating}}/5.0</h3>
+                        </div>
+                        <div class="panel-body">
+                            <!--Display message if there is no entry-->
+                            <div ng-if="reviews.length === 0">
+                                <p>No reviews, yet.</p>
+                            </div>
+                            <!--Display message if there is no entry-->
+                            <!------------------------------table------------------------------------------------>
+                            <table class="entry-table table-bordered">
+                                <tbody>
+                                <tr name="reviewTableRow" ng-repeat="review in reviews ">
+                                    <td name="entryCell">
+                                        <div>
+                                            <strong>{{review.patient.username}}</strong>
+                                        </div>
+                                        <div>
+                                            rating: {{review.rate}}
+                                        </div>
+                                        <div>
+                                            {{review.comment}}
+                                        </div>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            <!------------------------------table------------------------------------------------>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+</html>

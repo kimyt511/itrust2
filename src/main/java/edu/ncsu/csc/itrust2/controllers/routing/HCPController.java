@@ -174,4 +174,16 @@ public class HCPController {
     public String viewDiaryEntryHCP(final Model model) {
         return "/hcp/viewDiaryEntryHCP";
     }
+
+    /**
+     * Returns the form page for a HCP to the review page
+     *
+     * @param model The data for the front end
+     * @return Page to display to the user
+     */
+    @GetMapping("/hcp/hcpReview")
+    @PreAuthorize("hasRole('ROLE_HCP')")
+    public String hcpReview(final Model model) {
+        return "/hcp/hcpReview";
+    }
 }
