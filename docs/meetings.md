@@ -263,7 +263,6 @@
 ## Team 2 Meetings
 
 ### Meeting 1
-
 **Date**: 2023.11.5
 
 What we did:
@@ -272,12 +271,14 @@ What we did:
 - UC15 Backend - 한철원
 - Implement frontend very naively to visualize how each functionality works
 
+### Meeting 2
 **Date**: 2023.11.14
 
 What we did:
 - Discuss about a bug about viewing diagnoses in the original code
 - Decide to create DTO to fix the bug
 
+### Meeting 3
 **Date**: 2023.11.16
 
 What we did:
@@ -285,12 +286,33 @@ What we did:
 ToDo: Implement logging functionality
 ToDo: Implement UC15 into gradle version of iTrust2
 
+### Meeting 4
 **Date**: 2023.11.21
 
 What we did:
 - Discuss about a bug about documenting diagnoses in the gradle version of iTrust2
 ToDo: Implement UC15 into gradle version of iTrust2
 ToDo: Create test code and then merge to develop branch
+
+### Meeting 5
+**Date**: 2023.11.26
+
+What we did:
+- Discuss about model for UC18
+- Develop Vaccine model and API
+- Bug fix: In vaccine edit, instead of fixing existing data, fix bugs that have been added.
+- Integrate Vaccine and Office Visit
+- Remove unnecessary comments in the vaccination model
+
+### Meeting 6
+**Date**: 2023.11.27
+
+What we did:
+- Fix the bug and complete the funcitonalities of UC18
+- Bug fix: patient null error and typo
+- Add test code for UC18
+- Merge with develop branch
+
 
 ---
 
