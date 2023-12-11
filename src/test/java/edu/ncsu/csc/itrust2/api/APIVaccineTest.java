@@ -115,7 +115,7 @@ public class APIVaccineTest {
         .andExpect(status().isConflict());
         form1.setCptCode("90000");
 
-        vf1.setId(1L);
+        vf1.setId(form1.getId());
         mvc.perform(
                 put("/api/v1/vaccine")
                         .contentType(MediaType.APPLICATION_JSON)
